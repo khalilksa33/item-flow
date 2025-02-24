@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -49,6 +50,12 @@ export function ItemForm({ isOpen, onClose, item, onSave }: ItemFormProps) {
   };
 
   const handleQuantityChange = (newQuantity: number) => {
+    const currentUser = storage.getCurrentUser();
+    if (!currentUser) {
+      toast.error("Please log in to update quantities");
+      return;
+    }
+
     if (item) {
       const difference = newQuantity - (item.quantity || 0);
       const movement: StockMovement = {
@@ -57,6 +64,7 @@ export function ItemForm({ isOpen, onClose, item, onSave }: ItemFormProps) {
         quantity: Math.abs(difference),
         type: difference > 0 ? 'in' : 'out',
         reason: 'Manual adjustment',
+        userId: currentUser.id
       };
 
       setFormData({
@@ -81,6 +89,12 @@ export function ItemForm({ isOpen, onClose, item, onSave }: ItemFormProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const currentUser = storage.getCurrentUser();
+    if (!currentUser) {
+      toast.error("Please log in to save items");
+      return;
+    }
+
     const newItem: InventoryItem = {
       id: item?.id || crypto.randomUUID(),
       name: formData.name!,
@@ -94,7 +108,8 @@ export function ItemForm({ isOpen, onClose, item, onSave }: ItemFormProps) {
       stockMovements: formData.stockMovements || [],
       barcode: formData.barcode,
       qrCode: formData.qrCode,
-      supplierId: formData.supplierId
+      supplierId: formData.supplierId,
+      lastModifiedBy: currentUser.id
     };
 
     if (item) {
@@ -194,25 +209,6 @@ export function ItemForm({ isOpen, onClose, item, onSave }: ItemFormProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="image">Item Image</Label>
-              <Input
-                id="image"
-                type="file"
-                accept="image/*"
-                onChange={handleImageUpload}
-              />
-              {formData.imageUrl && (
-                <div className="mt-2">
-                  <img
-                    src={formData.imageUrl}
-                    alt="Item preview"
-                    className="max-h-32 rounded-md"
-                  />
-                </div>
-              )}
-            </div>
-
-            <div className="space-y-2">
               <Label htmlFor="supplier">Supplier</Label>
               <div className="flex gap-2">
                 <select
@@ -265,6 +261,25 @@ export function ItemForm({ isOpen, onClose, item, onSave }: ItemFormProps) {
                 </div>
               </div>
             )}
+
+            <div className="space-y-2">
+              <Label htmlFor="image">Item Image</Label>
+              <Input
+                id="image"
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+              />
+              {formData.imageUrl && (
+                <div className="mt-2">
+                  <img
+                    src={formData.imageUrl}
+                    alt="Item preview"
+                    className="max-h-32 rounded-md"
+                  />
+                </div>
+              )}
+            </div>
 
             <DialogFooter>
               <Button type="button" variant="outline" onClick={onClose}>
