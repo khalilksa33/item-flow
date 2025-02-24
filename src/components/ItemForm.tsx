@@ -1,9 +1,10 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { storage } from "@/lib/storage";
-import { InventoryItem, Category } from "@/types/inventory";
+import { InventoryItem, StockMovement } from "@/types/inventory";
 import {
   Dialog,
   DialogContent,
@@ -11,7 +12,6 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 
 interface ItemFormProps {
@@ -23,27 +23,61 @@ interface ItemFormProps {
 
 export function ItemForm({ isOpen, onClose, item, onSave }: ItemFormProps) {
   const [formData, setFormData] = useState<Partial<InventoryItem>>({
-    name: "",
-    description: "",
-    quantity: 0,
-    category: "",
-    minQuantity: 0,
+    name: item?.name || "",
+    description: item?.description || "",
+    quantity: item?.quantity || 0,
+    category: item?.category || "",
+    minQuantity: item?.minQuantity || 0,
+    cost: item?.cost || 0,
+    imageUrl: item?.imageUrl || "",
+    stockMovements: item?.stockMovements || [],
   });
-  const [categories, setCategories] = useState<Category[]>([]);
 
-  useEffect(() => {
-    if (item) {
-      setFormData(item);
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData({ ...formData, imageUrl: reader.result as string });
+      };
+      reader.readAsDataURL(file);
     }
-    setCategories(storage.getCategories());
-  }, [item]);
+  };
+
+  const handleQuantityChange = (newQuantity: number) => {
+    if (item) {
+      const difference = newQuantity - (item.quantity || 0);
+      const movement: StockMovement = {
+        id: crypto.randomUUID(),
+        date: new Date().toISOString(),
+        quantity: Math.abs(difference),
+        type: difference > 0 ? 'in' : 'out',
+        reason: 'Manual adjustment',
+      };
+
+      setFormData({
+        ...formData,
+        quantity: newQuantity,
+        stockMovements: [...(formData.stockMovements || []), movement],
+      });
+    } else {
+      setFormData({ ...formData, quantity: newQuantity });
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const newItem: InventoryItem = {
       id: item?.id || crypto.randomUUID(),
-      ...formData as Omit<InventoryItem, 'id' | 'lastUpdated'>,
+      name: formData.name!,
+      description: formData.description!,
+      quantity: formData.quantity!,
+      category: formData.category!,
+      minQuantity: formData.minQuantity!,
       lastUpdated: new Date().toISOString(),
+      cost: formData.cost,
+      imageUrl: formData.imageUrl,
+      stockMovements: formData.stockMovements || [],
     };
 
     if (item) {
@@ -60,7 +94,7 @@ export function ItemForm({ isOpen, onClose, item, onSave }: ItemFormProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>{item ? "Edit Item" : "Add New Item"}</DialogTitle>
         </DialogHeader>
@@ -74,6 +108,7 @@ export function ItemForm({ isOpen, onClose, item, onSave }: ItemFormProps) {
               required
             />
           </div>
+          
           <div className="space-y-2">
             <Label htmlFor="description">Description</Label>
             <Input
@@ -83,6 +118,7 @@ export function ItemForm({ isOpen, onClose, item, onSave }: ItemFormProps) {
               required
             />
           </div>
+
           <div className="space-y-2">
             <Label htmlFor="category">Category</Label>
             <select
@@ -93,13 +129,14 @@ export function ItemForm({ isOpen, onClose, item, onSave }: ItemFormProps) {
               required
             >
               <option value="">Select a category</option>
-              {categories.map((category) => (
+              {storage.getCategories().map((category) => (
                 <option key={category.id} value={category.name}>
                   {category.name}
                 </option>
               ))}
             </select>
           </div>
+
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="quantity">Quantity</Label>
@@ -108,7 +145,7 @@ export function ItemForm({ isOpen, onClose, item, onSave }: ItemFormProps) {
                 type="number"
                 min="0"
                 value={formData.quantity}
-                onChange={(e) => setFormData({ ...formData, quantity: Number(e.target.value) })}
+                onChange={(e) => handleQuantityChange(Number(e.target.value))}
                 required
               />
             </div>
@@ -124,6 +161,39 @@ export function ItemForm({ isOpen, onClose, item, onSave }: ItemFormProps) {
               />
             </div>
           </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="cost">Cost per Unit ($)</Label>
+            <Input
+              id="cost"
+              type="number"
+              min="0"
+              step="0.01"
+              value={formData.cost}
+              onChange={(e) => setFormData({ ...formData, cost: Number(e.target.value) })}
+              required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="image">Item Image</Label>
+            <Input
+              id="image"
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+            />
+            {formData.imageUrl && (
+              <div className="mt-2">
+                <img
+                  src={formData.imageUrl}
+                  alt="Item preview"
+                  className="max-h-32 rounded-md"
+                />
+              </div>
+            )}
+          </div>
+
           <DialogFooter>
             <Button type="button" variant="outline" onClick={onClose}>
               Cancel
