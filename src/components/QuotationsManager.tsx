@@ -64,7 +64,8 @@ export function QuotationsManager() {
       productId: "",
       quantity: 1,
       unitPrice: 0,
-      subtotal: 0
+      subtotal: 0,
+      vat: 0
     };
     setQuotationItems([...quotationItems, newItem]);
   };
