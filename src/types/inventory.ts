@@ -138,12 +138,16 @@ export interface QuotationItem {
   quantity: number;
   unitPrice: number;
   subtotal: number;
+  vat: number;
 }
 
 export interface Quotation {
   id: string;
   customerId: string;
   items: QuotationItem[];
+  subtotal: number;
+  vatRate: number;
+  vatAmount: number;
   total: number;
   status: 'draft' | 'sent' | 'accepted' | 'rejected' | 'expired';
   validUntil: string;
@@ -159,6 +163,7 @@ export interface InvoiceItem {
   quantity: number;
   unitPrice: number;
   subtotal: number;
+  vat: number;
 }
 
 export interface Invoice {
@@ -166,6 +171,9 @@ export interface Invoice {
   customerId: string;
   quotationId?: string;
   items: InvoiceItem[];
+  subtotal: number;
+  vatRate: number;
+  vatAmount: number;
   total: number;
   status: 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled';
   paymentStatus: 'unpaid' | 'partial' | 'paid';

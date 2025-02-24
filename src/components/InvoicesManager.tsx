@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import {
   Dialog,
@@ -34,6 +33,7 @@ export function InvoicesManager() {
   const [paymentDue, setPaymentDue] = useState("");
   const [paymentTerms, setPaymentTerms] = useState("");
   const [notes, setNotes] = useState("");
+  const VAT_RATE = 0.15;
 
   useEffect(() => {
     loadInvoices();
@@ -45,6 +45,19 @@ export function InvoicesManager() {
 
   const calculateTotal = (items: InvoiceItem[]) => {
     return items.reduce((sum, item) => sum + item.subtotal, 0);
+  };
+
+  const calculateItemTotal = (item: InvoiceItem) => {
+    const subtotal = item.quantity * item.unitPrice;
+    const vat = subtotal * VAT_RATE;
+    return { subtotal, vat };
+  };
+
+  const calculateTotals = (items: InvoiceItem[]) => {
+    const subtotal = items.reduce((sum, item) => sum + item.subtotal, 0);
+    const vatAmount = subtotal * VAT_RATE;
+    const total = subtotal + vatAmount;
+    return { subtotal, vatAmount, total };
   };
 
   const handleAddItem = () => {
@@ -67,11 +80,20 @@ export function InvoicesManager() {
       if (product) {
         item.productId = value;
         item.unitPrice = product.cost || 0;
-        item.subtotal = item.quantity * item.unitPrice;
+        const { subtotal, vat } = calculateItemTotal(item);
+        item.subtotal = subtotal;
+        item.vat = vat;
       }
     } else if (field === 'quantity') {
       item.quantity = Number(value);
-      item.subtotal = item.quantity * item.unitPrice;
+      const { subtotal, vat } = calculateItemTotal(item);
+      item.subtotal = subtotal;
+      item.vat = vat;
+    } else if (field === 'unitPrice') {
+      item.unitPrice = Number(value);
+      const { subtotal, vat } = calculateItemTotal(item);
+      item.subtotal = subtotal;
+      item.vat = vat;
     }
 
     updatedItems[index] = item;
@@ -93,12 +115,17 @@ export function InvoicesManager() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
+    const { subtotal, vatAmount, total } = calculateTotals(invoiceItems);
+    
     const invoiceData: Invoice = {
       id: editingInvoice?.id || crypto.randomUUID(),
       customerId: selectedCustomer,
       quotationId: selectedQuotation || undefined,
       items: invoiceItems,
-      total: calculateTotal(invoiceItems),
+      subtotal,
+      vatRate: VAT_RATE,
+      vatAmount,
+      total,
       status: 'draft',
       paymentStatus: 'unpaid',
       paymentDue,
@@ -298,7 +325,7 @@ export function InvoicesManager() {
                   </Button>
                 </div>
                 {invoiceItems.map((item, index) => (
-                  <div key={item.id} className="grid grid-cols-3 gap-2 mb-2">
+                  <div key={item.id} className="grid grid-cols-4 gap-2 mb-2">
                     <select
                       className="rounded-md border border-input bg-background px-3 py-2"
                       value={item.productId}
@@ -308,10 +335,19 @@ export function InvoicesManager() {
                       <option value="">Select Product</option>
                       {products.map(product => (
                         <option key={product.id} value={product.id}>
-                          {product.name} - ${product.cost}
+                          {product.name}
                         </option>
                       ))}
                     </select>
+                    <Input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={item.unitPrice}
+                      onChange={(e) => handleItemChange(index, 'unitPrice', e.target.value)}
+                      placeholder="Unit Price"
+                      required
+                    />
                     <Input
                       type="number"
                       min="1"
@@ -321,9 +357,14 @@ export function InvoicesManager() {
                       required
                     />
                     <div className="flex items-center gap-2">
-                      <span className="text-sm text-gray-600">
-                        Subtotal: ${item.subtotal.toFixed(2)}
-                      </span>
+                      <div className="text-sm space-y-1">
+                        <div className="text-gray-600">
+                          Subtotal: ${item.subtotal.toFixed(2)}
+                        </div>
+                        <div className="text-gray-600">
+                          VAT (15%): ${item.vat.toFixed(2)}
+                        </div>
+                      </div>
                       <Button
                         type="button"
                         variant="destructive"
@@ -349,8 +390,16 @@ export function InvoicesManager() {
                 />
               </div>
 
-              <div className="text-right text-lg font-semibold">
-                Total: ${calculateTotal(invoiceItems).toFixed(2)}
+              <div className="text-right space-y-1">
+                <div className="text-gray-600">
+                  Subtotal: ${calculateTotals(invoiceItems).subtotal.toFixed(2)}
+                </div>
+                <div className="text-gray-600">
+                  VAT (15%): ${calculateTotals(invoiceItems).vatAmount.toFixed(2)}
+                </div>
+                <div className="text-lg font-semibold">
+                  Total: ${calculateTotals(invoiceItems).total.toFixed(2)}
+                </div>
               </div>
             </div>
 

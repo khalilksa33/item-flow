@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import {
   Dialog,
@@ -32,6 +31,7 @@ export function QuotationsManager() {
   const [validUntil, setValidUntil] = useState("");
   const [notes, setNotes] = useState("");
   const [terms, setTerms] = useState("");
+  const [VAT_RATE, setVAT_RATE] = useState(0.15);
 
   useEffect(() => {
     loadQuotations();
@@ -43,6 +43,19 @@ export function QuotationsManager() {
 
   const calculateTotal = (items: QuotationItem[]) => {
     return items.reduce((sum, item) => sum + item.subtotal, 0);
+  };
+
+  const calculateItemTotal = (item: QuotationItem) => {
+    const subtotal = item.quantity * item.unitPrice;
+    const vat = subtotal * VAT_RATE;
+    return { subtotal, vat };
+  };
+
+  const calculateTotals = (items: QuotationItem[]) => {
+    const subtotal = items.reduce((sum, item) => sum + item.subtotal, 0);
+    const vatAmount = subtotal * VAT_RATE;
+    const total = subtotal + vatAmount;
+    return { subtotal, vatAmount, total };
   };
 
   const handleAddItem = () => {
@@ -65,11 +78,20 @@ export function QuotationsManager() {
       if (product) {
         item.productId = value;
         item.unitPrice = product.cost || 0;
-        item.subtotal = item.quantity * item.unitPrice;
+        const { subtotal, vat } = calculateItemTotal(item);
+        item.subtotal = subtotal;
+        item.vat = vat;
       }
     } else if (field === 'quantity') {
       item.quantity = Number(value);
-      item.subtotal = item.quantity * item.unitPrice;
+      const { subtotal, vat } = calculateItemTotal(item);
+      item.subtotal = subtotal;
+      item.vat = vat;
+    } else if (field === 'unitPrice') {
+      item.unitPrice = Number(value);
+      const { subtotal, vat } = calculateItemTotal(item);
+      item.subtotal = subtotal;
+      item.vat = vat;
     }
 
     updatedItems[index] = item;
@@ -79,11 +101,16 @@ export function QuotationsManager() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
+    const { subtotal, vatAmount, total } = calculateTotals(quotationItems);
+    
     const quotationData: Quotation = {
       id: editingQuotation?.id || crypto.randomUUID(),
       customerId: selectedCustomer,
       items: quotationItems,
-      total: calculateTotal(quotationItems),
+      subtotal,
+      vatRate: VAT_RATE,
+      vatAmount,
+      total,
       status: 'draft',
       validUntil,
       notes,
@@ -247,7 +274,7 @@ export function QuotationsManager() {
                   </Button>
                 </div>
                 {quotationItems.map((item, index) => (
-                  <div key={item.id} className="grid grid-cols-3 gap-2 mb-2">
+                  <div key={item.id} className="grid grid-cols-4 gap-2 mb-2">
                     <select
                       className="rounded-md border border-input bg-background px-3 py-2"
                       value={item.productId}
@@ -257,10 +284,19 @@ export function QuotationsManager() {
                       <option value="">Select Product</option>
                       {products.map(product => (
                         <option key={product.id} value={product.id}>
-                          {product.name} - ${product.cost}
+                          {product.name}
                         </option>
                       ))}
                     </select>
+                    <Input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={item.unitPrice}
+                      onChange={(e) => handleItemChange(index, 'unitPrice', e.target.value)}
+                      placeholder="Unit Price"
+                      required
+                    />
                     <Input
                       type="number"
                       min="1"
@@ -270,9 +306,14 @@ export function QuotationsManager() {
                       required
                     />
                     <div className="flex items-center gap-2">
-                      <span className="text-sm text-gray-600">
-                        Subtotal: ${item.subtotal.toFixed(2)}
-                      </span>
+                      <div className="text-sm space-y-1">
+                        <div className="text-gray-600">
+                          Subtotal: ${item.subtotal.toFixed(2)}
+                        </div>
+                        <div className="text-gray-600">
+                          VAT (15%): ${item.vat.toFixed(2)}
+                        </div>
+                      </div>
                       <Button
                         type="button"
                         variant="destructive"
@@ -307,8 +348,16 @@ export function QuotationsManager() {
                 />
               </div>
 
-              <div className="text-right text-lg font-semibold">
-                Total: ${calculateTotal(quotationItems).toFixed(2)}
+              <div className="text-right space-y-1">
+                <div className="text-gray-600">
+                  Subtotal: ${calculateTotals(quotationItems).subtotal.toFixed(2)}
+                </div>
+                <div className="text-gray-600">
+                  VAT (15%): ${calculateTotals(quotationItems).vatAmount.toFixed(2)}
+                </div>
+                <div className="text-lg font-semibold">
+                  Total: ${calculateTotals(quotationItems).total.toFixed(2)}
+                </div>
               </div>
             </div>
 
