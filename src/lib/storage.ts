@@ -73,7 +73,10 @@ export const storage = {
           quantity: 5,
           category: 'Electronics',
           minQuantity: 2,
-          lastUpdated: new Date().toISOString()
+          lastUpdated: new Date().toISOString(),
+          cost: 999.99,
+          stockMovements: [],
+          imageUrl: ''
         },
         {
           id: '2',
@@ -82,7 +85,10 @@ export const storage = {
           quantity: 10,
           category: 'Furniture',
           minQuantity: 3,
-          lastUpdated: new Date().toISOString()
+          lastUpdated: new Date().toISOString(),
+          cost: 199.99,
+          stockMovements: [],
+          imageUrl: ''
         }
       ];
       storage.setItems(defaultItems);

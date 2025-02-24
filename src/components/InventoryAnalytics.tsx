@@ -24,7 +24,7 @@ export function InventoryAnalytics({ items }: InventoryAnalyticsProps) {
     const lowStockItems = items.filter(item => item.quantity <= item.minQuantity).length;
     const movementsToday = items.reduce((count, item) => {
       const today = new Date().toISOString().split('T')[0];
-      return count + item.stockMovements.filter(m => m.date.startsWith(today)).length;
+      return count + (item.stockMovements || []).filter(m => m.date.startsWith(today)).length;
     }, 0);
 
     return {
