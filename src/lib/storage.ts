@@ -1,8 +1,8 @@
-
-import { InventoryItem, Category } from "@/types/inventory";
+import { InventoryItem, Category, Supplier } from "@/types/inventory";
 
 const ITEMS_KEY = 'inventory_items';
 const CATEGORIES_KEY = 'inventory_categories';
+const SUPPLIERS_KEY = 'inventory_suppliers';
 
 export const storage = {
   // Items operations
@@ -62,7 +62,42 @@ export const storage = {
     storage.setCategories(filteredCategories);
   },
 
-  // Initialize default data if empty
+  // Suppliers operations
+  getSuppliers: (): Supplier[] => {
+    const suppliers = localStorage.getItem(SUPPLIERS_KEY);
+    return suppliers ? JSON.parse(suppliers) : [];
+  },
+
+  setSuppliers: (suppliers: Supplier[]) => {
+    localStorage.setItem(SUPPLIERS_KEY, JSON.stringify(suppliers));
+  },
+
+  addSupplier: (supplier: Supplier) => {
+    const suppliers = storage.getSuppliers();
+    suppliers.push(supplier);
+    storage.setSuppliers(suppliers);
+  },
+
+  updateSupplier: (updatedSupplier: Supplier) => {
+    const suppliers = storage.getSuppliers();
+    const index = suppliers.findIndex(supplier => supplier.id === updatedSupplier.id);
+    if (index !== -1) {
+      suppliers[index] = updatedSupplier;
+      storage.setSuppliers(suppliers);
+    }
+  },
+
+  deleteSupplier: (id: string) => {
+    const suppliers = storage.getSuppliers();
+    const filteredSuppliers = suppliers.filter(supplier => supplier.id !== id);
+    storage.setSuppliers(filteredSuppliers);
+  },
+
+  getSupplierById: (id: string): Supplier | undefined => {
+    const suppliers = storage.getSuppliers();
+    return suppliers.find(supplier => supplier.id === id);
+  },
+
   initializeData: () => {
     if (!localStorage.getItem(ITEMS_KEY)) {
       const defaultItems: InventoryItem[] = [
@@ -76,7 +111,10 @@ export const storage = {
           lastUpdated: new Date().toISOString(),
           cost: 999.99,
           stockMovements: [],
-          imageUrl: ''
+          imageUrl: '',
+          barcode: '123456789',
+          qrCode: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=123456789',
+          supplierId: '1'
         },
         {
           id: '2',
@@ -88,10 +126,35 @@ export const storage = {
           lastUpdated: new Date().toISOString(),
           cost: 199.99,
           stockMovements: [],
-          imageUrl: ''
+          imageUrl: '',
+          barcode: '987654321',
+          qrCode: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=987654321',
+          supplierId: '2'
         }
       ];
       storage.setItems(defaultItems);
+    }
+
+    if (!localStorage.getItem(SUPPLIERS_KEY)) {
+      const defaultSuppliers: Supplier[] = [
+        {
+          id: '1',
+          name: 'TechCorp Supplies',
+          email: 'sales@techcorp.com',
+          phone: '555-0123',
+          address: '123 Tech Street',
+          notes: 'Primary electronics supplier'
+        },
+        {
+          id: '2',
+          name: 'Office Furniture Co',
+          email: 'contact@officefurniture.com',
+          phone: '555-0456',
+          address: '456 Office Road',
+          notes: 'Furniture supplier'
+        }
+      ];
+      storage.setSuppliers(defaultSuppliers);
     }
 
     if (!localStorage.getItem(CATEGORIES_KEY)) {
