@@ -2,12 +2,20 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { storage } from "@/lib/storage";
-import { Sale, SalesAnalytics } from "@/types/inventory";
+import type { Sale, SalesAnalytics as SalesAnalyticsType } from "@/types/inventory";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
 import { DollarSign, TrendingUp, ShoppingCart, CreditCard } from "lucide-react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 export function SalesAnalytics() {
-  const [analytics, setAnalytics] = useState<SalesAnalytics>({
+  const [analytics, setAnalytics] = useState<SalesAnalyticsType>({
     totalSales: 0,
     totalRevenue: 0,
     averageOrderValue: 0,
