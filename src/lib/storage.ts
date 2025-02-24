@@ -1,4 +1,4 @@
-import { InventoryItem, Category, Supplier, User, AuditLog, Customer, Vendor, Sale } from "@/types/inventory";
+import { InventoryItem, Category, Supplier, User, AuditLog, Customer, Vendor, Sale, Quotation, Invoice } from "@/types/inventory";
 
 const ITEMS_KEY = 'inventory_items';
 const CATEGORIES_KEY = 'inventory_categories';
@@ -9,6 +9,8 @@ const CURRENT_USER_KEY = 'inventory_current_user';
 const CUSTOMERS_KEY = 'inventory_customers';
 const VENDORS_KEY = 'inventory_vendors';
 const SALES_KEY = 'inventory_sales';
+const QUOTATIONS_KEY = 'inventory_quotations';
+const INVOICES_KEY = 'inventory_invoices';
 
 export const storage = {
   // Items operations
@@ -290,6 +292,68 @@ export const storage = {
     const sales = storage.getSales();
     const filteredSales = sales.filter(sale => sale.id !== id);
     storage.setSales(filteredSales);
+  },
+
+  // Quotations operations
+  getQuotations: (): Quotation[] => {
+    const quotations = localStorage.getItem(QUOTATIONS_KEY);
+    return quotations ? JSON.parse(quotations) : [];
+  },
+
+  setQuotations: (quotations: Quotation[]) => {
+    localStorage.setItem(QUOTATIONS_KEY, JSON.stringify(quotations));
+  },
+
+  addQuotation: (quotation: Quotation) => {
+    const quotations = storage.getQuotations();
+    quotations.push(quotation);
+    storage.setQuotations(quotations);
+  },
+
+  updateQuotation: (updatedQuotation: Quotation) => {
+    const quotations = storage.getQuotations();
+    const index = quotations.findIndex(q => q.id === updatedQuotation.id);
+    if (index !== -1) {
+      quotations[index] = updatedQuotation;
+      storage.setQuotations(quotations);
+    }
+  },
+
+  deleteQuotation: (id: string) => {
+    const quotations = storage.getQuotations();
+    const filteredQuotations = quotations.filter(q => q.id !== id);
+    storage.setQuotations(filteredQuotations);
+  },
+
+  // Invoices operations
+  getInvoices: (): Invoice[] => {
+    const invoices = localStorage.getItem(INVOICES_KEY);
+    return invoices ? JSON.parse(invoices) : [];
+  },
+
+  setInvoices: (invoices: Invoice[]) => {
+    localStorage.setItem(INVOICES_KEY, JSON.stringify(invoices));
+  },
+
+  addInvoice: (invoice: Invoice) => {
+    const invoices = storage.getInvoices();
+    invoices.push(invoice);
+    storage.setInvoices(invoices);
+  },
+
+  updateInvoice: (updatedInvoice: Invoice) => {
+    const invoices = storage.getInvoices();
+    const index = invoices.findIndex(i => i.id === updatedInvoice.id);
+    if (index !== -1) {
+      invoices[index] = updatedInvoice;
+      storage.setInvoices(invoices);
+    }
+  },
+
+  deleteInvoice: (id: string) => {
+    const invoices = storage.getInvoices();
+    const filteredInvoices = invoices.filter(i => i.id !== id);
+    storage.setInvoices(filteredInvoices);
   },
 
   initializeData: () => {

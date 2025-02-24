@@ -131,3 +131,47 @@ export interface SalesAnalytics {
     revenue: number;
   }[];
 }
+
+export interface QuotationItem {
+  id: string;
+  productId: string;
+  quantity: number;
+  unitPrice: number;
+  subtotal: number;
+}
+
+export interface Quotation {
+  id: string;
+  customerId: string;
+  items: QuotationItem[];
+  total: number;
+  status: 'draft' | 'sent' | 'accepted' | 'rejected' | 'expired';
+  validUntil: string;
+  notes?: string;
+  terms?: string;
+  createdAt: string;
+  lastUpdated: string;
+}
+
+export interface InvoiceItem {
+  id: string;
+  productId: string;
+  quantity: number;
+  unitPrice: number;
+  subtotal: number;
+}
+
+export interface Invoice {
+  id: string;
+  customerId: string;
+  quotationId?: string;
+  items: InvoiceItem[];
+  total: number;
+  status: 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled';
+  paymentStatus: 'unpaid' | 'partial' | 'paid';
+  paymentDue: string;
+  paymentTerms?: string;
+  notes?: string;
+  createdAt: string;
+  lastUpdated: string;
+}
