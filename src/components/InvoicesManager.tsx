@@ -138,20 +138,22 @@ export function InvoicesManager() {
       </Table>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-3xl">
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
               {editingInvoice ? "Edit Invoice" : "New Invoice"}
             </DialogTitle>
           </DialogHeader>
-          <InvoiceForm
-            editingInvoice={editingInvoice}
-            customers={customers}
-            products={products}
-            quotations={quotations}
-            onSubmit={handleSubmit}
-            onCancel={() => setIsDialogOpen(false)}
-          />
+          <div className="overflow-y-auto pr-1">
+            <InvoiceForm
+              editingInvoice={editingInvoice}
+              customers={customers}
+              products={products}
+              quotations={quotations}
+              onSubmit={handleSubmit}
+              onCancel={() => setIsDialogOpen(false)}
+            />
+          </div>
         </DialogContent>
       </Dialog>
     </div>
