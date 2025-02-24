@@ -1,4 +1,4 @@
-import { InventoryItem, Category, Supplier, User, AuditLog } from "@/types/inventory";
+import { InventoryItem, Category, Supplier, User, AuditLog, Customer, Vendor } from "@/types/inventory";
 
 const ITEMS_KEY = 'inventory_items';
 const CATEGORIES_KEY = 'inventory_categories';
@@ -6,6 +6,8 @@ const SUPPLIERS_KEY = 'inventory_suppliers';
 const USERS_KEY = 'inventory_users';
 const AUDIT_LOGS_KEY = 'inventory_audit_logs';
 const CURRENT_USER_KEY = 'inventory_current_user';
+const CUSTOMERS_KEY = 'inventory_customers';
+const VENDORS_KEY = 'inventory_vendors';
 
 export const storage = {
   // Items operations
@@ -196,6 +198,68 @@ export const storage = {
     localStorage.setItem(AUDIT_LOGS_KEY, JSON.stringify(logs));
   },
 
+  // Customer operations
+  getCustomers: (): Customer[] => {
+    const customers = localStorage.getItem(CUSTOMERS_KEY);
+    return customers ? JSON.parse(customers) : [];
+  },
+
+  setCustomers: (customers: Customer[]) => {
+    localStorage.setItem(CUSTOMERS_KEY, JSON.stringify(customers));
+  },
+
+  addCustomer: (customer: Customer) => {
+    const customers = storage.getCustomers();
+    customers.push(customer);
+    storage.setCustomers(customers);
+  },
+
+  updateCustomer: (updatedCustomer: Customer) => {
+    const customers = storage.getCustomers();
+    const index = customers.findIndex(customer => customer.id === updatedCustomer.id);
+    if (index !== -1) {
+      customers[index] = updatedCustomer;
+      storage.setCustomers(customers);
+    }
+  },
+
+  deleteCustomer: (id: string) => {
+    const customers = storage.getCustomers();
+    const filteredCustomers = customers.filter(customer => customer.id !== id);
+    storage.setCustomers(filteredCustomers);
+  },
+
+  // Vendor operations
+  getVendors: (): Vendor[] => {
+    const vendors = localStorage.getItem(VENDORS_KEY);
+    return vendors ? JSON.parse(vendors) : [];
+  },
+
+  setVendors: (vendors: Vendor[]) => {
+    localStorage.setItem(VENDORS_KEY, JSON.stringify(vendors));
+  },
+
+  addVendor: (vendor: Vendor) => {
+    const vendors = storage.getVendors();
+    vendors.push(vendor);
+    storage.setVendors(vendors);
+  },
+
+  updateVendor: (updatedVendor: Vendor) => {
+    const vendors = storage.getVendors();
+    const index = vendors.findIndex(vendor => vendor.id === updatedVendor.id);
+    if (index !== -1) {
+      vendors[index] = updatedVendor;
+      storage.setVendors(vendors);
+    }
+  },
+
+  deleteVendor: (id: string) => {
+    const vendors = storage.getVendors();
+    const filteredVendors = vendors.filter(vendor => vendor.id !== id);
+    storage.setVendors(filteredVendors);
+  },
+
   initializeData: () => {
     if (!localStorage.getItem(ITEMS_KEY)) {
       const defaultItems: InventoryItem[] = [
@@ -285,6 +349,69 @@ export const storage = {
         }
       ];
       storage.setUsers(defaultUsers);
+    }
+
+    if (!localStorage.getItem(CUSTOMERS_KEY)) {
+      const defaultCustomers: Customer[] = [
+        {
+          id: '1',
+          name: 'John Doe',
+          email: 'john@example.com',
+          phone: '555-0123',
+          address: '123 Main St',
+          type: 'individual',
+          createdAt: new Date().toISOString(),
+          lastUpdated: new Date().toISOString()
+        },
+        {
+          id: '2',
+          name: 'Acme Corp',
+          email: 'contact@acme.com',
+          phone: '555-0456',
+          address: '456 Business Ave',
+          type: 'business',
+          taxId: '12-3456789',
+          creditLimit: 10000,
+          paymentTerms: 'Net 30',
+          createdAt: new Date().toISOString(),
+          lastUpdated: new Date().toISOString()
+        }
+      ];
+      storage.setCustomers(defaultCustomers);
+    }
+
+    if (!localStorage.getItem(VENDORS_KEY)) {
+      const defaultVendors: Vendor[] = [
+        {
+          id: '1',
+          name: 'TechCorp Supplies',
+          email: 'sales@techcorp.com',
+          phone: '555-0123',
+          address: '123 Tech Street',
+          notes: 'Primary electronics supplier',
+          type: 'manufacturer',
+          products: ['Electronics', 'Components'],
+          paymentTerms: 'Net 45',
+          taxId: '98-7654321',
+          rating: 4.5,
+          activeContract: true
+        },
+        {
+          id: '2',
+          name: 'Office Furniture Co',
+          email: 'contact@officefurniture.com',
+          phone: '555-0456',
+          address: '456 Office Road',
+          notes: 'Furniture supplier',
+          type: 'wholesaler',
+          products: ['Furniture', 'Office Supplies'],
+          paymentTerms: 'Net 30',
+          taxId: '45-6789123',
+          rating: 4.0,
+          activeContract: true
+        }
+      ];
+      storage.setVendors(defaultVendors);
     }
   }
 };

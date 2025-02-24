@@ -39,6 +39,31 @@ export interface Supplier {
   notes?: string;
 }
 
+export interface Customer {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  address: string;
+  type: 'individual' | 'business';
+  taxId?: string;
+  creditLimit?: number;
+  paymentTerms?: string;
+  notes?: string;
+  createdAt: string;
+  lastUpdated: string;
+}
+
+export interface Vendor extends Supplier {
+  type: 'manufacturer' | 'wholesaler' | 'distributor';
+  products: string[];
+  paymentTerms: string;
+  taxId: string;
+  rating?: number;
+  activeContract?: boolean;
+  lastOrderDate?: string;
+}
+
 export interface User {
   id: string;
   username: string;
