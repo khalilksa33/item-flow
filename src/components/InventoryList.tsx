@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { InventoryItem } from "@/types/inventory";
 import { storage } from "@/lib/storage";
@@ -17,6 +16,12 @@ import { Package2, Plus, Search, Tags, Download, Upload, AlertTriangle } from "l
 import { ItemForm } from "./ItemForm";
 import { CategoryManager } from "./CategoryManager";
 import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export function InventoryList() {
   const [items, setItems] = useState<InventoryItem[]>([]);
