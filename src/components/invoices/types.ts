@@ -1,5 +1,5 @@
 
-import { Invoice, InvoiceItem } from "@/types/inventory";
+import { Invoice, InvoiceItem, Customer, InventoryItem, Quotation } from "@/types/inventory";
 
 export interface InvoiceItemProps {
   item: InvoiceItem;
@@ -10,9 +10,9 @@ export interface InvoiceItemProps {
 
 export interface InvoiceFormProps {
   editingInvoice: Invoice | null;
-  customers: any[];
-  products: any[];
-  quotations: any[];
+  customers: Customer[];
+  products: InventoryItem[];
+  quotations: Quotation[];
   onSubmit: (data: Partial<Invoice>) => void;
   onCancel: () => void;
 }

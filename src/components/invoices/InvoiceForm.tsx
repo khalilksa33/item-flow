@@ -84,6 +84,9 @@ export function InvoiceForm({
         id: crypto.randomUUID()
       })));
       setSelectedQuotation(quotationId);
+    } else {
+      setSelectedQuotation("");
+      setInvoiceItems([]);
     }
   };
 
@@ -105,6 +108,12 @@ export function InvoiceForm({
     });
   };
 
+  // Filter accepted quotations for the selected customer
+  const acceptedQuotations = quotations.filter(q => 
+    q.status === 'accepted' && 
+    (!selectedCustomer || q.customerId === selectedCustomer)
+  );
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
@@ -114,7 +123,10 @@ export function InvoiceForm({
             id="customer"
             className="w-full rounded-md border border-input bg-background px-3 py-2"
             value={selectedCustomer}
-            onChange={(e) => setSelectedCustomer(e.target.value)}
+            onChange={(e) => {
+              setSelectedCustomer(e.target.value);
+              setSelectedQuotation(""); // Reset quotation when customer changes
+            }}
             required
           >
             <option value="">Select Customer</option>
@@ -135,13 +147,14 @@ export function InvoiceForm({
             onChange={(e) => handleQuotationSelect(e.target.value)}
           >
             <option value="">Select Quotation</option>
-            {quotations
-              .filter(q => q.status === 'accepted')
-              .map(quotation => (
+            {acceptedQuotations.map(quotation => {
+              const customer = customers.find(c => c.id === quotation.customerId);
+              return (
                 <option key={quotation.id} value={quotation.id}>
-                  {customers.find(c => c.id === quotation.customerId)?.name} - ${quotation.total}
+                  {customer?.name} - ${quotation.total.toFixed(2)}
                 </option>
-              ))}
+              );
+            })}
           </select>
         </div>
       </div>
