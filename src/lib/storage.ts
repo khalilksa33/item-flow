@@ -21,6 +21,21 @@ export const storage = {
     storage.setItems(items);
   },
 
+  updateItem: (updatedItem: InventoryItem) => {
+    const items = storage.getItems();
+    const index = items.findIndex(item => item.id === updatedItem.id);
+    if (index !== -1) {
+      items[index] = { ...updatedItem, lastUpdated: new Date().toISOString() };
+      storage.setItems(items);
+    }
+  },
+
+  deleteItem: (id: string) => {
+    const items = storage.getItems();
+    const filteredItems = items.filter(item => item.id !== id);
+    storage.setItems(filteredItems);
+  },
+
   // Categories operations
   getCategories: (): Category[] => {
     const categories = localStorage.getItem(CATEGORIES_KEY);
@@ -33,6 +48,18 @@ export const storage = {
 
   setCategories: (categories: Category[]) => {
     localStorage.setItem(CATEGORIES_KEY, JSON.stringify(categories));
+  },
+
+  addCategory: (category: Category) => {
+    const categories = storage.getCategories();
+    categories.push(category);
+    storage.setCategories(categories);
+  },
+
+  deleteCategory: (id: string) => {
+    const categories = storage.getCategories();
+    const filteredCategories = categories.filter(category => category.id !== id);
+    storage.setCategories(filteredCategories);
   },
 
   // Initialize default data if empty
