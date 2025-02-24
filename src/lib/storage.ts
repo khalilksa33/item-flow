@@ -1,4 +1,4 @@
-import { InventoryItem, Category, Supplier, User, AuditLog, Customer, Vendor } from "@/types/inventory";
+import { InventoryItem, Category, Supplier, User, AuditLog, Customer, Vendor, Sale } from "@/types/inventory";
 
 const ITEMS_KEY = 'inventory_items';
 const CATEGORIES_KEY = 'inventory_categories';
@@ -8,6 +8,7 @@ const AUDIT_LOGS_KEY = 'inventory_audit_logs';
 const CURRENT_USER_KEY = 'inventory_current_user';
 const CUSTOMERS_KEY = 'inventory_customers';
 const VENDORS_KEY = 'inventory_vendors';
+const SALES_KEY = 'inventory_sales';
 
 export const storage = {
   // Items operations
@@ -260,6 +261,37 @@ export const storage = {
     storage.setVendors(filteredVendors);
   },
 
+  // Sales operations
+  getSales: (): Sale[] => {
+    const sales = localStorage.getItem(SALES_KEY);
+    return sales ? JSON.parse(sales) : [];
+  },
+
+  setSales: (sales: Sale[]) => {
+    localStorage.setItem(SALES_KEY, JSON.stringify(sales));
+  },
+
+  addSale: (sale: Sale) => {
+    const sales = storage.getSales();
+    sales.push(sale);
+    storage.setSales(sales);
+  },
+
+  updateSale: (updatedSale: Sale) => {
+    const sales = storage.getSales();
+    const index = sales.findIndex(sale => sale.id === updatedSale.id);
+    if (index !== -1) {
+      sales[index] = updatedSale;
+      storage.setSales(sales);
+    }
+  },
+
+  deleteSale: (id: string) => {
+    const sales = storage.getSales();
+    const filteredSales = sales.filter(sale => sale.id !== id);
+    storage.setSales(filteredSales);
+  },
+
   initializeData: () => {
     if (!localStorage.getItem(ITEMS_KEY)) {
       const defaultItems: InventoryItem[] = [
@@ -412,6 +444,31 @@ export const storage = {
         }
       ];
       storage.setVendors(defaultVendors);
+    }
+
+    if (!localStorage.getItem(SALES_KEY)) {
+      const sampleSales: Sale[] = [
+        {
+          id: '1',
+          customerId: '1',
+          items: [
+            {
+              id: crypto.randomUUID(),
+              productId: '1',
+              quantity: 2,
+              unitPrice: 999.99,
+              subtotal: 1999.98
+            }
+          ],
+          total: 1999.98,
+          status: 'completed',
+          paymentStatus: 'paid',
+          paymentMethod: 'credit_card',
+          date: new Date().toISOString(),
+          dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+        }
+      ];
+      storage.setSales(sampleSales);
     }
   }
 };

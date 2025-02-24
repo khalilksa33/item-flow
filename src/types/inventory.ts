@@ -1,4 +1,3 @@
-
 export interface InventoryItem {
   id: string;
   name: string;
@@ -89,5 +88,46 @@ export interface AnalyticsData {
   stockByCategory: {
     category: string;
     count: number;
+  }[];
+}
+
+export interface SaleItem {
+  id: string;
+  productId: string;
+  quantity: number;
+  unitPrice: number;
+  subtotal: number;
+}
+
+export interface Sale {
+  id: string;
+  customerId: string;
+  items: SaleItem[];
+  total: number;
+  status: 'pending' | 'completed' | 'cancelled';
+  paymentStatus: 'unpaid' | 'partial' | 'paid';
+  paymentMethod?: string;
+  date: string;
+  dueDate?: string;
+  notes?: string;
+}
+
+export interface SalesAnalytics {
+  totalSales: number;
+  totalRevenue: number;
+  averageOrderValue: number;
+  topProducts: {
+    productId: string;
+    name: string;
+    quantity: number;
+    revenue: number;
+  }[];
+  salesByStatus: {
+    status: string;
+    count: number;
+  }[];
+  monthlyRevenue: {
+    month: string;
+    revenue: number;
   }[];
 }
