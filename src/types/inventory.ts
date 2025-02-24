@@ -13,6 +13,7 @@ export interface InventoryItem {
   barcode?: string;
   qrCode?: string;
   supplierId?: string;
+  lastModifiedBy?: string;
 }
 
 export interface Category {
@@ -26,6 +27,7 @@ export interface StockMovement {
   quantity: number;
   type: 'in' | 'out';
   reason: string;
+  userId: string;
 }
 
 export interface Supplier {
@@ -35,6 +37,23 @@ export interface Supplier {
   phone: string;
   address: string;
   notes?: string;
+}
+
+export interface User {
+  id: string;
+  username: string;
+  password: string;
+  role: 'admin' | 'manager' | 'viewer';
+  lastLogin?: string;
+}
+
+export interface AuditLog {
+  id: string;
+  date: string;
+  action: 'create' | 'update' | 'delete';
+  itemId: string;
+  userId: string;
+  details: string;
 }
 
 export interface AnalyticsData {

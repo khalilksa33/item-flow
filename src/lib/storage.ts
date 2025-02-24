@@ -1,8 +1,11 @@
-import { InventoryItem, Category, Supplier } from "@/types/inventory";
+import { InventoryItem, Category, Supplier, User, AuditLog } from "@/types/inventory";
 
 const ITEMS_KEY = 'inventory_items';
 const CATEGORIES_KEY = 'inventory_categories';
 const SUPPLIERS_KEY = 'inventory_suppliers';
+const USERS_KEY = 'inventory_users';
+const AUDIT_LOGS_KEY = 'inventory_audit_logs';
+const CURRENT_USER_KEY = 'inventory_current_user';
 
 export const storage = {
   // Items operations
@@ -19,6 +22,18 @@ export const storage = {
     const items = storage.getItems();
     items.push(item);
     storage.setItems(items);
+
+    const currentUser = storage.getCurrentUser();
+    if (currentUser) {
+      storage.addAuditLog({
+        id: crypto.randomUUID(),
+        date: new Date().toISOString(),
+        action: 'create',
+        itemId: item.id,
+        userId: currentUser.id,
+        details: `Created item: ${item.name}`
+      });
+    }
   },
 
   updateItem: (updatedItem: InventoryItem) => {
@@ -27,13 +42,40 @@ export const storage = {
     if (index !== -1) {
       items[index] = { ...updatedItem, lastUpdated: new Date().toISOString() };
       storage.setItems(items);
+
+      const currentUser = storage.getCurrentUser();
+      if (currentUser) {
+        storage.addAuditLog({
+          id: crypto.randomUUID(),
+          date: new Date().toISOString(),
+          action: 'update',
+          itemId: updatedItem.id,
+          userId: currentUser.id,
+          details: `Updated item: ${updatedItem.name}`
+        });
+      }
     }
   },
 
   deleteItem: (id: string) => {
     const items = storage.getItems();
+    const item = items.find(i => i.id === id);
     const filteredItems = items.filter(item => item.id !== id);
     storage.setItems(filteredItems);
+
+    if (item) {
+      const currentUser = storage.getCurrentUser();
+      if (currentUser) {
+        storage.addAuditLog({
+          id: crypto.randomUUID(),
+          date: new Date().toISOString(),
+          action: 'delete',
+          itemId: id,
+          userId: currentUser.id,
+          details: `Deleted item: ${item.name}`
+        });
+      }
+    }
   },
 
   // Categories operations
@@ -96,6 +138,62 @@ export const storage = {
   getSupplierById: (id: string): Supplier | undefined => {
     const suppliers = storage.getSuppliers();
     return suppliers.find(supplier => supplier.id === id);
+  },
+
+  // User operations
+  getUsers: (): User[] => {
+    const users = localStorage.getItem(USERS_KEY);
+    return users ? JSON.parse(users) : [];
+  },
+
+  setUsers: (users: User[]) => {
+    localStorage.setItem(USERS_KEY, JSON.stringify(users));
+  },
+
+  addUser: (user: User) => {
+    const users = storage.getUsers();
+    users.push(user);
+    storage.setUsers(users);
+  },
+
+  updateUser: (updatedUser: User) => {
+    const users = storage.getUsers();
+    const index = users.findIndex(user => user.id === updatedUser.id);
+    if (index !== -1) {
+      users[index] = updatedUser;
+      storage.setUsers(users);
+    }
+  },
+
+  deleteUser: (id: string) => {
+    const users = storage.getUsers();
+    const filteredUsers = users.filter(user => user.id !== id);
+    storage.setUsers(filteredUsers);
+  },
+
+  getCurrentUser: (): User | null => {
+    const user = localStorage.getItem(CURRENT_USER_KEY);
+    return user ? JSON.parse(user) : null;
+  },
+
+  setCurrentUser: (user: User | null) => {
+    if (user) {
+      localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(user));
+    } else {
+      localStorage.removeItem(CURRENT_USER_KEY);
+    }
+  },
+
+  // Audit logging operations
+  getAuditLogs: (): AuditLog[] => {
+    const logs = localStorage.getItem(AUDIT_LOGS_KEY);
+    return logs ? JSON.parse(logs) : [];
+  },
+
+  addAuditLog: (log: AuditLog) => {
+    const logs = storage.getAuditLogs();
+    logs.push(log);
+    localStorage.setItem(AUDIT_LOGS_KEY, JSON.stringify(logs));
   },
 
   initializeData: () => {
@@ -163,6 +261,30 @@ export const storage = {
         { id: '2', name: 'Office Supplies' },
         { id: '3', name: 'Furniture' }
       ]);
+    }
+
+    if (!localStorage.getItem(USERS_KEY)) {
+      const defaultUsers: User[] = [
+        {
+          id: '1',
+          username: 'admin',
+          password: 'admin123',
+          role: 'admin'
+        },
+        {
+          id: '2',
+          username: 'manager',
+          password: 'manager123',
+          role: 'manager'
+        },
+        {
+          id: '3',
+          username: 'viewer',
+          password: 'viewer123',
+          role: 'viewer'
+        }
+      ];
+      storage.setUsers(defaultUsers);
     }
   }
 };
