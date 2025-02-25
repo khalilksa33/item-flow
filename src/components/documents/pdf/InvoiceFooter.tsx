@@ -1,6 +1,7 @@
 
 import { Text, View } from '@react-pdf/renderer';
 import { styles } from './styles';
+import { useTranslation } from 'react-i18next';
 
 interface InvoiceFooterProps {
   companyName: string;
@@ -17,26 +18,28 @@ export function InvoiceFooter({
   notes,
   status
 }: InvoiceFooterProps) {
+  const { t } = useTranslation();
+  
   return (
     <>
       {notes && (
         <View style={styles.notes}>
-          <Text style={styles.sectionTitle}>Notes</Text>
+          <Text style={styles.sectionTitle}>{t("invoices.notes")}</Text>
           <Text>{notes}</Text>
         </View>
       )}
 
       <View style={styles.thankYou}>
-        <Text>Thank you for your business!</Text>
+        <Text>{t("invoices.thankYou")}</Text>
       </View>
 
       {status === 'paid' && (
-        <Text style={styles.watermark}>PAID</Text>
+        <Text style={styles.watermark}>{t("invoices.paid")}</Text>
       )}
 
       <View style={styles.footer}>
         <Text>{companyName} • {companyAddress} • {companyPhone}</Text>
-        <Text>Generated on {new Date().toLocaleDateString()}</Text>
+        <Text>{t("invoices.generatedOn")} {new Date().toLocaleDateString()}</Text>
       </View>
     </>
   );

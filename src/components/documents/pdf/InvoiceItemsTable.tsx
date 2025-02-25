@@ -1,8 +1,9 @@
 
 import { Text, View } from '@react-pdf/renderer';
-import { InvoiceItem, InventoryItem } from '@/types/inventory';
+import { InvoiceItem } from '@/types/inventory';
 import { styles } from './styles';
 import { storage } from '@/lib/storage';
+import { useTranslation } from 'react-i18next';
 
 interface InvoiceItemsTableProps {
   items: InvoiceItem[];
@@ -11,6 +12,8 @@ interface InvoiceItemsTableProps {
 }
 
 export function InvoiceItemsTable({ items, currency, formatNumber }: InvoiceItemsTableProps) {
+  const { t } = useTranslation();
+  
   // Get all inventory items to map product IDs to names
   const inventoryItems = storage.getItems();
   
@@ -22,14 +25,14 @@ export function InvoiceItemsTable({ items, currency, formatNumber }: InvoiceItem
 
   return (
     <View style={styles.section}>
-      <Text style={styles.sectionTitle}>Invoice Items</Text>
+      <Text style={styles.sectionTitle}>{t("invoices.items")}</Text>
       <View style={styles.table}>
         <View style={[styles.tableRow, styles.tableHeader]}>
           <Text style={styles.tableCellNarrow}>#</Text>
-          <Text style={styles.tableCellWide}>Item</Text>
-          <Text style={styles.tableCell}>Quantity</Text>
-          <Text style={styles.tableCell}>Unit Price</Text>
-          <Text style={styles.tableCell}>Subtotal</Text>
+          <Text style={styles.tableCellWide}>{t("invoices.item")}</Text>
+          <Text style={styles.tableCell}>{t("invoices.quantity")}</Text>
+          <Text style={styles.tableCell}>{t("invoices.unitPrice")}</Text>
+          <Text style={styles.tableCell}>{t("invoices.subtotal")}</Text>
         </View>
         {items.map((item, index) => (
           <View key={index} style={styles.tableRow}>

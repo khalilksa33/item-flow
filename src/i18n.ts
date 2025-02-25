@@ -23,7 +23,7 @@ i18n
     },
     fallbackLng: 'en',
     supportedLngs: ['en', 'ar'],
-    debug: true,
+    debug: process.env.NODE_ENV === 'development',
     interpolation: {
       escapeValue: false, // not needed for react as it escapes by default
     },
@@ -32,9 +32,19 @@ i18n
     },
   });
 
-// Initialize language direction based on stored preference
+// Initialize language direction based on stored preference or detected language
+const updateDocumentLanguage = (language: string) => {
+  document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
+  document.documentElement.lang = language;
+};
+
+// Set initial direction
 const currentLanguage = localStorage.getItem('preferredLanguage') || i18n.language || 'en';
-document.documentElement.dir = currentLanguage === 'ar' ? 'rtl' : 'ltr';
-document.documentElement.lang = currentLanguage;
+updateDocumentLanguage(currentLanguage);
+
+// Also listen for language changes
+i18n.on('languageChanged', (lang) => {
+  updateDocumentLanguage(lang);
+});
 
 export default i18n;

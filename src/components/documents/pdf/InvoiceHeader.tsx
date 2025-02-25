@@ -1,6 +1,7 @@
 
 import { Text, View, Image } from '@react-pdf/renderer';
 import { styles } from './styles';
+import { useTranslation } from 'react-i18next';
 
 interface InvoiceHeaderProps {
   companyName: string;
@@ -23,15 +24,17 @@ export function InvoiceHeader({
   companyLogo,
   qrCodeUrl
 }: InvoiceHeaderProps) {
+  const { t } = useTranslation();
+  
   return (
     <View style={styles.header}>
       <View style={styles.headerLeft}>
         <Text style={styles.companyName}>{companyName}</Text>
-        {vatNumber && <Text style={styles.companyInfo}>VAT Number: {vatNumber}</Text>}
-        {crNumber && <Text style={styles.companyInfo}>CR Number: {crNumber}</Text>}
-        {companyAddress && <Text style={styles.companyInfo}>Address: {companyAddress}</Text>}
-        {companyPhone && <Text style={styles.companyInfo}>Phone: {companyPhone}</Text>}
-        {companyEmail && <Text style={styles.companyInfo}>Email: {companyEmail}</Text>}
+        {vatNumber && <Text style={styles.companyInfo}>{t("invoices.vatNumber")}: {vatNumber}</Text>}
+        {crNumber && <Text style={styles.companyInfo}>{t("invoices.crNumber")}: {crNumber}</Text>}
+        {companyAddress && <Text style={styles.companyInfo}>{t("invoices.address")}: {companyAddress}</Text>}
+        {companyPhone && <Text style={styles.companyInfo}>{t("invoices.phone")}: {companyPhone}</Text>}
+        {companyEmail && <Text style={styles.companyInfo}>{t("invoices.email")}: {companyEmail}</Text>}
       </View>
       <View style={styles.logoContainer}>
         {companyLogo && (
