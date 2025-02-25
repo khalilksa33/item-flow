@@ -163,6 +163,7 @@ export function InventoryList() {
                 <TableHead>Description</TableHead>
                 <TableHead>Quantity</TableHead>
                 <TableHead>Min. Quantity</TableHead>
+                <TableHead>Price</TableHead>
                 <TableHead>Last Updated</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
@@ -190,6 +191,9 @@ export function InventoryList() {
                     )}
                   </TableCell>
                   <TableCell>{item.minQuantity}</TableCell>
+                  <TableCell>
+                    ${item.cost ? item.cost.toFixed(2) : '0.00'}
+                  </TableCell>
                   <TableCell>
                     {new Date(item.lastUpdated).toLocaleDateString()}
                   </TableCell>
@@ -252,6 +256,10 @@ export function InventoryList() {
                 <div>
                   <h4 className="font-semibold">Minimum Stock Level</h4>
                   <p>{selectedItem.minQuantity}</p>
+                </div>
+                <div>
+                  <h4 className="font-semibold">Price</h4>
+                  <p>${selectedItem.cost ? selectedItem.cost.toFixed(2) : '0.00'}</p>
                 </div>
                 <div>
                   <h4 className="font-semibold">Last Updated</h4>
