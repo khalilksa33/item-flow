@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import {
   Card,
@@ -26,7 +25,17 @@ const Index = () => {
   const navigate = useNavigate();
   const [importing, setImporting] = useState(false);
 
+  const activationStatus = storage.getActivationStatus();
+  const daysRemaining = Math.ceil(
+    (new Date(activationStatus.expiryDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+  );
+
   const handleExportData = () => {
+    if (!storage.checkActivation()) {
+      toast.error("Please renew your license to export data");
+      return;
+    }
+
     const data = {
       inventory: storage.getItems(),
       customers: storage.getCustomers(),
@@ -36,16 +45,20 @@ const Index = () => {
       invoices: storage.getInvoices(),
     };
     
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const csvData = Object.entries(data).map(([key, value]) => 
+      `### ${key} ###\n${storage.exportToCSV()}`
+    ).join('\n\n');
+
+    const blob = new Blob([csvData], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "business-data-export.json";
+    a.download = "business-data-export.csv";
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    toast.success("Data exported successfully");
+    toast.success("Data exported successfully as CSV");
   };
 
   const handleImportData = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -85,7 +98,18 @@ const Index = () => {
   return (
     <div className="container mx-auto p-6">
       <div className="mb-8 flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Business Management System</h1>
+        <div>
+          <h1 className="text-3xl font-bold">Business Management System</h1>
+          {storage.checkActivation() ? (
+            <p className="text-sm text-muted-foreground mt-2">
+              License active - {daysRemaining} days remaining
+            </p>
+          ) : (
+            <p className="text-sm text-red-500 mt-2">
+              License expired - Please renew to continue using all features
+            </p>
+          )}
+        </div>
         <div className="flex gap-2">
           <Button onClick={handleExportData}>
             <Download className="h-4 w-4 mr-2" />

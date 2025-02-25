@@ -63,17 +63,17 @@ export function InventoryList() {
   }, [searchTerm, items]);
 
   const handleExport = () => {
-    const data = JSON.stringify(storage.getItems(), null, 2);
-    const blob = new Blob([data], { type: "application/json" });
+    const csv = storage.exportToCSV();
+    const blob = new Blob([csv], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "inventory-export.json";
+    a.download = "inventory-export.csv";
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    toast.success("Inventory data exported successfully");
+    toast.success("Inventory data exported successfully as CSV");
   };
 
   const handleImport = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -82,10 +82,14 @@ export function InventoryList() {
       const reader = new FileReader();
       reader.onload = (e) => {
         try {
-          const items = JSON.parse(e.target?.result as string);
-          storage.setItems(items);
-          loadItems();
-          toast.success("Inventory data imported successfully");
+          const csvContent = e.target?.result as string;
+          const success = storage.importFromCSV(csvContent);
+          if (success) {
+            loadItems();
+            toast.success("Inventory data imported successfully from CSV");
+          } else {
+            toast.error("Error importing data. Please check the CSV format.");
+          }
         } catch (error) {
           toast.error("Error importing data. Please check the file format.");
         }
@@ -93,6 +97,18 @@ export function InventoryList() {
       reader.readAsText(file);
     }
   };
+
+  useEffect(() => {
+    const checkAppActivation = () => {
+      if (!storage.checkActivation()) {
+        toast.error("Your application license has expired. Please renew to continue using the system.");
+      }
+    };
+
+    checkAppActivation();
+    const interval = setInterval(checkAppActivation, 1000 * 60 * 60); // Check every hour
+    return () => clearInterval(interval);
+  }, []);
 
   const handleEditItem = (item: InventoryItem) => {
     setSelectedItem(item);
@@ -106,6 +122,13 @@ export function InventoryList() {
 
   return (
     <div className="p-6 space-y-6">
+      {!storage.checkActivation() && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+          <strong className="font-bold">License Expired!</strong>
+          <span className="block sm:inline"> Your application license has expired. Please contact support to renew.</span>
+        </div>
+      )}
+      
       <div className="flex justify-between items-center flex-wrap gap-4">
         <h1 className="text-3xl font-bold">Inventory Items</h1>
         <div className="flex gap-2">

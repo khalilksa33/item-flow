@@ -534,5 +534,104 @@ export const storage = {
       ];
       storage.setSales(sampleSales);
     }
+  },
+
+  // Activation management
+  getActivationStatus: () => {
+    const activation = localStorage.getItem('activation_status');
+    if (!activation) {
+      const initialActivation = {
+        active: true,
+        expiryDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+        activatedOn: new Date().toISOString()
+      };
+      localStorage.setItem('activation_status', JSON.stringify(initialActivation));
+      return initialActivation;
+    }
+    return JSON.parse(activation);
+  },
+
+  setActivationStatus: (status: { active: boolean; expiryDate: string; activatedOn: string }) => {
+    localStorage.setItem('activation_status', JSON.stringify(status));
+  },
+
+  checkActivation: () => {
+    const status = storage.getActivationStatus();
+    const now = new Date();
+    const expiryDate = new Date(status.expiryDate);
+    return status.active && now < expiryDate;
+  },
+
+  extendActivation: (days: number = 30) => {
+    const status = storage.getActivationStatus();
+    const currentExpiry = new Date(status.expiryDate);
+    const newExpiry = new Date(currentExpiry.getTime() + days * 24 * 60 * 60 * 1000);
+    storage.setActivationStatus({
+      ...status,
+      expiryDate: newExpiry.toISOString()
+    });
+  },
+
+  // CSV export
+  exportToCSV: () => {
+    const items = storage.getItems();
+    const headers = [
+      'id',
+      'name',
+      'description',
+      'quantity',
+      'category',
+      'minQuantity',
+      'cost',
+      'lastUpdated',
+      'supplierId'
+    ];
+
+    const csvRows = [
+      headers.join(','),
+      ...items.map(item => 
+        headers.map(header => {
+          const value = item[header as keyof typeof item];
+          if (typeof value === 'string' && value.includes(',')) {
+            return `"${value}"`;
+          }
+          return value;
+        }).join(',')
+      )
+    ];
+
+    return csvRows.join('\n');
+  },
+
+  // CSV import
+  importFromCSV: (csvContent: string) => {
+    try {
+      const rows = csvContent.split('\n');
+      const headers = rows[0].split(',');
+      
+      const items = rows.slice(1).map(row => {
+        const values = row.split(',');
+        const item: any = {};
+        
+        headers.forEach((header, index) => {
+          if (['quantity', 'minQuantity', 'cost'].includes(header)) {
+            item[header] = parseFloat(values[index]) || 0;
+          } else {
+            item[header] = values[index]?.replace(/^"(.*)"$/, '$1') || '';
+          }
+        });
+
+        item.stockMovements = item.stockMovements || [];
+        item.lastUpdated = item.lastUpdated || new Date().toISOString();
+        
+        return item;
+      });
+
+      storage.setItems(items);
+      return true;
+    } catch (error) {
+      console.error('Error importing CSV:', error);
+      return false;
+    }
   }
 };
