@@ -152,6 +152,7 @@ interface InvoicePDFProps {
 }
 
 export const InvoicePDF = ({ invoice, customerName }: InvoicePDFProps) => {
+  // Get company info from local storage
   const companyName = localStorage.getItem('companyName') || 'Company Name';
   const vatNumber = localStorage.getItem('vatNumber') || '';
   const crNumber = localStorage.getItem('crNumber') || '';
@@ -160,8 +161,8 @@ export const InvoicePDF = ({ invoice, customerName }: InvoicePDFProps) => {
   const companyEmail = localStorage.getItem('companyEmail') || '';
   const currency = localStorage.getItem('currency') || 'USD';
 
-  // Generate QR code URL based on invoice ID and company details
-  const qrCodeData = `INV:${invoice.id}|COMP:${companyName}|CUST:${customerName}|AMT:${invoice.total}`;
+  // Generate QR code URL with proper encoding
+  const qrCodeData = `INV:${invoice.id}|COMP:${encodeURIComponent(companyName)}|CUST:${encodeURIComponent(customerName)}|AMT:${invoice.total}`;
   const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${encodeURIComponent(qrCodeData)}`;
 
   // Add safe number formatting helper
@@ -272,8 +273,10 @@ export const InvoicePDF = ({ invoice, customerName }: InvoicePDFProps) => {
           <Text>Thank you for your business!</Text>
         </View>
 
-        {/* Subtle Watermark */}
-        <Text style={styles.watermark}>PAID</Text>
+        {/* Subtle Watermark for paid invoices */}
+        {invoice.status === 'paid' && (
+          <Text style={styles.watermark}>PAID</Text>
+        )}
 
         {/* Footer */}
         <View style={styles.footer}>
