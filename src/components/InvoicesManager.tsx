@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import {
   Dialog,
@@ -18,8 +19,8 @@ import { storage } from "@/lib/storage";
 import { Invoice, Customer, InventoryItem, Quotation } from "@/types/inventory";
 import { toast } from "sonner";
 import { InvoiceForm } from "./invoices/InvoiceForm";
-import { PDFDownloadLink } from '@react-pdf/renderer';
-import { Printer, Receipt } from "lucide-react";
+import { PDFDownloadLink, BlobProvider } from '@react-pdf/renderer';
+import { Printer, Receipt, Download } from "lucide-react";
 import { InvoicePDF } from "./documents/InvoicePDF";
 import { ReceiptPDF } from "./documents/ReceiptPDF";
 
@@ -77,7 +78,63 @@ export function InvoicesManager() {
     return customers.find(c => c.id === customerId)?.name || 'Unknown Customer';
   };
 
-  const handlePrint = (invoice: Invoice, type: 'invoice' | 'receipt' = 'invoice') => {
+  const handlePrintDocument = (blob: Blob) => {
+    // Create a URL for the blob
+    const blobUrl = URL.createObjectURL(blob);
+    
+    // Open the PDF in a new tab
+    const printWindow = window.open(blobUrl, '_blank');
+    
+    if (printWindow) {
+      // Wait for the PDF to load then print
+      printWindow.onload = () => {
+        printWindow.print();
+        // Clean up the blob URL after printing
+        URL.revokeObjectURL(blobUrl);
+      };
+    } else {
+      // If popup is blocked, just download the file
+      toast.error("Pop-up blocked. Please allow pop-ups to print directly.");
+      
+      // Provide fallback download
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = `invoice-${Date.now()}.pdf`;
+      link.click();
+      
+      // Clean up
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 100);
+    }
+  };
+
+  const renderPrintButton = (invoice: Invoice, type: 'invoice' | 'receipt' = 'invoice') => {
+    const customerName = customers.find(c => c.id === invoice.customerId)?.name || 'Unknown Customer';
+    const Document = type === 'invoice' 
+      ? <InvoicePDF invoice={invoice} customerName={customerName} />
+      : <ReceiptPDF invoice={invoice} customerName={customerName} />;
+    
+    return (
+      <BlobProvider document={Document}>
+        {({ blob, url, loading, error }) => (
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={loading || !!error}
+            onClick={() => blob && handlePrintDocument(blob)}
+          >
+            {type === 'invoice' ? (
+              <Printer className="h-4 w-4 mr-2" />
+            ) : (
+              <Receipt className="h-4 w-4 mr-2" />
+            )}
+            {type === 'invoice' ? 'Print Invoice' : 'Print Receipt'}
+          </Button>
+        )}
+      </BlobProvider>
+    );
+  };
+
+  const renderDownloadButton = (invoice: Invoice, type: 'invoice' | 'receipt' = 'invoice') => {
     const customerName = customers.find(c => c.id === invoice.customerId)?.name || 'Unknown Customer';
     const Document = type === 'invoice' 
       ? <InvoicePDF invoice={invoice} customerName={customerName} />
@@ -94,12 +151,8 @@ export function InvoicesManager() {
             size="sm"
             disabled={loading}
           >
-            {type === 'invoice' ? (
-              <Printer className="h-4 w-4 mr-2" />
-            ) : (
-              <Receipt className="h-4 w-4 mr-2" />
-            )}
-            {type === 'invoice' ? 'Print Invoice' : 'Print Receipt'}
+            <Download className="h-4 w-4 mr-2" />
+            {type === 'invoice' ? 'Download Invoice' : 'Download Receipt'}
           </Button>
         )}
       </PDFDownloadLink>
@@ -147,9 +200,11 @@ export function InvoicesManager() {
               </TableCell>
               <TableCell>{new Date(invoice.paymentDue).toLocaleDateString()}</TableCell>
               <TableCell>
-                <div className="flex gap-2">
-                  {handlePrint(invoice, 'invoice')}
-                  {invoice.status === 'paid' && handlePrint(invoice, 'receipt')}
+                <div className="flex gap-2 flex-wrap">
+                  {renderPrintButton(invoice, 'invoice')}
+                  {renderDownloadButton(invoice, 'invoice')}
+                  {invoice.status === 'paid' && renderPrintButton(invoice, 'receipt')}
+                  {invoice.status === 'paid' && renderDownloadButton(invoice, 'receipt')}
                   <Button
                     variant="outline"
                     size="sm"
