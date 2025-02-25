@@ -160,6 +160,7 @@ export const InvoicePDF = ({ invoice, customerName }: InvoicePDFProps) => {
   const companyPhone = localStorage.getItem('companyPhone') || '';
   const companyEmail = localStorage.getItem('companyEmail') || '';
   const currency = localStorage.getItem('currency') || 'USD';
+  const companyLogo = localStorage.getItem('companyLogo') || '';
 
   // Generate QR code URL with proper encoding
   const qrCodeData = `INV:${invoice.id}|COMP:${encodeURIComponent(companyName)}|CUST:${encodeURIComponent(customerName)}|AMT:${invoice.total}`;
@@ -197,6 +198,19 @@ export const InvoicePDF = ({ invoice, customerName }: InvoicePDFProps) => {
             {companyAddress && <Text style={styles.companyInfo}>Address: {companyAddress}</Text>}
             {companyPhone && <Text style={styles.companyInfo}>Phone: {companyPhone}</Text>}
             {companyEmail && <Text style={styles.companyInfo}>Email: {companyEmail}</Text>}
+          </View>
+          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+            {companyLogo && (
+              <Image
+                src={companyLogo}
+                style={{
+                  width: 100,
+                  height: 100,
+                  objectFit: 'contain',
+                  marginHorizontal: 20,
+                }}
+              />
+            )}
           </View>
           <View style={styles.headerRight}>
             <Image style={styles.qrCode} src={qrCodeUrl} />
