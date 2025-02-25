@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Vendor } from "@/types/inventory";
+import { useTranslation } from "react-i18next";
 
 interface VendorFormData extends Omit<Vendor, 'id'> {}
 
@@ -15,6 +16,8 @@ interface VendorFormProps {
 }
 
 export function VendorForm({ formData, editingVendor, onChange, onSubmit, onCancel }: VendorFormProps) {
+  const { t } = useTranslation();
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
     onChange({ ...formData, [id]: value });
@@ -37,7 +40,7 @@ export function VendorForm({ formData, editingVendor, onChange, onSubmit, onCanc
     <form onSubmit={onSubmit} className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="name">Name</Label>
+          <Label htmlFor="name">{t("vendors.name")}</Label>
           <Input
             id="name"
             value={formData.name}
@@ -47,7 +50,7 @@ export function VendorForm({ formData, editingVendor, onChange, onSubmit, onCanc
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="type">Type</Label>
+          <Label htmlFor="type">{t("vendors.type")}</Label>
           <select
             id="type"
             className="w-full rounded-md border border-input bg-background px-3 py-2"
@@ -55,14 +58,14 @@ export function VendorForm({ formData, editingVendor, onChange, onSubmit, onCanc
             onChange={handleTypeChange}
             required
           >
-            <option value="manufacturer">Manufacturer</option>
-            <option value="wholesaler">Wholesaler</option>
-            <option value="distributor">Distributor</option>
+            <option value="manufacturer">{t("vendors.manufacturer")}</option>
+            <option value="wholesaler">{t("vendors.wholesaler")}</option>
+            <option value="distributor">{t("vendors.distributor")}</option>
           </select>
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor="email">{t("vendors.email")}</Label>
           <Input
             id="email"
             type="email"
@@ -73,7 +76,7 @@ export function VendorForm({ formData, editingVendor, onChange, onSubmit, onCanc
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="phone">Phone</Label>
+          <Label htmlFor="phone">{t("vendors.phone")}</Label>
           <Input
             id="phone"
             value={formData.phone}
@@ -83,7 +86,7 @@ export function VendorForm({ formData, editingVendor, onChange, onSubmit, onCanc
         </div>
 
         <div className="space-y-2 col-span-2">
-          <Label htmlFor="address">Address</Label>
+          <Label htmlFor="address">{t("vendors.address")}</Label>
           <Input
             id="address"
             value={formData.address}
@@ -93,7 +96,7 @@ export function VendorForm({ formData, editingVendor, onChange, onSubmit, onCanc
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="taxId">Tax ID</Label>
+          <Label htmlFor="taxId">{t("vendors.taxId")}</Label>
           <Input
             id="taxId"
             value={formData.taxId}
@@ -103,29 +106,29 @@ export function VendorForm({ formData, editingVendor, onChange, onSubmit, onCanc
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="paymentTerms">Payment Terms</Label>
+          <Label htmlFor="paymentTerms">{t("vendors.paymentTerms")}</Label>
           <Input
             id="paymentTerms"
             value={formData.paymentTerms}
             onChange={handleInputChange}
             required
-            placeholder="e.g., Net 30"
+            placeholder={t("vendors.paymentTermsPlaceholder")}
           />
         </div>
 
         <div className="space-y-2 col-span-2">
-          <Label htmlFor="products">Products (comma-separated)</Label>
+          <Label htmlFor="products">{t("vendors.productsList")}</Label>
           <Input
             id="products"
             value={formData.products.join(', ')}
             onChange={(e) => handleProductsChange(e.target.value)}
-            placeholder="e.g., Electronics, Components, Accessories"
+            placeholder={t("vendors.productsPlaceholder")}
             required
           />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="rating">Rating (0-5)</Label>
+          <Label htmlFor="rating">{t("vendors.rating")}</Label>
           <Input
             id="rating"
             type="number"
@@ -145,12 +148,12 @@ export function VendorForm({ formData, editingVendor, onChange, onSubmit, onCanc
               onChange={handleCheckboxChange}
               className="rounded border-gray-300"
             />
-            Active Contract
+            {t("vendors.activeContract")}
           </Label>
         </div>
 
         <div className="space-y-2 col-span-2">
-          <Label htmlFor="notes">Notes</Label>
+          <Label htmlFor="notes">{t("vendors.notes")}</Label>
           <Input
             id="notes"
             value={formData.notes}
@@ -161,10 +164,10 @@ export function VendorForm({ formData, editingVendor, onChange, onSubmit, onCanc
 
       <div className="flex justify-end gap-2">
         <Button type="button" variant="outline" onClick={onCancel}>
-          Cancel
+          {t("vendors.cancel")}
         </Button>
         <Button type="submit">
-          {editingVendor ? "Update" : "Add"} Vendor
+          {editingVendor ? t("vendors.update") : t("vendors.add")}
         </Button>
       </div>
     </form>

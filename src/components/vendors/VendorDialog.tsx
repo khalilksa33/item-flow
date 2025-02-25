@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/dialog";
 import { Vendor } from "@/types/inventory";
 import { VendorForm } from "./VendorForm";
+import { useTranslation } from "react-i18next";
 
 interface VendorFormData extends Omit<Vendor, 'id'> {}
 
@@ -29,12 +30,14 @@ export function VendorDialog({
   onSubmit,
   onCancel,
 }: VendorDialogProps) {
+  const { t } = useTranslation();
+
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
-            {editingVendor ? "Edit Vendor" : "Add New Vendor"}
+            {editingVendor ? t("vendors.editVendor") : t("vendors.addNewVendor")}
           </DialogTitle>
         </DialogHeader>
         <VendorForm

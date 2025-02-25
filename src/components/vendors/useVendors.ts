@@ -3,6 +3,7 @@ import { useState } from "react";
 import { storage } from "@/lib/storage";
 import { Vendor } from "@/types/inventory";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 export interface VendorFormData extends Omit<Vendor, 'id'> {}
 
@@ -10,6 +11,8 @@ export function useVendors() {
   const [vendors, setVendors] = useState<Vendor[]>(storage.getVendors());
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingVendor, setEditingVendor] = useState<Vendor | null>(null);
+  const { t } = useTranslation();
+  
   const [formData, setFormData] = useState<VendorFormData>({
     name: '',
     email: '',
@@ -55,10 +58,10 @@ export function useVendors() {
 
     if (editingVendor) {
       storage.updateVendor(vendorData);
-      toast.success("Vendor updated successfully");
+      toast.success(t("vendors.vendorUpdated"));
     } else {
       storage.addVendor(vendorData);
-      toast.success("Vendor added successfully");
+      toast.success(t("vendors.vendorAdded"));
     }
 
     loadVendors();
@@ -88,7 +91,7 @@ export function useVendors() {
   const handleDelete = (id: string) => {
     storage.deleteVendor(id);
     loadVendors();
-    toast.success("Vendor deleted successfully");
+    toast.success(t("vendors.vendorDeleted"));
   };
 
   const openAddDialog = () => {
