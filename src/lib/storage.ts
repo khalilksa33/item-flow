@@ -543,7 +543,8 @@ export const storage = {
       const initialActivation = {
         active: true,
         expiryDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-        activatedOn: new Date().toISOString()
+        activatedOn: new Date().toISOString(),
+        isPerpetual: false
       };
       localStorage.setItem('activation_status', JSON.stringify(initialActivation));
       return initialActivation;
@@ -551,12 +552,23 @@ export const storage = {
     return JSON.parse(activation);
   },
 
-  setActivationStatus: (status: { active: boolean; expiryDate: string; activatedOn: string }) => {
+  setActivationStatus: (status: { active: boolean; expiryDate: string; activatedOn: string; isPerpetual: boolean }) => {
     localStorage.setItem('activation_status', JSON.stringify(status));
+  },
+
+  setPerpetualActivation: () => {
+    const status = storage.getActivationStatus();
+    storage.setActivationStatus({
+      ...status,
+      active: true,
+      isPerpetual: true,
+      expiryDate: new Date('2099-12-31').toISOString()
+    });
   },
 
   checkActivation: () => {
     const status = storage.getActivationStatus();
+    if (status.isPerpetual) return true;
     const now = new Date();
     const expiryDate = new Date(status.expiryDate);
     return status.active && now < expiryDate;
