@@ -11,9 +11,25 @@ import { ProtectedRoute } from "@/components/common/ProtectedRoute";
 import { Home } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useEffect, useState } from "react";
 
 const AdminPage = () => {
   const { t } = useTranslation();
+  const [activeTab, setActiveTab] = useState("users");
+
+  // Get the tab from URL if present
+  useEffect(() => {
+    const hash = window.location.hash.replace('#', '');
+    if (hash && ["users", "company", "data", "license", "regional", "audit"].includes(hash)) {
+      setActiveTab(hash);
+    }
+  }, []);
+
+  // Update URL hash when tab changes
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+    window.location.hash = value;
+  };
 
   return (
     <ProtectedRoute requiredRole="admin">
@@ -28,7 +44,7 @@ const AdminPage = () => {
           <h1 className="text-3xl font-bold mb-6">{t("admin.title")}</h1>
         </div>
 
-        <Tabs defaultValue="users">
+        <Tabs value={activeTab} onValueChange={handleTabChange}>
           <TabsList className="mb-6">
             <TabsTrigger value="users">{t("admin.users")}</TabsTrigger>
             <TabsTrigger value="company">{t("admin.company")}</TabsTrigger>

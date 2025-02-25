@@ -4,8 +4,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Key, Clock } from "lucide-react";
 import { storage } from "@/lib/storage";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 export function LicenseManagement() {
+  const { t } = useTranslation();
   const activationStatus = storage.getActivationStatus();
   const daysRemaining = activationStatus.isPerpetual ? 
     '∞' : 
@@ -13,12 +15,12 @@ export function LicenseManagement() {
 
   const handlePerpetualActivation = () => {
     storage.setPerpetualActivation();
-    toast.success("Application activated perpetually!");
+    toast.success(t("admin.validLicense"));
   };
 
   const handleExtendActivation = () => {
     storage.extendActivation(30);
-    toast.success("License extended by 30 days");
+    toast.success(t("admin.licenseExtended", "License extended by 30 days"));
   };
 
   return (
@@ -26,17 +28,17 @@ export function LicenseManagement() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Key className="h-5 w-5" />
-          License Management
+          {t("admin.license")}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="p-4 rounded-lg bg-muted">
-          <h3 className="font-semibold mb-2">Current Status</h3>
+          <h3 className="font-semibold mb-2">{t("admin.licenseStatus")}</h3>
           <p className="text-sm text-muted-foreground flex items-center gap-2">
             <Clock className="h-4 w-4" />
             {activationStatus.isPerpetual ? 
-              "Perpetual License Active" : 
-              `${daysRemaining} days remaining`
+              t("admin.perpetualLicense", "Perpetual License Active") : 
+              t("admin.daysRemaining", "{{days}} days remaining", { days: daysRemaining })
             }
           </p>
         </div>
@@ -46,11 +48,11 @@ export function LicenseManagement() {
             <>
               <Button onClick={handlePerpetualActivation} className="w-full">
                 <Key className="h-4 w-4 mr-2" />
-                Activate Perpetually
+                {t("admin.activatePerpetual", "Activate Perpetually")}
               </Button>
               <Button onClick={handleExtendActivation} variant="outline" className="w-full">
                 <Clock className="h-4 w-4 mr-2" />
-                Extend by 30 Days
+                {t("admin.extendLicense", "Extend by 30 Days")}
               </Button>
             </>
           )}

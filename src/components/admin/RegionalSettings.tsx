@@ -6,8 +6,10 @@ import { Label } from "@/components/ui/label";
 import { Globe } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 export function RegionalSettings() {
+  const { t } = useTranslation();
   const [timezone, setTimezone] = useState(localStorage.getItem('timezone') || 'UTC');
   const [currency, setCurrency] = useState(localStorage.getItem('currency') || 'USD');
   const [vatRate, setVatRate] = useState(localStorage.getItem('vatRate') || '15');
@@ -18,7 +20,7 @@ export function RegionalSettings() {
     localStorage.setItem('currency', currency);
     localStorage.setItem('vatRate', vatRate);
     localStorage.setItem('dateFormat', dateFormat);
-    toast.success("Regional settings saved successfully");
+    toast.success(t("admin.settingsSaved", "Regional settings saved successfully"));
   };
 
   return (
@@ -26,12 +28,12 @@ export function RegionalSettings() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Globe className="h-5 w-5" />
-          Regional Settings
+          {t("admin.regional")}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="timezone">Timezone</Label>
+          <Label htmlFor="timezone">{t("admin.timeZone")}</Label>
           <Input 
             id="timezone"
             value={timezone}
@@ -40,7 +42,7 @@ export function RegionalSettings() {
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="currency">Currency</Label>
+          <Label htmlFor="currency">{t("admin.currency")}</Label>
           <Input 
             id="currency"
             value={currency}
@@ -49,7 +51,7 @@ export function RegionalSettings() {
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="vatRate">VAT Rate (%)</Label>
+          <Label htmlFor="vatRate">{t("admin.vatRate", "VAT Rate (%)")}</Label>
           <Input 
             id="vatRate"
             type="number"
@@ -59,7 +61,7 @@ export function RegionalSettings() {
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="dateFormat">Date Format</Label>
+          <Label htmlFor="dateFormat">{t("admin.dateFormat")}</Label>
           <Input 
             id="dateFormat"
             value={dateFormat}
@@ -67,7 +69,7 @@ export function RegionalSettings() {
             placeholder="DD/MM/YYYY"
           />
         </div>
-        <Button onClick={saveRegionalSettings}>Save Regional Settings</Button>
+        <Button onClick={saveRegionalSettings}>{t("common.save")} {t("admin.settings")}</Button>
       </CardContent>
     </Card>
   );

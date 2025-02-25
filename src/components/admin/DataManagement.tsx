@@ -5,13 +5,15 @@ import { Download, Settings, Upload } from "lucide-react";
 import { useState } from "react";
 import { storage } from "@/lib/storage";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 export function DataManagement() {
   const [importing, setImporting] = useState(false);
+  const { t } = useTranslation();
 
   const handleExportData = () => {
     if (!storage.checkActivation()) {
-      toast.error("Please activate the application to export data");
+      toast.error(t("inventory.licenseExpired"));
       return;
     }
 
@@ -37,7 +39,7 @@ export function DataManagement() {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    toast.success("Data exported successfully as CSV");
+    toast.success(t("inventory.exportSuccess"));
   };
 
   const handleImportData = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -56,9 +58,9 @@ export function DataManagement() {
       if (data.quotations) storage.setQuotations(data.quotations);
       if (data.invoices) storage.setInvoices(data.invoices);
       
-      toast.success("Data imported successfully");
+      toast.success(t("inventory.importSuccess"));
     } catch (error) {
-      toast.error("Error importing data. Please check the file format.");
+      toast.error(t("inventory.importError"));
     } finally {
       setImporting(false);
     }
@@ -69,18 +71,18 @@ export function DataManagement() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Settings className="h-5 w-5" />
-          Data Management
+          {t("admin.data")}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex flex-col gap-2">
           <Button onClick={handleExportData}>
             <Download className="h-4 w-4 mr-2" />
-            Export Data
+            {t("admin.backupData")}
           </Button>
           <Button onClick={() => document.getElementById('import-file')?.click()}>
             <Upload className="h-4 w-4 mr-2" />
-            Import Data
+            {t("admin.restoreData")}
           </Button>
           <input
             id="import-file"
