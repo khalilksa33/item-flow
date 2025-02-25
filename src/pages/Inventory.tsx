@@ -17,22 +17,7 @@ const InventoryPage = () => {
     setItems(storage.getItems());
   };
 
-  const handleSubmit = (formData: Omit<InventoryItem, 'id' | 'lastUpdated'>) => {
-    const itemData: InventoryItem = {
-      id: editingItem?.id || crypto.randomUUID(),
-      ...formData,
-      lastUpdated: new Date().toISOString(),
-      stockMovements: formData.stockMovements || []
-    };
-
-    if (editingItem) {
-      storage.updateItem(itemData);
-      toast.success("Item updated successfully");
-    } else {
-      storage.addItem(itemData);
-      toast.success("Item added successfully");
-    }
-
+  const handleSubmit = () => {
     loadItems();
     setIsDialogOpen(false);
     setEditingItem(null);
@@ -62,11 +47,7 @@ const InventoryPage = () => {
       </div>
 
       <div className="space-y-4">
-        <InventoryList
-          items={items}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-        />
+        <InventoryList />
       </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
