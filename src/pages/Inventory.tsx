@@ -17,12 +17,12 @@ const InventoryPage = () => {
     setItems(storage.getItems());
   };
 
-  const handleSubmit = (formData: Omit<InventoryItem, 'id' | 'createdAt' | 'lastUpdated'>) => {
+  const handleSubmit = (formData: Omit<InventoryItem, 'id' | 'lastUpdated'>) => {
     const itemData: InventoryItem = {
       id: editingItem?.id || crypto.randomUUID(),
       ...formData,
-      createdAt: editingItem?.createdAt || new Date().toISOString(),
       lastUpdated: new Date().toISOString(),
+      stockMovements: formData.stockMovements || []
     };
 
     if (editingItem) {
@@ -61,11 +61,13 @@ const InventoryPage = () => {
         </Button>
       </div>
 
-      <InventoryList
-        items={items}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-      />
+      <div className="space-y-4">
+        <InventoryList
+          items={items}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+        />
+      </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent>
@@ -75,9 +77,10 @@ const InventoryPage = () => {
             </DialogTitle>
           </DialogHeader>
           <ItemForm
-            editingItem={editingItem}
-            onSubmit={handleSubmit}
-            onCancel={() => setIsDialogOpen(false)}
+            isOpen={isDialogOpen}
+            onClose={() => setIsDialogOpen(false)}
+            item={editingItem}
+            onSave={handleSubmit}
           />
         </DialogContent>
       </Dialog>
