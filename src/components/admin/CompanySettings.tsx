@@ -3,8 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Building } from "lucide-react";
-import { useState } from "react";
+import { Building, Upload } from "lucide-react";
+import { useState, useRef } from "react";
 import { toast } from "sonner";
 
 export function CompanySettings() {
@@ -14,6 +14,8 @@ export function CompanySettings() {
   const [companyAddress, setCompanyAddress] = useState(localStorage.getItem('companyAddress') || '');
   const [companyPhone, setCompanyPhone] = useState(localStorage.getItem('companyPhone') || '');
   const [companyEmail, setCompanyEmail] = useState(localStorage.getItem('companyEmail') || '');
+  const [companyLogo, setCompanyLogo] = useState(localStorage.getItem('companyLogo') || '');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const saveCompanySettings = () => {
     localStorage.setItem('companyName', companyName);
@@ -22,7 +24,33 @@ export function CompanySettings() {
     localStorage.setItem('companyAddress', companyAddress);
     localStorage.setItem('companyPhone', companyPhone);
     localStorage.setItem('companyEmail', companyEmail);
+    localStorage.setItem('companyLogo', companyLogo);
     toast.success("Company settings saved successfully");
+  };
+
+  const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        toast.error("Logo file size must be less than 2MB");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result as string;
+        setCompanyLogo(base64String);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveLogo = () => {
+    setCompanyLogo('');
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+    toast.success("Company logo removed");
   };
 
   return (
@@ -43,6 +71,39 @@ export function CompanySettings() {
             placeholder="Enter company name"
           />
         </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="companyLogo">Company Logo</Label>
+          <div className="flex flex-col gap-2">
+            <Input 
+              ref={fileInputRef}
+              id="companyLogo"
+              type="file"
+              accept="image/*"
+              onChange={handleLogoUpload}
+            />
+            {companyLogo && (
+              <div className="mt-2 space-y-2">
+                <div className="border rounded p-4 flex justify-center">
+                  <img 
+                    src={companyLogo} 
+                    alt="Company Logo" 
+                    className="max-h-32 max-w-full object-contain" 
+                  />
+                </div>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={handleRemoveLogo}
+                  className="w-full"
+                >
+                  Remove Logo
+                </Button>
+              </div>
+            )}
+          </div>
+        </div>
+        
         <div className="space-y-2">
           <Label htmlFor="vatNumber">VAT Number</Label>
           <Input 
