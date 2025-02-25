@@ -1,0 +1,151 @@
+
+{
+  "app": {
+    "title": "Inventory Management System",
+    "subtitle": "Manage your inventory, customers, and sales efficiently"
+  },
+  "auth": {
+    "login": "Login",
+    "logout": "Logout",
+    "username": "Username",
+    "password": "Password",
+    "enterUsername": "Enter your username",
+    "enterPassword": "Enter your password",
+    "welcome": "Welcome to the Inventory Management System",
+    "pleaseLogin": "Please log in to access the system features",
+    "invalid": "Invalid username or password",
+    "required": "Username and password are required",
+    "defaultUsers": "Default users: admin/admin123 or manager/manager123"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "description": "View analytics and business overview"
+  },
+  "inventory": {
+    "title": "Inventory",
+    "description": "Manage your inventory items",
+    "items": "Inventory Items",
+    "itemsList": "Items List",
+    "searchItems": "Search items...",
+    "addItem": "Add Item",
+    "categories": "Categories",
+    "export": "Export",
+    "import": "Import",
+    "edit": "Edit",
+    "details": "Details",
+    "description": "Description",
+    "category": "Category",
+    "currentStock": "Current Stock",
+    "minimumStock": "Minimum Stock Level",
+    "price": "Price",
+    "lastUpdated": "Last Updated",
+    "name": "Name",
+    "quantity": "Quantity",
+    "minQuantity": "Min. Quantity",
+    "actions": "Actions",
+    "licenseExpired": "License Expired!",
+    "licenseMessage": "Your application license has expired. Please contact support to renew."
+  },
+  "customers": {
+    "title": "Customers",
+    "description": "Manage customer information"
+  },
+  "sales": {
+    "title": "Sales",
+    "description": "Track and manage sales"
+  },
+  "quotations": {
+    "title": "Quotations",
+    "description": "Create and manage quotations"
+  },
+  "invoices": {
+    "title": "Invoices",
+    "description": "Generate and track invoices",
+    "invoice": "Invoice",
+    "reference": "Reference",
+    "date": "Date",
+    "dueDate": "Due Date",
+    "paymentTerms": "Payment Terms",
+    "billTo": "Bill To",
+    "items": "Invoice Items",
+    "item": "Item",
+    "quantity": "Quantity",
+    "unitPrice": "Unit Price",
+    "subtotal": "Subtotal",
+    "vat": "VAT",
+    "total": "Total",
+    "notes": "Notes",
+    "thankYou": "Thank you for your business!",
+    "generatedOn": "Generated on"
+  },
+  "vendors": {
+    "title": "Vendors",
+    "description": "Manage your vendors and suppliers",
+    "addVendor": "Add Vendor",
+    "editVendor": "Edit Vendor",
+    "addNewVendor": "Add New Vendor",
+    "name": "Name",
+    "type": "Type",
+    "manufacturer": "Manufacturer",
+    "wholesaler": "Wholesaler",
+    "distributor": "Distributor",
+    "email": "Email",
+    "phone": "Phone",
+    "address": "Address",
+    "taxId": "Tax ID",
+    "paymentTerms": "Payment Terms",
+    "products": "Products",
+    "productsList": "Products (comma-separated)",
+    "rating": "Rating (0-5)",
+    "activeContract": "Active Contract",
+    "notes": "Notes",
+    "contact": "Contact",
+    "status": "Status",
+    "active": "Active",
+    "inactive": "Inactive",
+    "actions": "Actions",
+    "cancel": "Cancel",
+    "update": "Update",
+    "add": "Add",
+    "vendorAdded": "Vendor added successfully",
+    "vendorUpdated": "Vendor updated successfully",
+    "vendorDeleted": "Vendor deleted successfully"
+  },
+  "admin": {
+    "title": "Admin Settings",
+    "description": "Configure system settings and permissions"
+  },
+  "common": {
+    "back": "Back to Home",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "view": "View",
+    "add": "Add",
+    "update": "Update",
+    "search": "Search",
+    "welcome": "Welcome",
+    "role": "Role",
+    "actions": "Actions"
+  },
+  "footer": {
+    "copyright": "Inventory Management System",
+    "licenseStatus": "License Status",
+    "active": "Active",
+    "inactive": "Inactive"
+  },
+  "tips": {
+    "title": "Quick Tips",
+    "viewDetails": "Click on an item's name to view detailed information",
+    "search": "Use the search bar to filter items by name, category, or description",
+    "lowStock": "Items highlighted in red indicate low stock levels",
+    "export": "Export your data regularly to keep a backup",
+    "categories": "Use the Categories button to manage your item categories"
+  },
+  "language": {
+    "english": "English",
+    "arabic": "العربية",
+    "changeLanguage": "Change Language"
+  }
+}

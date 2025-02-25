@@ -16,10 +16,13 @@ import {
 } from "lucide-react";
 import { storage } from "@/lib/storage";
 import { useUser } from "@/contexts/UserContext";
+import { LanguageSwitcher } from "@/components/common/LanguageSwitcher";
+import { useTranslation } from "react-i18next";
 
 const Index = () => {
   const navigate = useNavigate();
   const { currentUser, logout, isAdmin } = useUser();
+  const { t } = useTranslation();
 
   useEffect(() => {
     // Initialize data on first load
@@ -32,51 +35,51 @@ const Index = () => {
 
   const menuItems = [
     {
-      title: "Dashboard",
+      title: t("dashboard.title"),
       icon: <BarChartIcon className="h-5 w-5" />,
-      description: "View analytics and business overview",
+      description: t("dashboard.description"),
       href: "/dashboard",
       color: "bg-blue-500",
     },
     {
-      title: "Inventory",
+      title: t("inventory.title"),
       icon: <BoxIcon className="h-5 w-5" />,
-      description: "Manage your inventory items",
+      description: t("inventory.description"),
       href: "/inventory",
       color: "bg-green-500",
     },
     {
-      title: "Customers",
+      title: t("customers.title"),
       icon: <UsersIcon className="h-5 w-5" />,
-      description: "Manage customer information",
+      description: t("customers.description"),
       href: "/customers",
       color: "bg-purple-500",
     },
     {
-      title: "Sales",
+      title: t("sales.title"),
       icon: <ShoppingCartIcon className="h-5 w-5" />,
-      description: "Track and manage sales",
+      description: t("sales.description"),
       href: "/sales",
       color: "bg-yellow-500",
     },
     {
-      title: "Quotations",
+      title: t("quotations.title"),
       icon: <FileTextIcon className="h-5 w-5" />,
-      description: "Create and manage quotations",
+      description: t("quotations.description"),
       href: "/quotations",
       color: "bg-orange-500",
     },
     {
-      title: "Invoices",
+      title: t("invoices.title"),
       icon: <FileTextIcon className="h-5 w-5" />,
-      description: "Generate and track invoices",
+      description: t("invoices.description"),
       href: "/invoices",
       color: "bg-red-500",
     },
     {
-      title: "Vendors",
+      title: t("vendors.title"),
       icon: <TruckIcon className="h-5 w-5" />,
-      description: "Manage your vendors and suppliers",
+      description: t("vendors.description"),
       href: "/vendors",
       color: "bg-teal-500",
     },
@@ -85,9 +88,9 @@ const Index = () => {
   // Only show admin card if user is an admin
   const adminCard = isAdmin() ? [
     {
-      title: "Admin Settings",
+      title: t("admin.title"),
       icon: <SettingsIcon className="h-5 w-5" />,
-      description: "Configure system settings and permissions",
+      description: t("admin.description"),
       href: "/admin",
       color: "bg-gray-700",
     }
@@ -103,29 +106,34 @@ const Index = () => {
 
   return (
     <div className="container mx-auto p-6">
-      <header className="mb-6 text-center">
-        <h1 className="text-3xl font-bold">Inventory Management System</h1>
-        <p className="text-gray-500">Manage your inventory, customers, and sales efficiently</p>
+      <header className="mb-6 flex justify-between items-center">
+        <div className="text-center flex-1">
+          <h1 className="text-3xl font-bold">{t("app.title")}</h1>
+          <p className="text-gray-500">{t("app.subtitle")}</p>
+        </div>
+        <div>
+          <LanguageSwitcher />
+        </div>
       </header>
 
       {!currentUser ? (
         <div className="text-center mt-10">
-          <h2 className="text-2xl font-semibold mb-4">Welcome to the Inventory Management System</h2>
-          <p className="text-gray-600 mb-6">Please log in to access the system features</p>
+          <h2 className="text-2xl font-semibold mb-4">{t("auth.welcome")}</h2>
+          <p className="text-gray-600 mb-6">{t("auth.pleaseLogin")}</p>
           <Button asChild size="lg">
-            <Link to="/login">Login</Link>
+            <Link to="/login">{t("auth.login")}</Link>
           </Button>
         </div>
       ) : (
         <>
           <div className="flex justify-between items-center mb-6">
             <div>
-              <h2 className="text-xl font-semibold">Welcome, {currentUser.username}</h2>
-              <p className="text-sm text-gray-500">Role: {currentUser.role}</p>
+              <h2 className="text-xl font-semibold">{t("common.welcome")}, {currentUser.username}</h2>
+              <p className="text-sm text-gray-500">{t("common.role")}: {currentUser.role}</p>
             </div>
             <Button variant="outline" onClick={handleLogout}>
               <LogOutIcon className="h-4 w-4 mr-2" />
-              Logout
+              {t("auth.logout")}
             </Button>
           </div>
 
@@ -144,7 +152,7 @@ const Index = () => {
                 </CardHeader>
                 <CardFooter>
                   <Button asChild className="w-full">
-                    <Link to={item.href}>Access {item.title}</Link>
+                    <Link to={item.href}>{t("common.view")} {item.title}</Link>
                   </Button>
                 </CardFooter>
               </Card>
@@ -154,11 +162,11 @@ const Index = () => {
       )}
 
       <footer className="mt-12 text-center text-sm text-gray-500">
-        <p>Inventory Management System &copy; {new Date().getFullYear()}</p>
+        <p>{t("footer.copyright")} &copy; {new Date().getFullYear()}</p>
         <p>
-          License Status:{" "}
+          {t("footer.licenseStatus")}:{" "}
           <span className={checkActivation() ? "text-green-500" : "text-red-500"}>
-            {checkActivation() ? "Active" : "Inactive"}
+            {checkActivation() ? t("footer.active") : t("footer.inactive")}
           </span>
         </p>
       </footer>

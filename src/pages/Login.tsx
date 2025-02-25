@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,6 +8,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useUser } from "@/contexts/UserContext";
 import { storage } from "@/lib/storage";
+import { useTranslation } from "react-i18next";
+import { LanguageSwitcher } from "@/components/common/LanguageSwitcher";
 
 const LoginPage = () => {
   const [username, setUsername] = useState("");
@@ -15,6 +17,7 @@ const LoginPage = () => {
   const [error, setError] = useState("");
   const { login } = useUser();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   // Initialize some default users if none exist
   const initializeDefaultUsers = () => {
@@ -41,16 +44,16 @@ const LoginPage = () => {
   };
 
   // Initialize users on component mount
-  useState(() => {
+  useEffect(() => {
     initializeDefaultUsers();
-  });
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
     if (!username || !password) {
-      setError("Username and password are required");
+      setError(t("auth.required"));
       return;
     }
 
@@ -58,17 +61,20 @@ const LoginPage = () => {
     if (success) {
       navigate("/dashboard");
     } else {
-      setError("Invalid username or password");
+      setError(t("auth.invalid"));
     }
   };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <div className="absolute top-4 right-4">
+        <LanguageSwitcher />
+      </div>
       <Card className="w-[350px]">
         <CardHeader>
-          <CardTitle>Login</CardTitle>
+          <CardTitle>{t("auth.login")}</CardTitle>
           <CardDescription>
-            Enter your credentials to access the inventory management system
+            {t("auth.pleaseLogin")}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -79,32 +85,32 @@ const LoginPage = () => {
               </Alert>
             )}
             <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
+              <Label htmlFor="username">{t("auth.username")}</Label>
               <Input
                 id="username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="Enter your username"
+                placeholder={t("auth.enterUsername")}
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">{t("auth.password")}</Label>
               <Input
                 id="password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter your password"
+                placeholder={t("auth.enterPassword")}
               />
             </div>
             <Button type="submit" className="w-full">
-              Login
+              {t("auth.login")}
             </Button>
           </form>
         </CardContent>
         <CardFooter className="text-sm text-gray-500 justify-center">
           <div>
-            Default users: admin/admin123 or manager/manager123
+            {t("auth.defaultUsers")}
           </div>
         </CardFooter>
       </Card>

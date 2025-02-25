@@ -9,6 +9,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Vendor } from "@/types/inventory";
+import { useTranslation } from "react-i18next";
 
 interface VendorListProps {
   vendors: Vendor[];
@@ -17,23 +18,25 @@ interface VendorListProps {
 }
 
 export function VendorList({ vendors, onEdit, onDelete }: VendorListProps) {
+  const { t } = useTranslation();
+  
   return (
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>Name</TableHead>
-          <TableHead>Type</TableHead>
-          <TableHead>Products</TableHead>
-          <TableHead>Contact</TableHead>
-          <TableHead>Status</TableHead>
-          <TableHead>Actions</TableHead>
+          <TableHead>{t("vendors.name")}</TableHead>
+          <TableHead>{t("vendors.type")}</TableHead>
+          <TableHead>{t("vendors.products")}</TableHead>
+          <TableHead>{t("vendors.contact")}</TableHead>
+          <TableHead>{t("vendors.status")}</TableHead>
+          <TableHead>{t("vendors.actions")}</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {vendors.map((vendor) => (
           <TableRow key={vendor.id}>
             <TableCell>{vendor.name}</TableCell>
-            <TableCell className="capitalize">{vendor.type}</TableCell>
+            <TableCell className="capitalize">{t(`vendors.${vendor.type}`)}</TableCell>
             <TableCell>{vendor.products.join(', ')}</TableCell>
             <TableCell>{vendor.email}</TableCell>
             <TableCell>
@@ -44,30 +47,7 @@ export function VendorList({ vendors, onEdit, onDelete }: VendorListProps) {
                     : 'bg-red-100 text-red-800'
                 }`}
               >
-                {vendor.activeContract ? 'Active' : 'Inactive'}
+                {vendor.activeContract ? t("vendors.active") : t("vendors.inactive")}
               </span>
             </TableCell>
-            <TableCell>
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => onEdit(vendor)}
-                >
-                  Edit
-                </Button>
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={() => onDelete(vendor.id)}
-                >
-                  Delete
-                </Button>
-              </div>
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
-  );
-}
+            <TableCell
