@@ -23,6 +23,11 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'flex-end',
   },
+  logo: {
+    width: 80,
+    height: 80,
+    objectFit: 'contain',
+  },
   qrCode: {
     width: 80,
     height: 80,
@@ -144,6 +149,11 @@ const styles = StyleSheet.create({
     color: 'rgba(200, 200, 200, 0.3)',
     transform: 'rotate(-45deg)',
   },
+  logoContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  }
 });
 
 interface InvoicePDFProps {
@@ -199,16 +209,11 @@ export const InvoicePDF = ({ invoice, customerName }: InvoicePDFProps) => {
             {companyPhone && <Text style={styles.companyInfo}>Phone: {companyPhone}</Text>}
             {companyEmail && <Text style={styles.companyInfo}>Email: {companyEmail}</Text>}
           </View>
-          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+          <View style={styles.logoContainer}>
             {companyLogo && (
               <Image
                 src={companyLogo}
-                style={{
-                  width: 100,
-                  height: 100,
-                  objectFit: 'contain',
-                  marginHorizontal: 20,
-                }}
+                style={styles.logo}
               />
             )}
           </View>
