@@ -40,19 +40,21 @@ export function ItemForm({ isOpen, onClose, item, onSave }: ItemFormProps) {
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent>
+        <DialogContent className="max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{item ? "Edit Item" : "Add New Item"}</DialogTitle>
           </DialogHeader>
           <form onSubmit={onSubmit} className="space-y-4">
-            <ItemFormFields
-              formData={formData}
-              onFieldChange={handleFieldChange}
-              onQuantityChange={handleQuantityChange}
-              onGenerateBarcode={generateBarcode}
-              onSupplierManage={() => setIsSupplierManagerOpen(true)}
-              onImageUpload={handleImageUpload}
-            />
+            <div className="space-y-4 py-4">
+              <ItemFormFields
+                formData={formData}
+                onFieldChange={handleFieldChange}
+                onQuantityChange={handleQuantityChange}
+                onGenerateBarcode={generateBarcode}
+                onSupplierManage={() => setIsSupplierManagerOpen(true)}
+                onImageUpload={handleImageUpload}
+              />
+            </div>
             <DialogFooter>
               <Button type="button" variant="outline" onClick={onClose}>
                 Cancel
