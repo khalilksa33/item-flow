@@ -4,6 +4,11 @@ import { Input } from "@/components/ui/input";
 import { InvoiceItemProps } from "./types";
 
 export function InvoiceItemRow({ item, products, onItemChange, onRemove }: InvoiceItemProps) {
+  // Create safe formatting helper to handle potentially undefined values
+  const safeFormat = (value: number | undefined): string => {
+    return (typeof value === 'number') ? value.toFixed(2) : '0.00';
+  };
+  
   return (
     <div className="grid grid-cols-4 gap-2 mb-2">
       <select
@@ -39,10 +44,10 @@ export function InvoiceItemRow({ item, products, onItemChange, onRemove }: Invoi
       <div className="flex items-center gap-2">
         <div className="text-sm space-y-1">
           <div className="text-gray-600">
-            Subtotal: ${item.subtotal.toFixed(2)}
+            Subtotal: ${safeFormat(item.subtotal)}
           </div>
           <div className="text-gray-600">
-            VAT (15%): ${item.vat.toFixed(2)}
+            VAT (15%): ${safeFormat(item.vat)}
           </div>
         </div>
         <Button
