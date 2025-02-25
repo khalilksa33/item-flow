@@ -5,18 +5,32 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Lock } from "lucide-react";
 import { toast } from "sonner";
+import { useUser } from "@/contexts/UserContext";
+import { useTranslation } from "react-i18next";
 
 interface AdminLoginProps {
   onLogin: () => void;
 }
 
 export function AdminLogin({ onLogin }: AdminLoginProps) {
+  const { currentUser } = useUser();
+  const { t } = useTranslation();
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const username = formData.get('username') as string;
     const password = formData.get('password') as string;
 
+    // Check if current user is already admin
+    if (currentUser && currentUser.role === 'admin') {
+      localStorage.setItem('adminAuth', 'true');
+      onLogin();
+      toast.success('Logged in as admin');
+      return;
+    }
+
+    // Traditional admin login
     if (username === 'admin' && password === 'admin123') {
       localStorage.setItem('adminAuth', 'true');
       onLogin();
@@ -32,13 +46,13 @@ export function AdminLogin({ onLogin }: AdminLoginProps) {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Lock className="h-5 w-5" />
-            Admin Login
+            {t("admin.title")}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
+              <Label htmlFor="username">{t("auth.username")}</Label>
               <Input
                 id="username"
                 name="username"
@@ -46,7 +60,7 @@ export function AdminLogin({ onLogin }: AdminLoginProps) {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">{t("auth.password")}</Label>
               <Input
                 id="password"
                 name="password"
@@ -54,7 +68,7 @@ export function AdminLogin({ onLogin }: AdminLoginProps) {
                 required
               />
             </div>
-            <Button type="submit" className="w-full">Login</Button>
+            <Button type="submit" className="w-full">{t("auth.login")}</Button>
           </form>
         </CardContent>
       </Card>

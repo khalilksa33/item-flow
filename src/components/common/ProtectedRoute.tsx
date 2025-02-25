@@ -11,6 +11,11 @@ export function ProtectedRoute({ children, requiredRole = 'viewer' }: ProtectedR
   const { currentUser, isAuthorized } = useUser();
   const location = useLocation();
 
+  // Special case for admin route - check localStorage for adminAuth
+  if (requiredRole === 'admin' && localStorage.getItem('adminAuth') === 'true') {
+    return <>{children}</>;
+  }
+
   if (!currentUser) {
     // Redirect to login if not logged in
     return <Navigate to="/login" state={{ from: location }} replace />;
