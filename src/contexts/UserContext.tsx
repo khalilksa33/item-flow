@@ -1,6 +1,9 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User } from '@/types/inventory';
 import { storage } from '@/lib/storage';
+import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 interface UserContextType {
   currentUser: User | null;
@@ -14,6 +17,7 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const loadUserSession = () => {
@@ -62,15 +66,19 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         localStorage.setItem('adminAuth', 'true');
       }
       
+      toast.success(t('auth.loginSuccess'));
       return true;
     }
+    toast.error(t('auth.invalid'));
     return false;
   };
 
   const logout = () => {
     storage.setCurrentUser(null);
     localStorage.removeItem('adminAuth');
+    localStorage.removeItem('inventory_current_user');
     setCurrentUser(null);
+    toast.success(t('auth.logoutSuccess'));
   };
 
   const isAdmin = () => {
