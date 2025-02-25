@@ -30,8 +30,14 @@ export function useItemForm(item?: InventoryItem, onSave?: () => void) {
       return;
     }
 
-    if (item) {
-      const difference = newQuantity - (item.quantity || 0);
+    // Ensure we're dealing with numbers for calculation
+    const oldQuantity = Number(item?.quantity || 0);
+    newQuantity = Number(newQuantity);
+    
+    // Calculate difference for stock movement
+    const difference = newQuantity - oldQuantity;
+    
+    if (difference !== 0) {
       const movement: StockMovement = {
         id: crypto.randomUUID(),
         date: new Date().toISOString(),
@@ -46,7 +52,15 @@ export function useItemForm(item?: InventoryItem, onSave?: () => void) {
         quantity: newQuantity,
         stockMovements: [...(formData.stockMovements || []), movement],
       });
+      
+      console.log("Quantity updated:", {
+        oldQuantity,
+        newQuantity,
+        difference,
+        movement
+      });
     } else {
+      // Even if the value hasn't changed, update the formData to ensure UI consistency
       setFormData({ ...formData, quantity: newQuantity });
     }
   };
@@ -80,15 +94,16 @@ export function useItemForm(item?: InventoryItem, onSave?: () => void) {
       return;
     }
 
+    // Ensure we're working with the correct data types
     const newItem: InventoryItem = {
       id: item?.id || crypto.randomUUID(),
       name: formData.name!,
       description: formData.description!,
-      quantity: formData.quantity!,
+      quantity: Number(formData.quantity!), // Ensure it's a number
       category: formData.category!,
-      minQuantity: formData.minQuantity!,
+      minQuantity: Number(formData.minQuantity!), // Ensure it's a number
       lastUpdated: new Date().toISOString(),
-      cost: formData.cost,
+      cost: Number(formData.cost || 0), // Ensure it's a number
       imageUrl: formData.imageUrl,
       stockMovements: formData.stockMovements || [],
       barcode: formData.barcode,
@@ -96,6 +111,8 @@ export function useItemForm(item?: InventoryItem, onSave?: () => void) {
       supplierId: formData.supplierId,
       lastModifiedBy: currentUser.id
     };
+
+    console.log("Saving item:", newItem);
 
     if (item) {
       storage.updateItem(newItem);
