@@ -7,6 +7,8 @@ import { InventoryList } from "@/components/InventoryList";
 import { storage } from "@/lib/storage";
 import { InventoryItem } from "@/types/inventory";
 import { toast } from "sonner";
+import { Home } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const InventoryPage = () => {
   const [items, setItems] = useState<InventoryItem[]>(storage.getItems());
@@ -36,6 +38,14 @@ const InventoryPage = () => {
 
   return (
     <div className="container mx-auto p-6">
+      <div className="mb-6">
+        <Link to="/">
+          <Button variant="ghost" size="sm" className="mb-4">
+            <Home className="h-4 w-4 mr-2" />
+            Back to Home
+          </Button>
+        </Link>
+      </div>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Inventory Management</h1>
         <Button onClick={() => {
