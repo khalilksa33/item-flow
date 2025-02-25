@@ -9,6 +9,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Customer } from "@/types/inventory";
+import { useTranslation } from "react-i18next";
 
 interface CustomerListProps {
   customers: Customer[];
@@ -17,22 +18,24 @@ interface CustomerListProps {
 }
 
 export function CustomerList({ customers, onEdit, onDelete }: CustomerListProps) {
+  const { t } = useTranslation();
+
   return (
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>Name</TableHead>
-          <TableHead>Type</TableHead>
-          <TableHead>Email</TableHead>
-          <TableHead>Phone</TableHead>
-          <TableHead>Actions</TableHead>
+          <TableHead>{t("customers.name")}</TableHead>
+          <TableHead>{t("customers.type")}</TableHead>
+          <TableHead>{t("customers.email")}</TableHead>
+          <TableHead>{t("customers.phone")}</TableHead>
+          <TableHead>{t("common.actions")}</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {customers.map((customer) => (
           <TableRow key={customer.id}>
             <TableCell>{customer.name}</TableCell>
-            <TableCell className="capitalize">{customer.type}</TableCell>
+            <TableCell className="capitalize">{t(`customers.${customer.type}`)}</TableCell>
             <TableCell>{customer.email}</TableCell>
             <TableCell>{customer.phone}</TableCell>
             <TableCell>
@@ -42,14 +45,14 @@ export function CustomerList({ customers, onEdit, onDelete }: CustomerListProps)
                   size="sm"
                   onClick={() => onEdit(customer)}
                 >
-                  Edit
+                  {t("common.edit")}
                 </Button>
                 <Button
                   variant="destructive"
                   size="sm"
                   onClick={() => onDelete(customer.id)}
                 >
-                  Delete
+                  {t("common.delete")}
                 </Button>
               </div>
             </TableCell>

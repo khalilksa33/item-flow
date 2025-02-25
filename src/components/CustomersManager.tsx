@@ -12,11 +12,13 @@ import { Customer } from "@/types/inventory";
 import { toast } from "sonner";
 import { CustomerForm } from "./customers/CustomerForm";
 import { CustomerList } from "./customers/CustomerList";
+import { useTranslation } from "react-i18next";
 
 export function CustomersManager() {
   const [customers, setCustomers] = useState<Customer[]>(storage.getCustomers());
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
+  const { t } = useTranslation();
 
   const loadCustomers = () => {
     setCustomers(storage.getCustomers());
@@ -32,10 +34,10 @@ export function CustomersManager() {
 
     if (editingCustomer) {
       storage.updateCustomer(customerData);
-      toast.success("Customer updated successfully");
+      toast.success(t("customers.customerUpdated"));
     } else {
       storage.addCustomer(customerData);
-      toast.success("Customer added successfully");
+      toast.success(t("customers.customerAdded"));
     }
 
     loadCustomers();
@@ -51,18 +53,18 @@ export function CustomersManager() {
   const handleDelete = (id: string) => {
     storage.deleteCustomer(id);
     loadCustomers();
-    toast.success("Customer deleted successfully");
+    toast.success(t("customers.customerDeleted"));
   };
 
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Customers</h2>
+        <h2 className="text-2xl font-bold">{t("customers.title")}</h2>
         <Button onClick={() => {
           setEditingCustomer(null);
           setIsDialogOpen(true);
         }}>
-          Add Customer
+          {t("customers.addCustomer")}
         </Button>
       </div>
 
@@ -76,7 +78,7 @@ export function CustomersManager() {
         <DialogContent className="max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {editingCustomer ? "Edit Customer" : "Add New Customer"}
+              {editingCustomer ? t("customers.editCustomer") : t("customers.addNewCustomer")}
             </DialogTitle>
           </DialogHeader>
           <div className="overflow-y-auto pr-1">

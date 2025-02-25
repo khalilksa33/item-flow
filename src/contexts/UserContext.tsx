@@ -19,32 +19,27 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const { t } = useTranslation();
 
+  // Load user session on mount and when storage changes
   useEffect(() => {
     const loadUserSession = () => {
       const storedUser = storage.getCurrentUser();
       if (storedUser) {
         setCurrentUser(storedUser);
-      } else if (localStorage.getItem('adminAuth') === 'true') {
-        const adminUser = storage.getUsers().find(u => u.role === 'admin');
-        if (adminUser) {
-          setCurrentUser(adminUser);
-        }
       }
     };
 
+    // Initial load
     loadUserSession();
 
+    // Set up storage event listener
     const handleStorageChange = (event: StorageEvent) => {
-      if (event.key === 'inventory_current_user' || event.key === 'adminAuth') {
+      if (event.key === 'inventory_current_user') {
         loadUserSession();
       }
     };
 
     window.addEventListener('storage', handleStorageChange);
-    
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-    };
+    return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
   const login = (username: string, password: string): boolean => {
@@ -60,6 +55,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       };
       storage.updateUser(updatedUser);
       storage.setCurrentUser(updatedUser);
+      localStorage.setItem('inventory_current_user', JSON.stringify(updatedUser));
       setCurrentUser(updatedUser);
       
       if (user.role === 'admin') {
@@ -86,15 +82,18 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   };
 
   const isAuthorized = (requiredRole: 'admin' | 'manager' | 'viewer'): boolean => {
+    const storedUser = storage.getCurrentUser();
+    if (!storedUser && !currentUser) return false;
+    
+    const userToCheck = storedUser || currentUser;
+    
     if (requiredRole === 'admin' && localStorage.getItem('adminAuth') === 'true') {
       return true;
     }
     
-    if (!currentUser) return false;
-    
-    if (currentUser.role === 'admin') return true;
-    if (currentUser.role === 'manager' && requiredRole !== 'admin') return true;
-    if (currentUser.role === 'viewer' && requiredRole === 'viewer') return true;
+    if (userToCheck?.role === 'admin') return true;
+    if (userToCheck?.role === 'manager' && requiredRole !== 'admin') return true;
+    if (userToCheck?.role === 'viewer' && requiredRole === 'viewer') return true;
     
     return false;
   };
