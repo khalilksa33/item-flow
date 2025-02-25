@@ -9,11 +9,13 @@ import { InventoryItem } from "@/types/inventory";
 import { toast } from "sonner";
 import { Home } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const InventoryPage = () => {
   const [items, setItems] = useState<InventoryItem[]>(storage.getItems());
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<InventoryItem | null>(null);
+  const { t } = useTranslation();
 
   const loadItems = () => {
     setItems(storage.getItems());
@@ -33,7 +35,7 @@ const InventoryPage = () => {
   const handleDelete = (id: string) => {
     storage.deleteItem(id);
     loadItems();
-    toast.success("Item deleted successfully");
+    toast.success(t("inventory.itemDeleted"));
   };
 
   return (
@@ -42,17 +44,17 @@ const InventoryPage = () => {
         <Link to="/">
           <Button variant="ghost" size="sm" className="mb-4">
             <Home className="h-4 w-4 mr-2" />
-            Back to Home
+            {t("common.back")}
           </Button>
         </Link>
       </div>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Inventory Management</h1>
+        <h1 className="text-3xl font-bold">{t("inventory.title")}</h1>
         <Button onClick={() => {
           setEditingItem(null);
           setIsDialogOpen(true);
         }}>
-          Add Item
+          {t("inventory.addItem")}
         </Button>
       </div>
 
@@ -64,7 +66,7 @@ const InventoryPage = () => {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {editingItem ? "Edit Item" : "Add New Item"}
+              {editingItem ? t("inventory.edit") : t("inventory.addItem")}
             </DialogTitle>
           </DialogHeader>
           <ItemForm
