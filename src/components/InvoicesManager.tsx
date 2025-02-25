@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import {
   Dialog,
@@ -19,6 +18,10 @@ import { storage } from "@/lib/storage";
 import { Invoice, Customer, InventoryItem, Quotation } from "@/types/inventory";
 import { toast } from "sonner";
 import { InvoiceForm } from "./invoices/InvoiceForm";
+import { PDFDownloadLink } from '@react-pdf/renderer';
+import { Printer, Receipt } from "lucide-react";
+import { InvoicePDF } from "./documents/InvoicePDF";
+import { ReceiptPDF } from "./documents/ReceiptPDF";
 
 export function InvoicesManager() {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
@@ -74,6 +77,35 @@ export function InvoicesManager() {
     return customers.find(c => c.id === customerId)?.name || 'Unknown Customer';
   };
 
+  const handlePrint = (invoice: Invoice, type: 'invoice' | 'receipt' = 'invoice') => {
+    const customerName = customers.find(c => c.id === invoice.customerId)?.name || 'Unknown Customer';
+    const Document = type === 'invoice' 
+      ? <InvoicePDF invoice={invoice} customerName={customerName} />
+      : <ReceiptPDF invoice={invoice} customerName={customerName} />;
+    
+    return (
+      <PDFDownloadLink
+        document={Document}
+        fileName={`${type}-${invoice.id.slice(0, 8)}.pdf`}
+      >
+        {({ loading }) => (
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={loading}
+          >
+            {type === 'invoice' ? (
+              <Printer className="h-4 w-4 mr-2" />
+            ) : (
+              <Receipt className="h-4 w-4 mr-2" />
+            )}
+            {type === 'invoice' ? 'Print Invoice' : 'Print Receipt'}
+          </Button>
+        )}
+      </PDFDownloadLink>
+    );
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
@@ -116,6 +148,8 @@ export function InvoicesManager() {
               <TableCell>{new Date(invoice.paymentDue).toLocaleDateString()}</TableCell>
               <TableCell>
                 <div className="flex gap-2">
+                  {handlePrint(invoice, 'invoice')}
+                  {invoice.status === 'paid' && handlePrint(invoice, 'receipt')}
                   <Button
                     variant="outline"
                     size="sm"

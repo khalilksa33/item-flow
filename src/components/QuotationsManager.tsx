@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import {
   Dialog,
@@ -19,6 +18,9 @@ import { storage } from "@/lib/storage";
 import { Quotation, Customer, InventoryItem } from "@/types/inventory";
 import { toast } from "sonner";
 import { QuotationForm } from "./quotations/QuotationForm";
+import { PDFDownloadLink } from '@react-pdf/renderer';
+import { Printer } from "lucide-react";
+import { QuotationPDF } from "./documents/QuotationPDF";
 
 export function QuotationsManager() {
   const [quotations, setQuotations] = useState<Quotation[]>([]);
@@ -72,6 +74,27 @@ export function QuotationsManager() {
     return customers.find(c => c.id === customerId)?.name || 'Unknown Customer';
   };
 
+  const handlePrint = (quotation: Quotation) => {
+    const customerName = customers.find(c => c.id === quotation.customerId)?.name || 'Unknown Customer';
+    return (
+      <PDFDownloadLink
+        document={<QuotationPDF quotation={quotation} customerName={customerName} />}
+        fileName={`quotation-${quotation.id.slice(0, 8)}.pdf`}
+      >
+        {({ loading }) => (
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={loading}
+          >
+            <Printer className="h-4 w-4 mr-2" />
+            Print
+          </Button>
+        )}
+      </PDFDownloadLink>
+    );
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
@@ -114,6 +137,7 @@ export function QuotationsManager() {
               <TableCell>{new Date(quotation.validUntil).toLocaleDateString()}</TableCell>
               <TableCell>
                 <div className="flex gap-2">
+                  {handlePrint(quotation)}
                   <Button
                     variant="outline"
                     size="sm"
