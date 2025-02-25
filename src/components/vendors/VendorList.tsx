@@ -50,4 +50,28 @@ export function VendorList({ vendors, onEdit, onDelete }: VendorListProps) {
                 {vendor.activeContract ? t("vendors.active") : t("vendors.inactive")}
               </span>
             </TableCell>
-            <TableCell
+            <TableCell>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => onEdit(vendor)}
+                >
+                  {t("common.edit")}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="text-red-500 hover:text-red-700"
+                  onClick={() => onDelete(vendor.id)}
+                >
+                  {t("common.delete")}
+                </Button>
+              </div>
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  );
+}
