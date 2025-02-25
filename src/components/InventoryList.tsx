@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { InventoryItem } from "@/types/inventory";
 import { storage } from "@/lib/storage";
@@ -22,6 +23,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useTranslation } from "react-i18next";
 
 export function InventoryList() {
   const [items, setItems] = useState<InventoryItem[]>([]);
@@ -31,6 +33,7 @@ export function InventoryList() {
   const [isCategoryManagerOpen, setIsCategoryManagerOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<InventoryItem | undefined>();
   const [isDetailViewOpen, setIsDetailViewOpen] = useState(false);
+  const { t } = useTranslation();
 
   useEffect(() => {
     loadItems();
@@ -46,8 +49,8 @@ export function InventoryList() {
   const checkLowStockItems = (items: InventoryItem[]) => {
     const lowStockItems = items.filter(item => item.quantity <= item.minQuantity);
     if (lowStockItems.length > 0) {
-      toast.warning(`${lowStockItems.length} items are low in stock!`, {
-        description: "Check your inventory levels"
+      toast.warning(t("inventory.lowStockWarning", { count: lowStockItems.length }), {
+        description: t("inventory.checkLevels")
       });
     }
   };
@@ -73,7 +76,7 @@ export function InventoryList() {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    toast.success("Inventory data exported successfully as CSV");
+    toast.success(t("inventory.exportSuccess"));
   };
 
   const handleImport = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -86,12 +89,12 @@ export function InventoryList() {
           const success = storage.importFromCSV(csvContent);
           if (success) {
             loadItems();
-            toast.success("Inventory data imported successfully from CSV");
+            toast.success(t("inventory.importSuccess"));
           } else {
-            toast.error("Error importing data. Please check the CSV format.");
+            toast.error(t("inventory.importError"));
           }
         } catch (error) {
-          toast.error("Error importing data. Please check the file format.");
+          toast.error(t("inventory.importFormatError"));
         }
       };
       reader.readAsText(file);
@@ -101,14 +104,14 @@ export function InventoryList() {
   useEffect(() => {
     const checkAppActivation = () => {
       if (!storage.checkActivation()) {
-        toast.error("Your application license has expired. Please renew to continue using the system.");
+        toast.error(t("inventory.licenseExpired"));
       }
     };
 
     checkAppActivation();
     const interval = setInterval(checkAppActivation, 1000 * 60 * 60); // Check every hour
     return () => clearInterval(interval);
-  }, []);
+  }, [t]);
 
   const handleEditItem = (item: InventoryItem) => {
     setSelectedItem(item);
@@ -124,25 +127,25 @@ export function InventoryList() {
     <div className="p-6 space-y-6">
       {!storage.checkActivation() && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
-          <strong className="font-bold">License Expired!</strong>
-          <span className="block sm:inline"> Your application license has expired. Please contact support to renew.</span>
+          <strong className="font-bold">{t("inventory.licenseExpired")}</strong>
+          <span className="block sm:inline"> {t("inventory.licenseMessage")}</span>
         </div>
       )}
       
       <div className="flex justify-between items-center flex-wrap gap-4">
-        <h1 className="text-3xl font-bold">Inventory Items</h1>
+        <h1 className="text-3xl font-bold">{t("inventory.title")}</h1>
         <div className="flex gap-2">
           <Button onClick={() => setIsCategoryManagerOpen(true)}>
             <Tags className="h-4 w-4 mr-2" />
-            Categories
+            {t("inventory.categories")}
           </Button>
           <Button onClick={handleExport}>
             <Download className="h-4 w-4 mr-2" />
-            Export
+            {t("inventory.export")}
           </Button>
           <Button onClick={() => document.getElementById('import-file')?.click()}>
             <Upload className="h-4 w-4 mr-2" />
-            Import
+            {t("inventory.import")}
           </Button>
           <input
             id="import-file"
@@ -153,7 +156,7 @@ export function InventoryList() {
           />
           <Button onClick={() => setIsItemFormOpen(true)}>
             <Plus className="h-4 w-4 mr-2" />
-            Add Item
+            {t("inventory.addItem")}
           </Button>
         </div>
       </div>
@@ -162,7 +165,7 @@ export function InventoryList() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Package2 className="h-5 w-5" />
-            Items List
+            {t("inventory.itemsList")}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -170,7 +173,7 @@ export function InventoryList() {
             <div className="relative">
               <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search items..."
+                placeholder={t("inventory.searchItems")}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-8"
@@ -181,14 +184,14 @@ export function InventoryList() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Description</TableHead>
-                <TableHead>Quantity</TableHead>
-                <TableHead>Min. Quantity</TableHead>
-                <TableHead>Price</TableHead>
-                <TableHead>Last Updated</TableHead>
-                <TableHead>Actions</TableHead>
+                <TableHead>{t("inventory.name")}</TableHead>
+                <TableHead>{t("inventory.category")}</TableHead>
+                <TableHead>{t("common.description")}</TableHead>
+                <TableHead>{t("inventory.quantity")}</TableHead>
+                <TableHead>{t("inventory.minQuantity")}</TableHead>
+                <TableHead>{t("inventory.price")}</TableHead>
+                <TableHead>{t("inventory.lastUpdated")}</TableHead>
+                <TableHead>{t("inventory.actions")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -226,7 +229,7 @@ export function InventoryList() {
                       size="sm"
                       onClick={() => handleEditItem(item)}
                     >
-                      Edit
+                      {t("common.edit")}
                     </Button>
                   </TableCell>
                 </TableRow>
@@ -262,30 +265,30 @@ export function InventoryList() {
             </DialogHeader>
             <div className="space-y-4">
               <div>
-                <h4 className="font-semibold">Description</h4>
+                <h4 className="font-semibold">{t("common.description")}</h4>
                 <p>{selectedItem.description}</p>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <h4 className="font-semibold">Category</h4>
+                  <h4 className="font-semibold">{t("inventory.category")}</h4>
                   <p>{selectedItem.category}</p>
                 </div>
                 <div>
-                  <h4 className="font-semibold">Current Stock</h4>
+                  <h4 className="font-semibold">{t("inventory.currentStock")}</h4>
                   <p className={selectedItem.quantity <= selectedItem.minQuantity ? "text-red-500" : ""}>
                     {selectedItem.quantity}
                   </p>
                 </div>
                 <div>
-                  <h4 className="font-semibold">Minimum Stock Level</h4>
+                  <h4 className="font-semibold">{t("inventory.minimumStock")}</h4>
                   <p>{selectedItem.minQuantity}</p>
                 </div>
                 <div>
-                  <h4 className="font-semibold">Price</h4>
+                  <h4 className="font-semibold">{t("inventory.price")}</h4>
                   <p>${selectedItem.cost ? selectedItem.cost.toFixed(2) : '0.00'}</p>
                 </div>
                 <div>
-                  <h4 className="font-semibold">Last Updated</h4>
+                  <h4 className="font-semibold">{t("inventory.lastUpdated")}</h4>
                   <p>{new Date(selectedItem.lastUpdated).toLocaleDateString()}</p>
                 </div>
               </div>
@@ -295,13 +298,13 @@ export function InventoryList() {
       )}
 
       <div className="text-sm text-muted-foreground">
-        <h2 className="font-semibold mb-2">Quick Tips</h2>
+        <h2 className="font-semibold mb-2">{t("inventory.quickTips")}</h2>
         <ul className="list-disc pl-5 space-y-1">
-          <li>Click on an item's name to view detailed information</li>
-          <li>Use the search bar to filter items by name, category, or description</li>
-          <li>Items highlighted in red indicate low stock levels</li>
-          <li>Export your data regularly to keep a backup</li>
-          <li>Use the Categories button to manage your item categories</li>
+          <li>{t("inventory.tipClickName")}</li>
+          <li>{t("inventory.tipSearch")}</li>
+          <li>{t("inventory.tipLowStock")}</li>
+          <li>{t("inventory.tipExport")}</li>
+          <li>{t("inventory.tipCategories")}</li>
         </ul>
       </div>
     </div>

@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User } from '@/types/inventory';
 import { storage } from '@/lib/storage';
@@ -17,11 +16,31 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
 
   useEffect(() => {
-    // Check for stored user session
-    const storedUser = storage.getCurrentUser();
-    if (storedUser) {
-      setCurrentUser(storedUser);
-    }
+    const loadUserSession = () => {
+      const storedUser = storage.getCurrentUser();
+      if (storedUser) {
+        setCurrentUser(storedUser);
+      } else if (localStorage.getItem('adminAuth') === 'true') {
+        const adminUser = storage.getUsers().find(u => u.role === 'admin');
+        if (adminUser) {
+          setCurrentUser(adminUser);
+        }
+      }
+    };
+
+    loadUserSession();
+
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key === 'inventory_current_user' || event.key === 'adminAuth') {
+        loadUserSession();
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, []);
 
   const login = (username: string, password: string): boolean => {
@@ -31,7 +50,6 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     );
 
     if (user) {
-      // Update last login time
       const updatedUser = {
         ...user,
         lastLogin: new Date().toISOString(),
@@ -39,6 +57,11 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       storage.updateUser(updatedUser);
       storage.setCurrentUser(updatedUser);
       setCurrentUser(updatedUser);
+      
+      if (user.role === 'admin') {
+        localStorage.setItem('adminAuth', 'true');
+      }
+      
       return true;
     }
     return false;
@@ -46,17 +69,21 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
   const logout = () => {
     storage.setCurrentUser(null);
+    localStorage.removeItem('adminAuth');
     setCurrentUser(null);
   };
 
   const isAdmin = () => {
-    return currentUser?.role === 'admin';
+    return currentUser?.role === 'admin' || localStorage.getItem('adminAuth') === 'true';
   };
 
   const isAuthorized = (requiredRole: 'admin' | 'manager' | 'viewer'): boolean => {
+    if (requiredRole === 'admin' && localStorage.getItem('adminAuth') === 'true') {
+      return true;
+    }
+    
     if (!currentUser) return false;
     
-    // Simple role hierarchy: admin > manager > viewer
     if (currentUser.role === 'admin') return true;
     if (currentUser.role === 'manager' && requiredRole !== 'admin') return true;
     if (currentUser.role === 'viewer' && requiredRole === 'viewer') return true;
