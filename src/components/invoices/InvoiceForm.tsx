@@ -6,6 +6,9 @@ import { Label } from "@/components/ui/label";
 import { InvoiceFormProps } from "./types";
 import { InvoiceItem } from "@/types/inventory";
 import { InvoiceItemRow } from "./InvoiceItemRow";
+import { CustomerQuotationSelect } from "./CustomerQuotationSelect";
+import { PaymentDetails } from "./PaymentDetails";
+import { InvoiceTotals } from "./InvoiceTotals";
 
 const VAT_RATE = 0.15;
 
@@ -90,6 +93,11 @@ export function InvoiceForm({
     }
   };
 
+  const handleCustomerChange = (customerId: string) => {
+    setSelectedCustomer(customerId);
+    setSelectedQuotation(""); // Reset quotation when customer changes
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const { subtotal, vatAmount, total } = calculateTotals(invoiceItems);
@@ -108,79 +116,25 @@ export function InvoiceForm({
     });
   };
 
-  // Filter accepted quotations for the selected customer
-  const acceptedQuotations = quotations.filter(q => 
-    q.status === 'accepted' && 
-    (!selectedCustomer || q.customerId === selectedCustomer)
-  );
+  const totals = calculateTotals(invoiceItems);
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <Label htmlFor="customer">Customer</Label>
-          <select
-            id="customer"
-            className="w-full rounded-md border border-input bg-background px-3 py-2"
-            value={selectedCustomer}
-            onChange={(e) => {
-              setSelectedCustomer(e.target.value);
-              setSelectedQuotation(""); // Reset quotation when customer changes
-            }}
-            required
-          >
-            <option value="">Select Customer</option>
-            {customers.map(customer => (
-              <option key={customer.id} value={customer.id}>
-                {customer.name}
-              </option>
-            ))}
-          </select>
-        </div>
+      <CustomerQuotationSelect
+        customers={customers}
+        quotations={quotations}
+        selectedCustomer={selectedCustomer}
+        selectedQuotation={selectedQuotation}
+        onCustomerChange={handleCustomerChange}
+        onQuotationChange={handleQuotationSelect}
+      />
 
-        <div>
-          <Label htmlFor="quotation">From Quotation (Optional)</Label>
-          <select
-            id="quotation"
-            className="w-full rounded-md border border-input bg-background px-3 py-2"
-            value={selectedQuotation}
-            onChange={(e) => handleQuotationSelect(e.target.value)}
-          >
-            <option value="">Select Quotation</option>
-            {acceptedQuotations.map(quotation => {
-              const customer = customers.find(c => c.id === quotation.customerId);
-              return (
-                <option key={quotation.id} value={quotation.id}>
-                  {customer?.name} - ${quotation.total.toFixed(2)}
-                </option>
-              );
-            })}
-          </select>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <Label htmlFor="paymentDue">Payment Due Date</Label>
-          <Input
-            id="paymentDue"
-            type="date"
-            value={paymentDue}
-            onChange={(e) => setPaymentDue(e.target.value)}
-            required
-          />
-        </div>
-
-        <div>
-          <Label htmlFor="paymentTerms">Payment Terms</Label>
-          <Input
-            id="paymentTerms"
-            value={paymentTerms}
-            onChange={(e) => setPaymentTerms(e.target.value)}
-            placeholder="e.g., Net 30"
-          />
-        </div>
-      </div>
+      <PaymentDetails
+        paymentDue={paymentDue}
+        paymentTerms={paymentTerms}
+        onPaymentDueChange={setPaymentDue}
+        onPaymentTermsChange={setPaymentTerms}
+      />
 
       <div>
         <div className="flex justify-between items-center mb-2">
@@ -212,17 +166,11 @@ export function InvoiceForm({
         />
       </div>
 
-      <div className="text-right space-y-1">
-        <div className="text-gray-600">
-          Subtotal: ${calculateTotals(invoiceItems).subtotal.toFixed(2)}
-        </div>
-        <div className="text-gray-600">
-          VAT (15%): ${calculateTotals(invoiceItems).vatAmount.toFixed(2)}
-        </div>
-        <div className="text-lg font-semibold">
-          Total: ${calculateTotals(invoiceItems).total.toFixed(2)}
-        </div>
-      </div>
+      <InvoiceTotals
+        subtotal={totals.subtotal}
+        vatAmount={totals.vatAmount}
+        total={totals.total}
+      />
 
       <div className="flex justify-end gap-2">
         <Button type="button" variant="outline" onClick={onCancel}>
