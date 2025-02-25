@@ -39,7 +39,7 @@ const AdminPage = () => {
           </TabsList>
 
           <TabsContent value="users">
-            <UserManager />
+            <UserManager standalone={true} />
           </TabsContent>
           <TabsContent value="company">
             <CompanySettings />

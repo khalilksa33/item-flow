@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,16 +19,19 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 interface UserManagerProps {
-  isOpen: boolean;
-  onClose: () => void;
+  isOpen?: boolean;
+  onClose?: () => void;
+  standalone?: boolean;
 }
 
-export function UserManager({ isOpen, onClose }: UserManagerProps) {
+export function UserManager({ isOpen, onClose, standalone = false }: UserManagerProps) {
   const [users, setUsers] = useState<User[]>([]);
   const [editingUser, setEditingUser] = useState<User | undefined>();
   const [formData, setFormData] = useState<Partial<User>>({});
+  const { t } = useTranslation();
 
   useEffect(() => {
     loadUsers();
@@ -50,10 +52,10 @@ export function UserManager({ isOpen, onClose }: UserManagerProps) {
 
     if (editingUser) {
       storage.updateUser(userData);
-      toast.success("User updated successfully");
+      toast.success(t("admin.userUpdated"));
     } else {
       storage.addUser(userData);
-      toast.success("User added successfully");
+      toast.success(t("admin.userAdded"));
     }
 
     setEditingUser(undefined);
@@ -64,93 +66,102 @@ export function UserManager({ isOpen, onClose }: UserManagerProps) {
   const handleDelete = (id: string) => {
     storage.deleteUser(id);
     loadUsers();
-    toast.success("User deleted successfully");
+    toast.success(t("admin.userDeleted"));
   };
+
+  const userManagerContent = (
+    <>
+      <form onSubmit={handleSubmit} className="space-y-4 mb-4">
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="username">{t("auth.username")}</Label>
+            <Input
+              id="username"
+              value={formData.username || ""}
+              onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+              required
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="password">{t("auth.password")}</Label>
+            <Input
+              id="password"
+              type="password"
+              value={formData.password || ""}
+              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+              required={!editingUser}
+              placeholder={editingUser ? t("admin.leaveBlankToKeep") : ""}
+            />
+          </div>
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="role">{t("common.role")}</Label>
+          <select
+            id="role"
+            className="w-full rounded-md border border-input bg-background px-3 py-2"
+            value={formData.role || "viewer"}
+            onChange={(e) => setFormData({ ...formData, role: e.target.value as User['role'] })}
+            required
+          >
+            <option value="viewer">Viewer</option>
+            <option value="manager">Manager</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+        <Button type="submit">
+          {editingUser ? t("common.update") : t("common.add")} {t("admin.user")}
+        </Button>
+      </form>
+
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>{t("auth.username")}</TableHead>
+            <TableHead>{t("common.role")}</TableHead>
+            <TableHead>{t("common.actions")}</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {users.map((user) => (
+            <TableRow key={user.id}>
+              <TableCell>{user.username}</TableCell>
+              <TableCell className="capitalize">{user.role}</TableCell>
+              <TableCell>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setEditingUser(user)}
+                  >
+                    {t("common.edit")}
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => handleDelete(user.id)}
+                  >
+                    {t("common.delete")}
+                  </Button>
+                </div>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </>
+  );
+
+  if (standalone) {
+    return <div className="space-y-6">{userManagerContent}</div>;
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl">
         <DialogHeader>
-          <DialogTitle>Manage Users</DialogTitle>
+          <DialogTitle>{t("admin.manageUsers")}</DialogTitle>
         </DialogHeader>
-
-        <form onSubmit={handleSubmit} className="space-y-4 mb-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
-              <Input
-                id="username"
-                value={formData.username || ""}
-                onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                value={formData.password || ""}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                required={!editingUser}
-                placeholder={editingUser ? "Leave blank to keep current" : ""}
-              />
-            </div>
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="role">Role</Label>
-            <select
-              id="role"
-              className="w-full rounded-md border border-input bg-background px-3 py-2"
-              value={formData.role || "viewer"}
-              onChange={(e) => setFormData({ ...formData, role: e.target.value as User['role'] })}
-              required
-            >
-              <option value="viewer">Viewer</option>
-              <option value="manager">Manager</option>
-              <option value="admin">Admin</option>
-            </select>
-          </div>
-          <Button type="submit">
-            {editingUser ? "Update" : "Add"} User
-          </Button>
-        </form>
-
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Username</TableHead>
-              <TableHead>Role</TableHead>
-              <TableHead>Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {users.map((user) => (
-              <TableRow key={user.id}>
-                <TableCell>{user.username}</TableCell>
-                <TableCell className="capitalize">{user.role}</TableCell>
-                <TableCell>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setEditingUser(user)}
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      onClick={() => handleDelete(user.id)}
-                    >
-                      Delete
-                    </Button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+        {userManagerContent}
       </DialogContent>
     </Dialog>
   );
