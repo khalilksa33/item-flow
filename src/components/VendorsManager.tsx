@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { VendorList } from "./vendors/VendorList";
 import { VendorDialog } from "./vendors/VendorDialog";
 import { useVendors } from "./vendors/useVendors";
+import { useTranslation } from "react-i18next";
 
 export function VendorsManager() {
   const {
@@ -17,13 +18,15 @@ export function VendorsManager() {
     handleDelete,
     openAddDialog,
   } = useVendors();
+  
+  const { t } = useTranslation();
 
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Vendors</h2>
+        <h2 className="text-2xl font-bold">{t("vendors.title")}</h2>
         <Button onClick={openAddDialog}>
-          Add Vendor
+          {t("vendors.addVendor")}
         </Button>
       </div>
 
