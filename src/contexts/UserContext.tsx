@@ -19,27 +19,18 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const { t } = useTranslation();
 
-  // Load user session on mount and when storage changes
+  // Load user session on mount
   useEffect(() => {
-    const loadUserSession = () => {
-      const storedUser = storage.getCurrentUser();
-      if (storedUser) {
-        setCurrentUser(storedUser);
+    // Check localStorage directly for user info
+    const userJson = localStorage.getItem('inventory_current_user');
+    if (userJson) {
+      try {
+        const user = JSON.parse(userJson);
+        setCurrentUser(user);
+      } catch (e) {
+        console.error("Failed to parse user data from localStorage:", e);
       }
-    };
-
-    // Initial load
-    loadUserSession();
-
-    // Set up storage event listener
-    const handleStorageChange = (event: StorageEvent) => {
-      if (event.key === 'inventory_current_user') {
-        loadUserSession();
-      }
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
+    }
   }, []);
 
   const login = (username: string, password: string): boolean => {
@@ -53,8 +44,11 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         ...user,
         lastLogin: new Date().toISOString(),
       };
+      
+      // Update in storage
       storage.updateUser(updatedUser);
-      storage.setCurrentUser(updatedUser);
+      
+      // Set in both localStorage and state
       localStorage.setItem('inventory_current_user', JSON.stringify(updatedUser));
       setCurrentUser(updatedUser);
       
@@ -65,35 +59,76 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       toast.success(t('auth.loginSuccess'));
       return true;
     }
+    
     toast.error(t('auth.invalid'));
     return false;
   };
 
   const logout = () => {
-    storage.setCurrentUser(null);
-    localStorage.removeItem('adminAuth');
+    // Clear from localStorage first
     localStorage.removeItem('inventory_current_user');
+    localStorage.removeItem('adminAuth');
+    
+    // Then clear state
     setCurrentUser(null);
+    
+    // Finally, clear from storage
+    storage.setCurrentUser(null);
+    
     toast.success(t('auth.logoutSuccess'));
   };
 
   const isAdmin = () => {
-    return currentUser?.role === 'admin' || localStorage.getItem('adminAuth') === 'true';
+    // First check localStorage for admin status
+    if (localStorage.getItem('adminAuth') === 'true') {
+      return true;
+    }
+    
+    // Then check current user
+    if (currentUser?.role === 'admin') {
+      return true;
+    }
+    
+    // Finally check localStorage for user data
+    const userJson = localStorage.getItem('inventory_current_user');
+    if (userJson) {
+      try {
+        const user = JSON.parse(userJson);
+        return user.role === 'admin';
+      } catch (e) {
+        console.error("Failed to parse user data in isAdmin:", e);
+      }
+    }
+    
+    return false;
   };
 
   const isAuthorized = (requiredRole: 'admin' | 'manager' | 'viewer'): boolean => {
-    const storedUser = storage.getCurrentUser();
-    if (!storedUser && !currentUser) return false;
-    
-    const userToCheck = storedUser || currentUser;
-    
+    // First check admin override
     if (requiredRole === 'admin' && localStorage.getItem('adminAuth') === 'true') {
       return true;
     }
     
-    if (userToCheck?.role === 'admin') return true;
-    if (userToCheck?.role === 'manager' && requiredRole !== 'admin') return true;
-    if (userToCheck?.role === 'viewer' && requiredRole === 'viewer') return true;
+    // Get user from localStorage if not in state
+    let userToCheck = currentUser;
+    
+    if (!userToCheck) {
+      const userJson = localStorage.getItem('inventory_current_user');
+      if (userJson) {
+        try {
+          userToCheck = JSON.parse(userJson);
+        } catch (e) {
+          console.error("Failed to parse user data in isAuthorized:", e);
+        }
+      }
+    }
+    
+    if (!userToCheck) return false;
+    
+    // Check authorization based on role
+    if (userToCheck.role === 'admin') return true;
+    if (userToCheck.role === 'manager' && requiredRole !== 'admin') return true;
+    if (userToCheck.role === 'viewer' && requiredRole === 'viewer') return true;
     
     return false;
   };

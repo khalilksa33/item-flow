@@ -177,8 +177,15 @@ export const storage = {
   },
 
   getCurrentUser: (): User | null => {
-    const user = localStorage.getItem(CURRENT_USER_KEY);
-    return user ? JSON.parse(user) : null;
+    const userFromLocal = localStorage.getItem(CURRENT_USER_KEY);
+    if (userFromLocal) {
+      try {
+        return JSON.parse(userFromLocal);
+      } catch (e) {
+        console.error("Error parsing user from localStorage:", e);
+      }
+    }
+    return null;
   },
 
   setCurrentUser: (user: User | null) => {

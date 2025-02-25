@@ -1,5 +1,5 @@
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
@@ -23,11 +23,20 @@ const Index = () => {
   const navigate = useNavigate();
   const { currentUser, logout, isAdmin } = useUser();
   const { t } = useTranslation();
+  const [userLoggedIn, setUserLoggedIn] = useState(false);
 
   useEffect(() => {
     // Initialize data on first load
     storage.initializeData();
-  }, []);
+    
+    // Check localStorage directly for user info
+    const userJson = localStorage.getItem('inventory_current_user');
+    if (userJson) {
+      setUserLoggedIn(true);
+    } else {
+      setUserLoggedIn(false);
+    }
+  }, [currentUser]);
 
   const checkActivation = () => {
     return storage.checkActivation();
@@ -104,6 +113,23 @@ const Index = () => {
     navigate('/login');
   };
 
+  // Try to get user from localStorage if currentUser is null
+  const getUserInfo = () => {
+    if (currentUser) return currentUser;
+    
+    const userJson = localStorage.getItem('inventory_current_user');
+    if (userJson) {
+      try {
+        return JSON.parse(userJson);
+      } catch (e) {
+        console.error("Failed to parse user data:", e);
+      }
+    }
+    return null;
+  };
+
+  const user = getUserInfo();
+
   return (
     <div className="container mx-auto p-6">
       <header className="mb-6 flex justify-between items-center">
@@ -116,7 +142,7 @@ const Index = () => {
         </div>
       </header>
 
-      {!currentUser ? (
+      {!user && !userLoggedIn ? (
         <div className="text-center mt-10">
           <h2 className="text-2xl font-semibold mb-4">{t("auth.welcome")}</h2>
           <p className="text-gray-600 mb-6">{t("auth.pleaseLogin")}</p>
@@ -128,8 +154,8 @@ const Index = () => {
         <>
           <div className="flex justify-between items-center mb-6">
             <div>
-              <h2 className="text-xl font-semibold">{t("common.welcome")}, {currentUser.username}</h2>
-              <p className="text-sm text-gray-500">{t("common.role")}: {currentUser.role}</p>
+              <h2 className="text-xl font-semibold">{t("common.welcome")}, {user?.username}</h2>
+              <p className="text-sm text-gray-500">{t("common.role")}: {user?.role}</p>
             </div>
             <Button variant="outline" onClick={handleLogout}>
               <LogOutIcon className="h-4 w-4 mr-2" />

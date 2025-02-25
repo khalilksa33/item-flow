@@ -19,6 +19,14 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
+  // Check if user is already logged in
+  useEffect(() => {
+    const userJson = localStorage.getItem('inventory_current_user');
+    if (userJson) {
+      navigate('/dashboard');
+    }
+  }, [navigate]);
+
   // Initialize some default users if none exist
   const initializeDefaultUsers = () => {
     const users = storage.getUsers();
@@ -59,6 +67,15 @@ const LoginPage = () => {
 
     const success = login(username, password);
     if (success) {
+      // Double-check that user data is properly stored in localStorage
+      const users = storage.getUsers();
+      const user = users.find(u => u.username === username && u.password === password);
+      if (user) {
+        localStorage.setItem('inventory_current_user', JSON.stringify(user));
+        if (user.role === 'admin') {
+          localStorage.setItem('adminAuth', 'true');
+        }
+      }
       navigate("/dashboard");
     } else {
       setError(t("auth.invalid"));
