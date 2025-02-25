@@ -18,7 +18,7 @@ import {
   TruckIcon,
   Download,
   Upload,
-  Key
+  Settings
 } from "lucide-react";
 import { storage } from "@/lib/storage";
 import { toast } from "sonner";
@@ -26,11 +26,6 @@ import { toast } from "sonner";
 const Index = () => {
   const navigate = useNavigate();
   const [importing, setImporting] = useState(false);
-
-  const activationStatus = storage.getActivationStatus();
-  const daysRemaining = activationStatus.isPerpetual ? 
-    '∞' : 
-    Math.ceil((new Date(activationStatus.expiryDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
 
   const handleExportData = () => {
     if (!storage.checkActivation()) {
@@ -87,11 +82,6 @@ const Index = () => {
     }
   };
 
-  const handlePerpetualActivation = () => {
-    storage.setPerpetualActivation();
-    toast.success("Application activated perpetually!");
-  };
-
   const menuItems = [
     { title: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
     { title: 'Inventory', icon: Package, path: '/inventory' },
@@ -100,6 +90,7 @@ const Index = () => {
     { title: 'Quotations', icon: FileText, path: '/quotations' },
     { title: 'Invoices', icon: Receipt, path: '/invoices' },
     { title: 'Vendors', icon: TruckIcon, path: '/vendors' },
+    { title: 'Admin', icon: Settings, path: '/admin' },
   ];
 
   return (
@@ -107,25 +98,11 @@ const Index = () => {
       <div className="mb-8 flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold">Business Management System</h1>
-          <div className="flex items-center gap-4 mt-2">
-            {storage.checkActivation() ? (
-              <>
-                <p className="text-sm text-muted-foreground">
-                  License active {activationStatus.isPerpetual ? '(Perpetual)' : `- ${daysRemaining} days remaining`}
-                </p>
-                {!activationStatus.isPerpetual && (
-                  <Button variant="outline" size="sm" onClick={handlePerpetualActivation}>
-                    <Key className="h-4 w-4 mr-2" />
-                    Activate Perpetually
-                  </Button>
-                )}
-              </>
-            ) : (
-              <p className="text-sm text-red-500">
-                License expired - Please activate to continue using all features
-              </p>
-            )}
-          </div>
+          {!storage.checkActivation() && (
+            <p className="text-sm text-red-500 mt-2">
+              License expired - Please contact administrator
+            </p>
+          )}
         </div>
         <div className="flex gap-2">
           <Button onClick={handleExportData}>
