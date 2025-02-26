@@ -7,7 +7,6 @@ import { InvoiceInfo } from './pdf/InvoiceInfo';
 import { InvoiceItemsTable } from './pdf/InvoiceItemsTable';
 import { InvoiceTotals } from './pdf/InvoiceTotals';
 import { InvoiceFooter } from './pdf/InvoiceFooter';
-import i18n from '@/i18n';
 
 interface InvoicePDFProps {
   invoice: Invoice;
@@ -15,8 +14,8 @@ interface InvoicePDFProps {
 }
 
 export const InvoicePDF = ({ invoice, customerName }: InvoicePDFProps) => {
-  // Force the language based on current i18n settings for consistent rendering
-  const currentLanguage = i18n.language;
+  // Force the language based on localStorage settings for consistent rendering
+  const currentLanguage = localStorage.getItem('preferredLanguage') || 'en';
   const isRTL = currentLanguage === 'ar';
   
   // Get company info from local storage
@@ -35,28 +34,85 @@ export const InvoicePDF = ({ invoice, customerName }: InvoicePDFProps) => {
 
   // Format numbers for display
   const formatNumber = (value: number | undefined) => {
-    return (value ?? 0).toFixed(2);
+    if (value === undefined || value === null) {
+      return "0.00";
+    }
+    return value.toFixed(2);
   };
 
   // Format dates according to locale
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString(isRTL ? 'ar-SA' : 'en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString(isRTL ? 'ar-SA' : 'en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    } catch (error) {
+      console.error("Error formatting date:", error);
+      return dateString;
+    }
   };
 
   // Invoice reference number
   const invoiceRef = `INV-${invoice.id.slice(0, 8).toUpperCase()}`;
+  
+  // Get the translated labels based on current language
+  const labels = isRTL ? {
+    invoice: "فاتورة",
+    reference: "المرجع",
+    date: "التاريخ",
+    dueDate: "تاريخ الاستحقاق",
+    paymentTerms: "شروط الدفع",
+    billTo: "فاتورة إلى",
+    items: "عناصر الفاتورة",
+    item: "العنصر",
+    quantity: "الكمية",
+    unitPrice: "سعر الوحدة",
+    subtotal: "المجموع الفرعي",
+    vat: "ضريبة القيمة المضافة",
+    total: "المجموع",
+    notes: "ملاحظات",
+    thankYou: "شكرًا لعملك معنا!",
+    generatedOn: "تم إنشاؤها في",
+    paid: "مدفوع",
+    vatNumber: "رقم ضريبة القيمة المضافة",
+    crNumber: "رقم السجل التجاري",
+    address: "العنوان",
+    phone: "الهاتف",
+    email: "البريد الإلكتروني"
+  } : {
+    invoice: "Invoice",
+    reference: "Reference",
+    date: "Date",
+    dueDate: "Due Date",
+    paymentTerms: "Payment Terms",
+    billTo: "Bill To",
+    items: "Invoice Items",
+    item: "Item",
+    quantity: "Quantity",
+    unitPrice: "Unit Price",
+    subtotal: "Subtotal",
+    vat: "VAT",
+    total: "Total",
+    notes: "Notes",
+    thankYou: "Thank you for your business!",
+    generatedOn: "Generated on",
+    paid: "PAID",
+    vatNumber: "VAT Number",
+    crNumber: "CR Number",
+    address: "Address",
+    phone: "Phone",
+    email: "Email"
+  };
 
   return (
     <Document>
       <Page size="A4" style={[styles.page, isRTL && styles.rtl]}>
         {/* Paid Watermark if applicable */}
         {invoice.status === 'paid' && (
-          <Text style={styles.watermark}>{isRTL ? 'مدفوع' : 'PAID'}</Text>
+          <Text style={styles.watermark}>{labels.paid}</Text>
         )}
 
         <InvoiceHeader
@@ -69,6 +125,7 @@ export const InvoicePDF = ({ invoice, customerName }: InvoicePDFProps) => {
           companyLogo={companyLogo}
           qrCodeUrl={qrCodeUrl}
           isRTL={isRTL}
+          labels={labels}
         />
 
         <InvoiceInfo
@@ -79,6 +136,7 @@ export const InvoicePDF = ({ invoice, customerName }: InvoicePDFProps) => {
           customerName={customerName}
           formatDate={formatDate}
           isRTL={isRTL}
+          labels={labels}
         />
 
         <InvoiceItemsTable
@@ -86,6 +144,7 @@ export const InvoicePDF = ({ invoice, customerName }: InvoicePDFProps) => {
           currency={currency}
           formatNumber={formatNumber}
           isRTL={isRTL}
+          labels={labels}
         />
 
         <InvoiceTotals
@@ -96,15 +155,16 @@ export const InvoicePDF = ({ invoice, customerName }: InvoicePDFProps) => {
           currency={currency}
           formatNumber={formatNumber}
           isRTL={isRTL}
+          labels={labels}
         />
 
         <InvoiceFooter
           companyName={companyName}
-          companyAddress={companyAddress}
           companyPhone={companyPhone}
           notes={invoice.notes}
           status={invoice.status}
           isRTL={isRTL}
+          labels={labels}
         />
       </Page>
     </Document>

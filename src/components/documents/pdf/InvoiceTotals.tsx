@@ -1,7 +1,6 @@
 
 import { Text, View } from '@react-pdf/renderer';
 import { styles } from './styles';
-import { useTranslation } from 'react-i18next';
 
 interface InvoiceTotalsProps {
   subtotal: number;
@@ -11,6 +10,7 @@ interface InvoiceTotalsProps {
   currency: string;
   formatNumber: (value: number | undefined) => string;
   isRTL?: boolean;
+  labels: Record<string, string>;
 }
 
 export function InvoiceTotals({ 
@@ -20,23 +20,36 @@ export function InvoiceTotals({
   total, 
   currency,
   formatNumber,
-  isRTL = false
+  isRTL = false,
+  labels
 }: InvoiceTotalsProps) {
-  const { t } = useTranslation("invoices");
-  
   return (
     <View style={styles.totals}>
       <View style={isRTL ? styles.totalRowRTL : styles.totalRow}>
-        <Text style={isRTL ? styles.totalLabelRTL : styles.totalLabel}>{t("subtotal")}:</Text>
-        <Text style={isRTL ? styles.totalValueRTL : styles.totalValue}>{currency} {formatNumber(subtotal)}</Text>
+        <Text style={isRTL ? styles.totalLabelRTL : styles.totalLabel}>
+          {labels.subtotal}:
+        </Text>
+        <Text style={isRTL ? styles.totalValueRTL : styles.totalValue}>
+          {isRTL ? `${formatNumber(subtotal)} ${currency}` : `${currency} ${formatNumber(subtotal)}`}
+        </Text>
       </View>
+      
       <View style={isRTL ? styles.totalRowRTL : styles.totalRow}>
-        <Text style={isRTL ? styles.totalLabelRTL : styles.totalLabel}>{t("vat")} ({(vatRate * 100).toFixed()}%):</Text>
-        <Text style={isRTL ? styles.totalValueRTL : styles.totalValue}>{currency} {formatNumber(vatAmount)}</Text>
+        <Text style={isRTL ? styles.totalLabelRTL : styles.totalLabel}>
+          {labels.vat} ({(vatRate * 100).toFixed()}%):
+        </Text>
+        <Text style={isRTL ? styles.totalValueRTL : styles.totalValue}>
+          {isRTL ? `${formatNumber(vatAmount)} ${currency}` : `${currency} ${formatNumber(vatAmount)}`}
+        </Text>
       </View>
+      
       <View style={[isRTL ? styles.totalRowRTL : styles.totalRow, styles.grandTotal]}>
-        <Text style={isRTL ? styles.totalLabelRTL : styles.totalLabel}>{t("total")}:</Text>
-        <Text style={isRTL ? styles.totalValueRTL : styles.totalValue}>{currency} {formatNumber(total)}</Text>
+        <Text style={isRTL ? styles.totalLabelRTL : styles.totalLabel}>
+          {labels.total}:
+        </Text>
+        <Text style={isRTL ? styles.totalValueRTL : styles.totalValue}>
+          {isRTL ? `${formatNumber(total)} ${currency}` : `${currency} ${formatNumber(total)}`}
+        </Text>
       </View>
     </View>
   );

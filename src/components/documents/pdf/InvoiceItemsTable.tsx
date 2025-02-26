@@ -3,18 +3,22 @@ import { Text, View } from '@react-pdf/renderer';
 import { InvoiceItem } from '@/types/inventory';
 import { styles } from './styles';
 import { storage } from '@/lib/storage';
-import { useTranslation } from 'react-i18next';
 
 interface InvoiceItemsTableProps {
   items: InvoiceItem[];
   currency: string;
   formatNumber: (value: number | undefined) => string;
   isRTL?: boolean;
+  labels: Record<string, string>;
 }
 
-export function InvoiceItemsTable({ items, currency, formatNumber, isRTL = false }: InvoiceItemsTableProps) {
-  const { t } = useTranslation("invoices");
-  
+export function InvoiceItemsTable({ 
+  items, 
+  currency, 
+  formatNumber, 
+  isRTL = false,
+  labels
+}: InvoiceItemsTableProps) {
   // Get all inventory items to map product IDs to names
   const inventoryItems = storage.getItems();
   
@@ -26,22 +30,26 @@ export function InvoiceItemsTable({ items, currency, formatNumber, isRTL = false
 
   return (
     <View style={styles.section}>
-      <Text style={styles.sectionTitle}>{t("items")}</Text>
+      <Text style={styles.sectionTitle}>{labels.items}</Text>
       <View style={styles.table}>
         <View style={isRTL ? styles.tableHeaderRTL : styles.tableHeader}>
           <Text style={styles.tableCellNarrow}>#</Text>
-          <Text style={styles.tableCellWide}>{t("item")}</Text>
-          <Text style={styles.tableCell}>{t("quantity")}</Text>
-          <Text style={styles.tableCell}>{t("unitPrice")}</Text>
-          <Text style={styles.tableCell}>{t("subtotal")}</Text>
+          <Text style={styles.tableCellWide}>{labels.item}</Text>
+          <Text style={styles.tableCell}>{labels.quantity}</Text>
+          <Text style={styles.tableCell}>{labels.unitPrice}</Text>
+          <Text style={styles.tableCell}>{labels.subtotal}</Text>
         </View>
         {items.map((item, index) => (
           <View key={index} style={isRTL ? styles.tableRowRTL : styles.tableRow}>
             <Text style={styles.tableCellNarrow}>{index + 1}</Text>
             <Text style={styles.tableCellWide}>{getProductName(item.productId)}</Text>
-            <Text style={styles.tableCell}>{item.quantity}</Text>
-            <Text style={styles.tableCell}>{currency} {formatNumber(item.unitPrice)}</Text>
-            <Text style={styles.tableCell}>{currency} {formatNumber(item.subtotal)}</Text>
+            <Text style={styles.tableCell}>{item.quantity || 0}</Text>
+            <Text style={styles.tableCell}>
+              {isRTL ? `${formatNumber(item.unitPrice)} ${currency}` : `${currency} ${formatNumber(item.unitPrice)}`}
+            </Text>
+            <Text style={styles.tableCell}>
+              {isRTL ? `${formatNumber(item.subtotal)} ${currency}` : `${currency} ${formatNumber(item.subtotal)}`}
+            </Text>
           </View>
         ))}
       </View>

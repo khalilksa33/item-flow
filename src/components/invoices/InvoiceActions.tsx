@@ -29,87 +29,120 @@ export function InvoiceActions({ invoice, customers, onEdit, onDelete }: Invoice
   const customerName = customers.find(c => c.id === invoice.customerId)?.name || t("invoices:unknownCustomer");
 
   const handlePrintDocument = (blob: Blob) => {
-    // Create a URL for the blob
-    const blobUrl = URL.createObjectURL(blob);
-    
-    // Open the PDF in a new tab
-    const printWindow = window.open(blobUrl, '_blank');
-    
-    if (printWindow) {
-      // Wait for the PDF to load then print
-      printWindow.onload = () => {
-        printWindow.print();
-        // Clean up the blob URL after printing
-        URL.revokeObjectURL(blobUrl);
-      };
-    } else {
-      // If popup is blocked, just download the file
-      toast.error(t("invoices:popupBlocked"));
+    try {
+      // Create a URL for the blob
+      const blobUrl = URL.createObjectURL(blob);
       
-      // Provide fallback download
-      const link = document.createElement('a');
-      link.href = blobUrl;
-      link.download = `invoice-${Date.now()}.pdf`;
-      link.click();
+      // Open the PDF in a new tab
+      const printWindow = window.open(blobUrl, '_blank');
       
-      // Clean up
-      setTimeout(() => URL.revokeObjectURL(blobUrl), 100);
+      if (printWindow) {
+        // Wait for the PDF to load then print
+        printWindow.onload = () => {
+          try {
+            printWindow.print();
+            // Clean up the blob URL after printing
+            URL.revokeObjectURL(blobUrl);
+          } catch (e) {
+            console.error("Error during print:", e);
+            toast.error(t("invoices:printError", "Error during printing"));
+          }
+        };
+      } else {
+        // If popup is blocked, just download the file
+        toast.error(t("invoices:popupBlocked"));
+        
+        // Provide fallback download
+        const link = document.createElement('a');
+        link.href = blobUrl;
+        link.download = `invoice-${Date.now()}.pdf`;
+        link.click();
+        
+        // Clean up
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 100);
+      }
+    } catch (e) {
+      console.error("Error handling print document:", e);
+      toast.error(t("invoices:printError", "Error handling document"));
     }
   };
 
   // Helper function to render a document view/print/download menu item
   const renderDocumentActions = (type: 'invoice' | 'receipt' = 'invoice') => {
-    const Document = type === 'invoice' 
-      ? <InvoicePDF invoice={invoice} customerName={customerName} />
-      : <ReceiptPDF invoice={invoice} customerName={customerName} />;
-    
-    return (
-      <>
-        <DropdownMenuLabel className={isRTL ? "text-right" : ""}>
-          {type === 'invoice' ? t("invoices:invoice") : t("invoices:receipt")}
-        </DropdownMenuLabel>
-        
-        {/* View option */}
-        <BlobProvider document={Document}>
-          {({ blob, url, loading, error }) => (
-            <DropdownMenuItem
-              disabled={loading || !!error}
-              onClick={() => url && window.open(url, '_blank')}
-            >
-              <Eye className={`h-4 w-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
-              {type === 'invoice' ? t("invoices:viewInvoice") : t("invoices:viewReceipt")}
-            </DropdownMenuItem>
-          )}
-        </BlobProvider>
-        
-        {/* Print option */}
-        <BlobProvider document={Document}>
-          {({ blob, loading, error }) => (
-            <DropdownMenuItem
-              disabled={loading || !!error}
-              onClick={() => blob && handlePrintDocument(blob)}
-            >
-              <Printer className={`h-4 w-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
-              {type === 'invoice' ? t("invoices:printInvoice") : t("invoices:printReceipt")}
-            </DropdownMenuItem>
-          )}
-        </BlobProvider>
-        
-        {/* Download option */}
-        <PDFDownloadLink
-          document={Document}
-          fileName={`${type}-${invoice.id.slice(0, 8)}.pdf`}
-          style={{ textDecoration: 'none' }}
-        >
-          {({ loading }) => (
-            <DropdownMenuItem disabled={loading}>
-              <Download className={`h-4 w-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
-              {type === 'invoice' ? t("invoices:downloadInvoice") : t("invoices:downloadReceipt")}
-            </DropdownMenuItem>
-          )}
-        </PDFDownloadLink>
-      </>
-    );
+    try {
+      const Document = type === 'invoice' 
+        ? <InvoicePDF invoice={invoice} customerName={customerName} />
+        : <ReceiptPDF invoice={invoice} customerName={customerName} />;
+      
+      return (
+        <>
+          <DropdownMenuLabel className={isRTL ? "text-right" : ""}>
+            {type === 'invoice' ? t("invoices:invoice") : t("invoices:receipt")}
+          </DropdownMenuLabel>
+          
+          {/* View option */}
+          <BlobProvider document={Document}>
+            {({ blob, url, loading, error }) => (
+              <DropdownMenuItem
+                disabled={loading || !!error}
+                onClick={() => {
+                  if (url) {
+                    try {
+                      window.open(url, '_blank');
+                    } catch (e) {
+                      console.error("Error opening URL:", e);
+                      toast.error(t("invoices:viewError", "Error viewing document"));
+                    }
+                  }
+                }}
+              >
+                <Eye className={`h-4 w-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+                {type === 'invoice' ? t("invoices:viewInvoice") : t("invoices:viewReceipt")}
+              </DropdownMenuItem>
+            )}
+          </BlobProvider>
+          
+          {/* Print option */}
+          <BlobProvider document={Document}>
+            {({ blob, loading, error }) => (
+              <DropdownMenuItem
+                disabled={loading || !!error}
+                onClick={() => {
+                  if (blob) {
+                    try {
+                      handlePrintDocument(blob);
+                    } catch (e) {
+                      console.error("Error in print handler:", e);
+                      toast.error(t("invoices:printError", "Error printing document"));
+                    }
+                  }
+                }}
+              >
+                <Printer className={`h-4 w-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+                {type === 'invoice' ? t("invoices:printInvoice") : t("invoices:printReceipt")}
+              </DropdownMenuItem>
+            )}
+          </BlobProvider>
+          
+          {/* Download option */}
+          <PDFDownloadLink
+            document={Document}
+            fileName={`${type}-${invoice.id.slice(0, 8)}.pdf`}
+            style={{ textDecoration: 'none' }}
+          >
+            {({ loading, error }) => (
+              <DropdownMenuItem disabled={loading || !!error}>
+                <Download className={`h-4 w-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+                {type === 'invoice' ? t("invoices:downloadInvoice") : t("invoices:downloadReceipt")}
+              </DropdownMenuItem>
+            )}
+          </PDFDownloadLink>
+        </>
+      );
+    } catch (e) {
+      console.error("Error rendering document actions:", e);
+      return null;
+    }
   };
 
   return (

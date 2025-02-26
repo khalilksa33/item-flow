@@ -1,7 +1,6 @@
 
 import { Text, View, Image } from '@react-pdf/renderer';
 import { styles } from './styles';
-import { useTranslation } from 'react-i18next';
 
 interface InvoiceHeaderProps {
   companyName: string;
@@ -13,6 +12,7 @@ interface InvoiceHeaderProps {
   companyLogo: string;
   qrCodeUrl: string;
   isRTL?: boolean;
+  labels: Record<string, string>;
 }
 
 export function InvoiceHeader({
@@ -24,20 +24,18 @@ export function InvoiceHeader({
   companyEmail,
   companyLogo,
   qrCodeUrl,
-  isRTL = false
+  isRTL = false,
+  labels
 }: InvoiceHeaderProps) {
-  const { t } = useTranslation("invoices");
-  
   return (
     <View style={[styles.header, isRTL && styles.rtlRow]}>
       {/* Company Info */}
       <View style={[styles.headerInfo, isRTL && styles.rtlSection]}>
         <Text style={styles.companyName}>{companyName}</Text>
-        <Text style={styles.companyInfo}>{t("vatNumber")}: {vatNumber}</Text>
-        <Text style={styles.companyInfo}>{t("crNumber")}: {crNumber}</Text>
-        <Text style={styles.companyInfo}>{t("address")}: {companyAddress}</Text>
-        <Text style={styles.companyInfo}>{t("phone")}: {companyPhone}</Text>
-        <Text style={styles.companyInfo}>{t("email")}: {companyEmail}</Text>
+        <Text style={styles.companyInfo}>{labels.vatNumber}: {vatNumber}</Text>
+        <Text style={styles.companyInfo}>{labels.crNumber}: {crNumber}</Text>
+        <Text style={styles.companyInfo}>{labels.phone}: {companyPhone}</Text>
+        <Text style={styles.companyInfo}>{labels.email}: {companyEmail}</Text>
       </View>
 
       {/* Logo */}
@@ -46,6 +44,7 @@ export function InvoiceHeader({
           <Image 
             src={companyLogo} 
             style={styles.logo}
+            cache={false}
           />
         </View>
       )}
