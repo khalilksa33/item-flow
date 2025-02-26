@@ -6,13 +6,13 @@ import { Link, useNavigate } from "react-router-dom";
 import {
   Box,
   BoxIcon,
-  BarChartIcon,
-  UsersIcon,
-  ShoppingCartIcon,
-  FileTextIcon,
-  TruckIcon,
-  SettingsIcon,
-  LogOutIcon,
+  BarChart as BarChartIcon,
+  Users as UsersIcon,
+  ShoppingCart as ShoppingCartIcon,
+  FileText as FileTextIcon,
+  Truck as TruckIcon,
+  Settings as SettingsIcon,
+  LogOut as LogOutIcon,
 } from "lucide-react";
 import { storage } from "@/lib/storage";
 import { useUser } from "@/contexts/UserContext";
@@ -134,8 +134,8 @@ const Index = () => {
     <div className="container mx-auto p-6">
       <header className="mb-6 flex justify-between items-center">
         <div className="text-center flex-1">
-          <h1 className="text-3xl font-bold">{t("app.title")}</h1>
-          <p className="text-gray-500">{t("app.subtitle")}</p>
+          <h1 className="text-3xl font-bold">Inventory Management System</h1>
+          <p className="text-gray-500">Manage your inventory, customers, and sales efficiently</p>
         </div>
         <div>
           <LanguageSwitcher />
@@ -144,22 +144,22 @@ const Index = () => {
 
       {!user && !userLoggedIn ? (
         <div className="text-center mt-10">
-          <h2 className="text-2xl font-semibold mb-4">{t("auth.welcome")}</h2>
-          <p className="text-gray-600 mb-6">{t("auth.pleaseLogin")}</p>
+          <h2 className="text-2xl font-semibold mb-4">Welcome to the Inventory Management System</h2>
+          <p className="text-gray-600 mb-6">Please log in to continue</p>
           <Button asChild size="lg">
-            <Link to="/login">{t("auth.login")}</Link>
+            <Link to="/login">Login</Link>
           </Button>
         </div>
       ) : (
         <>
           <div className="flex justify-between items-center mb-6">
             <div>
-              <h2 className="text-xl font-semibold">{t("common.welcome")}, {user?.username}</h2>
-              <p className="text-sm text-gray-500">{t("common.role")}: {user?.role}</p>
+              <h2 className="text-xl font-semibold">Welcome, {user?.username}</h2>
+              <p className="text-sm text-gray-500">Role: {user?.role}</p>
             </div>
             <Button variant="outline" onClick={handleLogout}>
               <LogOutIcon className="h-4 w-4 mr-2" />
-              {t("auth.logout")}
+              Logout
             </Button>
           </div>
 
@@ -178,7 +178,7 @@ const Index = () => {
                 </CardHeader>
                 <CardFooter>
                   <Button asChild className="w-full">
-                    <Link to={item.href}>{t("common.view")} {item.title}</Link>
+                    <Link to={item.href}>View {item.title}</Link>
                   </Button>
                 </CardFooter>
               </Card>
@@ -188,11 +188,11 @@ const Index = () => {
       )}
 
       <footer className="mt-12 text-center text-sm text-gray-500">
-        <p>{t("footer.copyright")} &copy; {new Date().getFullYear()}</p>
+        <p>Inventory Management System &copy; {new Date().getFullYear()}</p>
         <p>
-          {t("footer.licenseStatus")}:{" "}
+          License Status:{" "}
           <span className={checkActivation() ? "text-green-500" : "text-red-500"}>
-            {checkActivation() ? t("footer.active") : t("footer.inactive")}
+            {checkActivation() ? "Active" : "Inactive"}
           </span>
         </p>
       </footer>
