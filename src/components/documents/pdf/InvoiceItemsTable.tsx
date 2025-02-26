@@ -24,14 +24,11 @@ export function InvoiceItemsTable({ items, currency, formatNumber, isRTL = false
     return product ? product.name : productId; // Fallback to ID if product not found
   };
 
-  const tableHeaderStyles = [styles.tableRow, styles.tableHeader];
-  if (isRTL) tableHeaderStyles.push(styles.rtlRow);
-
   return (
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>{t("invoices.items")}</Text>
       <View style={styles.table}>
-        <View style={tableHeaderStyles}>
+        <View style={isRTL ? styles.tableHeaderRTL : styles.tableHeader}>
           <Text style={styles.tableCellNarrow}>#</Text>
           <Text style={styles.tableCellWide}>{t("invoices.item")}</Text>
           <Text style={styles.tableCell}>{t("invoices.quantity")}</Text>
@@ -39,7 +36,7 @@ export function InvoiceItemsTable({ items, currency, formatNumber, isRTL = false
           <Text style={styles.tableCell}>{t("invoices.subtotal")}</Text>
         </View>
         {items.map((item, index) => (
-          <View key={index} style={[styles.tableRow, isRTL && styles.rtlRow]}>
+          <View key={index} style={isRTL ? styles.tableRowRTL : styles.tableRow}>
             <Text style={styles.tableCellNarrow}>{index + 1}</Text>
             <Text style={styles.tableCellWide}>{getProductName(item.productId)}</Text>
             <Text style={styles.tableCell}>{item.quantity}</Text>

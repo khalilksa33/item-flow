@@ -24,28 +24,19 @@ export function InvoiceTotals({
 }: InvoiceTotalsProps) {
   const { t } = useTranslation();
   
-  const totalRowStyle = [styles.totalRow];
-  if (isRTL) totalRowStyle.push(styles.rtlRow);
-  
-  const totalLabelStyle = [styles.totalLabel];
-  if (isRTL) totalLabelStyle.push(styles.rtlValue);
-  
-  const totalValueStyle = [styles.totalValue];
-  if (isRTL) totalValueStyle.push(styles.rtlValue);
-  
   return (
     <View style={styles.totals}>
-      <View style={totalRowStyle}>
-        <Text style={totalLabelStyle}>{t("invoices.subtotal")}:</Text>
-        <Text style={totalValueStyle}>{currency} {formatNumber(subtotal)}</Text>
+      <View style={isRTL ? styles.totalRowRTL : styles.totalRow}>
+        <Text style={isRTL ? styles.totalLabelRTL : styles.totalLabel}>{t("invoices.subtotal")}:</Text>
+        <Text style={isRTL ? styles.totalValueRTL : styles.totalValue}>{currency} {formatNumber(subtotal)}</Text>
       </View>
-      <View style={totalRowStyle}>
-        <Text style={totalLabelStyle}>{t("invoices.vat")} ({(vatRate * 100).toFixed()}%):</Text>
-        <Text style={totalValueStyle}>{currency} {formatNumber(vatAmount)}</Text>
+      <View style={isRTL ? styles.totalRowRTL : styles.totalRow}>
+        <Text style={isRTL ? styles.totalLabelRTL : styles.totalLabel}>{t("invoices.vat")} ({(vatRate * 100).toFixed()}%):</Text>
+        <Text style={isRTL ? styles.totalValueRTL : styles.totalValue}>{currency} {formatNumber(vatAmount)}</Text>
       </View>
-      <View style={[...totalRowStyle, styles.grandTotal]}>
-        <Text style={totalLabelStyle}>{t("invoices.total")}:</Text>
-        <Text style={totalValueStyle}>{currency} {formatNumber(total)}</Text>
+      <View style={[isRTL ? styles.totalRowRTL : styles.totalRow, styles.grandTotal]}>
+        <Text style={isRTL ? styles.totalLabelRTL : styles.totalLabel}>{t("invoices.total")}:</Text>
+        <Text style={isRTL ? styles.totalValueRTL : styles.totalValue}>{currency} {formatNumber(total)}</Text>
       </View>
     </View>
   );

@@ -84,8 +84,21 @@ export const styles = StyleSheet.create({
     borderBottomColor: '#000',
     padding: 5,
   },
+  tableHeaderRTL: {
+    backgroundColor: '#f0f0f0',
+    flexDirection: 'row-reverse',
+    borderBottomWidth: 1,
+    borderBottomColor: '#000',
+    padding: 5,
+  },
   tableRow: {
     flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+    padding: 5,
+  },
+  tableRowRTL: {
+    flexDirection: 'row-reverse',
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
     padding: 5,
@@ -135,14 +148,30 @@ export const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     marginBottom: 5,
   },
+  totalRowRTL: {
+    flexDirection: 'row-reverse',
+    justifyContent: 'flex-start',
+    marginBottom: 5,
+  },
   totalLabel: {
     flex: 1,
     textAlign: 'right',
     paddingRight: 10,
     maxWidth: 150,
   },
+  totalLabelRTL: {
+    flex: 1,
+    textAlign: 'left',
+    paddingLeft: 10,
+    paddingRight: 0,
+    maxWidth: 150,
+  },
   totalValue: {
     textAlign: 'right',
+    minWidth: 100,
+  },
+  totalValueRTL: {
+    textAlign: 'left',
     minWidth: 100,
   },
   grandTotal: {
