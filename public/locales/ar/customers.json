@@ -1,0 +1,22 @@
+
+{
+  "title": "العملاء",
+  "description": "إدارة معلومات العملاء",
+  "addCustomer": "إضافة عميل",
+  "editCustomer": "تعديل العميل",
+  "addNewCustomer": "إضافة عميل جديد",
+  "name": "الاسم",
+  "type": "النوع",
+  "email": "البريد الإلكتروني",
+  "phone": "الهاتف",
+  "address": "العنوان",
+  "individual": "فرد",
+  "business": "شركة",
+  "taxId": "الرقم الضريبي",
+  "creditLimit": "حد الائتمان",
+  "paymentTerms": "شروط الدفع",
+  "notes": "ملاحظات",
+  "customerAdded": "تمت إضافة العميل بنجاح",
+  "customerUpdated": "تم تحديث العميل بنجاح",
+  "customerDeleted": "تم حذف العميل بنجاح"
+}

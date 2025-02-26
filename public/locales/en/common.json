@@ -1,0 +1,23 @@
+
+{
+  "back": "Back to Home",
+  "save": "Save",
+  "cancel": "Cancel",
+  "delete": "Delete",
+  "edit": "Edit",
+  "view": "View",
+  "add": "Add",
+  "update": "Update",
+  "search": "Search",
+  "welcome": "Welcome",
+  "role": "Role",
+  "actions": "Actions",
+  "description": "Description",
+  "yes": "Yes",
+  "no": "No",
+  "confirm": "Confirm",
+  "success": "Success",
+  "error": "Error",
+  "warning": "Warning",
+  "info": "Information"
+}

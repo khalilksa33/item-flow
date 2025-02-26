@@ -1,0 +1,16 @@
+
+{
+  "title": "Inventory Management System",
+  "subtitle": "Manage your inventory, customers, and sales efficiently",
+  "footer": {
+    "copyright": "Inventory Management System",
+    "licenseStatus": "License Status",
+    "active": "Active",
+    "inactive": "Inactive"
+  },
+  "language": {
+    "english": "English",
+    "arabic": "العربية",
+    "changeLanguage": "Change Language"
+  }
+}

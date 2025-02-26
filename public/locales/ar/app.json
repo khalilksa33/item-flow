@@ -1,0 +1,16 @@
+
+{
+  "title": "نظام إدارة المخزون",
+  "subtitle": "إدارة المخزون والعملاء والمبيعات بكفاءة",
+  "footer": {
+    "copyright": "نظام إدارة المخزون",
+    "licenseStatus": "حالة الترخيص",
+    "active": "نشط",
+    "inactive": "غير نشط"
+  },
+  "language": {
+    "english": "English",
+    "arabic": "العربية",
+    "changeLanguage": "تغيير اللغة"
+  }
+}

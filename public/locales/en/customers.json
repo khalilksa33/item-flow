@@ -1,0 +1,22 @@
+
+{
+  "title": "Customers",
+  "description": "Manage customer information",
+  "addCustomer": "Add Customer",
+  "editCustomer": "Edit Customer",
+  "addNewCustomer": "Add New Customer",
+  "name": "Name",
+  "type": "Type",
+  "email": "Email",
+  "phone": "Phone",
+  "address": "Address",
+  "individual": "Individual",
+  "business": "Business",
+  "taxId": "Tax ID",
+  "creditLimit": "Credit Limit",
+  "paymentTerms": "Payment Terms",
+  "notes": "Notes",
+  "customerAdded": "Customer added successfully",
+  "customerUpdated": "Customer updated successfully",
+  "customerDeleted": "Customer deleted successfully"
+}

@@ -1,0 +1,9 @@
+
+{
+  "title": "Quick Tips",
+  "viewDetails": "Click on an item's name to view detailed information",
+  "search": "Use the search bar to filter items by name, category, or description",
+  "lowStock": "Items highlighted in red indicate low stock levels",
+  "export": "Export your data regularly to keep a backup",
+  "categories": "Use the Categories button to manage your item categories"
+}
