@@ -1,7 +1,6 @@
 
 import { Navigate, useLocation } from "react-router-dom";
 import { useUser } from "@/contexts/UserContext";
-import { useEffect } from "react";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -9,16 +8,17 @@ interface ProtectedRouteProps {
 }
 
 export function ProtectedRoute({ children, requiredRole = 'viewer' }: ProtectedRouteProps) {
-  const { currentUser, isAuthorized, isAdmin } = useUser();
+  const { currentUser, isAdmin } = useUser();
   const location = useLocation();
 
   // Special case for admin route
   if (requiredRole === 'admin') {
-    // Allow access if user is admin or adminAuth is set in localStorage
+    // Only allow access if user is admin (checking both the isAdmin function and current user role)
     if (isAdmin()) {
       return <>{children}</>;
     } else {
-      return <Navigate to="/login" state={{ from: location }} replace />;
+      // Redirect to dashboard if not admin
+      return <Navigate to="/dashboard" state={{ from: location }} replace />;
     }
   }
 
@@ -28,10 +28,18 @@ export function ProtectedRoute({ children, requiredRole = 'viewer' }: ProtectedR
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  if (!isAuthorized(requiredRole)) {
+  if (!isAuthorized(currentUser.role, requiredRole)) {
     // Redirect to dashboard if not authorized
     return <Navigate to="/dashboard" replace />;
   }
 
   return <>{children}</>;
+}
+
+// Helper function to check authorization
+function isAuthorized(userRole: string, requiredRole: string): boolean {
+  if (userRole === 'admin') return true;
+  if (userRole === 'manager' && requiredRole !== 'admin') return true;
+  if (userRole === 'viewer' && requiredRole === 'viewer') return true;
+  return false;
 }

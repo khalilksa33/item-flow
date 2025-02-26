@@ -52,8 +52,12 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       localStorage.setItem('inventory_current_user', JSON.stringify(updatedUser));
       setCurrentUser(updatedUser);
       
+      // Only set adminAuth if user is actually an admin
       if (user.role === 'admin') {
         localStorage.setItem('adminAuth', 'true');
+      } else {
+        // Make sure adminAuth is removed if not an admin
+        localStorage.removeItem('adminAuth');
       }
       
       toast.success(t('auth.loginSuccess'));
@@ -79,24 +83,36 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   };
 
   const isAdmin = () => {
-    // First check localStorage for admin status
-    if (localStorage.getItem('adminAuth') === 'true') {
-      return true;
-    }
-    
-    // Then check current user
+    // First check current user role
     if (currentUser?.role === 'admin') {
       return true;
     }
     
-    // Finally check localStorage for user data
-    const userJson = localStorage.getItem('inventory_current_user');
-    if (userJson) {
-      try {
-        const user = JSON.parse(userJson);
-        return user.role === 'admin';
-      } catch (e) {
-        console.error("Failed to parse user data in isAdmin:", e);
+    // Then check localStorage for admin status (only if we don't have a current user)
+    if (!currentUser) {
+      // First check for adminAuth flag
+      if (localStorage.getItem('adminAuth') === 'true') {
+        // Double check that user in localStorage is actually an admin
+        const userJson = localStorage.getItem('inventory_current_user');
+        if (userJson) {
+          try {
+            const user = JSON.parse(userJson);
+            return user.role === 'admin';
+          } catch (e) {
+            console.error("Failed to parse user data in isAdmin:", e);
+          }
+        }
+      }
+      
+      // Check localStorage for user data
+      const userJson = localStorage.getItem('inventory_current_user');
+      if (userJson) {
+        try {
+          const user = JSON.parse(userJson);
+          return user.role === 'admin';
+        } catch (e) {
+          console.error("Failed to parse user data in isAdmin:", e);
+        }
       }
     }
     
@@ -104,12 +120,12 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   };
 
   const isAuthorized = (requiredRole: 'admin' | 'manager' | 'viewer'): boolean => {
-    // First check admin override
-    if (requiredRole === 'admin' && localStorage.getItem('adminAuth') === 'true') {
-      return true;
+    // Special handling for admin role
+    if (requiredRole === 'admin') {
+      return isAdmin();
     }
     
-    // Get user from localStorage if not in state
+    // Get user from state or localStorage
     let userToCheck = currentUser;
     
     if (!userToCheck) {
