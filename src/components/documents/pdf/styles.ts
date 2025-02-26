@@ -71,6 +71,15 @@ export const styles = StyleSheet.create({
   },
   
   // Table styles
+  section: {
+    marginVertical: 15,
+    paddingVertical: 10,
+  },
+  sectionTitle: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
   table: {
     marginVertical: 20,
   },
@@ -109,6 +118,16 @@ export const styles = StyleSheet.create({
     fontSize: 10,
     textAlign: 'right',
   },
+  tableCellNarrow: {
+    flex: 0.5,
+    fontSize: 10,
+    padding: 3,
+  },
+  tableCellWide: {
+    flex: 2,
+    fontSize: 10,
+    padding: 3,
+  },
   
   // Totals styles
   totals: {
@@ -145,6 +164,40 @@ export const styles = StyleSheet.create({
     width: 100,
     textAlign: 'left',
   },
+  grandTotal: {
+    borderTopWidth: 1,
+    borderTopColor: '#000',
+    marginTop: 5,
+    paddingTop: 5,
+    fontWeight: 'bold',
+  },
+  
+  // Notes styles
+  notes: {
+    marginTop: 30,
+    paddingTop: 10,
+    borderTopWidth: 1,
+    borderTopColor: '#ccc',
+    fontSize: 10,
+  },
+  
+  // Thank you message
+  thankYou: {
+    marginTop: 40,
+    textAlign: 'center',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  
+  // Watermark for paid status
+  watermark: {
+    position: 'absolute',
+    fontSize: 100,
+    color: 'rgba(200, 200, 200, 0.3)',
+    transform: 'rotate(-45deg)',
+    left: 100,
+    top: 300,
+  },
   
   // Footer styles
   footer: {
@@ -153,6 +206,8 @@ export const styles = StyleSheet.create({
     left: 30,
     right: 30,
     textAlign: 'center',
+    fontSize: 9,
+    color: '#666',
   },
   
   // RTL styles
