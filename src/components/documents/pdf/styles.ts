@@ -67,6 +67,11 @@ export const styles = StyleSheet.create({
     marginBottom: 2,
   },
   
+  // Section styles
+  section: {
+    marginBottom: 15,
+  },
+  
   // Table styles
   table: {
     marginTop: 10,
@@ -106,6 +111,16 @@ export const styles = StyleSheet.create({
   priceCell: {
     flex: 1,
     textAlign: 'right',
+  },
+  tableCellNarrow: {
+    flex: 0.5,
+    fontSize: 10,
+    padding: 3,
+  },
+  tableCellWide: {
+    flex: 2,
+    fontSize: 10,
+    padding: 3,
   },
   
   // Totals section
