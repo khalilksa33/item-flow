@@ -26,5 +26,6 @@
   "print": "Print",
   "createSuccess": "Quotation created successfully",
   "updateSuccess": "Quotation updated successfully",
-  "deleteSuccess": "Quotation deleted successfully"
+  "deleteSuccess": "Quotation deleted successfully",
+  "noQuotations": "No quotations found. Create your first quotation using the button above."
 }

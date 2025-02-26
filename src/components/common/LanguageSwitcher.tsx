@@ -36,11 +36,9 @@ export function LanguageSwitcher() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="icon">
-          <Languages className="h-4 w-4" />
-          <span className="sr-only">
-            {isRTL ? 'تغيير اللغة' : 'Change Language'}
-          </span>
+        <Button variant="outline">
+          <Languages className="h-4 w-4 mr-2" />
+          {isRTL ? 'العربية' : 'English'}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">

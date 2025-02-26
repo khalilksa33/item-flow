@@ -35,7 +35,8 @@ interface QuotationPDFProps {
 }
 
 export const QuotationPDF = ({ quotation, customerName }: QuotationPDFProps) => {
-  const { t, i18n } = useTranslation();
+  // Use a direct import since useTranslation doesn't work well in PDF context
+  const isRTL = localStorage.getItem('preferredLanguage') === 'ar';
   
   const companyName = localStorage.getItem('companyName') || 'Company Name';
   const vatNumber = localStorage.getItem('vatNumber') || '';
@@ -47,17 +48,25 @@ export const QuotationPDF = ({ quotation, customerName }: QuotationPDFProps) => 
   const companyLogo = localStorage.getItem('companyLogo') || '';
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString(i18n.language === 'ar' ? 'ar-SA' : 'en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
+    try {
+      return new Date(dateString).toLocaleDateString(isRTL ? 'ar-SA' : 'en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    } catch (error) {
+      console.error("Error formatting date:", error);
+      return dateString;
+    }
   };
 
   // Safe formatting function to handle undefined values
   const safeFormatNumber = (value: number | undefined) => {
     return typeof value === 'number' ? value.toFixed(2) : '0.00';
   };
+
+  // Ensure quotation items array exists
+  const items = quotation.items || [];
 
   return (
     <Document>
@@ -79,27 +88,27 @@ export const QuotationPDF = ({ quotation, customerName }: QuotationPDFProps) => 
         </View>
 
         <View>
-          <Text style={styles.title}>Quotation</Text>
+          <Text style={styles.title}>{isRTL ? 'عرض أسعار' : 'Quotation'}</Text>
           <View style={styles.infoRow}>
             <View>
-              <Text style={styles.infoItem}>Date: {formatDate(quotation.createdAt)}</Text>
-              <Text style={styles.infoItem}>Valid Until: {formatDate(quotation.validUntil)}</Text>
-              {quotation.terms && <Text style={styles.infoItem}>Terms: {quotation.terms}</Text>}
+              <Text style={styles.infoItem}>{isRTL ? 'التاريخ:' : 'Date:'} {formatDate(quotation.createdAt)}</Text>
+              <Text style={styles.infoItem}>{isRTL ? 'صالح حتى:' : 'Valid Until:'} {formatDate(quotation.validUntil)}</Text>
+              {quotation.terms && <Text style={styles.infoItem}>{isRTL ? 'الشروط:' : 'Terms:'} {quotation.terms}</Text>}
             </View>
             <View>
-              <Text style={styles.infoItem}>Customer: {customerName}</Text>
+              <Text style={styles.infoItem}>{isRTL ? 'العميل:' : 'Customer:'} {customerName}</Text>
             </View>
           </View>
         </View>
 
         <View style={styles.table}>
           <View style={[styles.tableRow, styles.tableHeader]}>
-            <Text style={styles.tableCell}>Item</Text>
-            <Text style={styles.tableCell}>Quantity</Text>
-            <Text style={styles.tableCell}>Unit Price</Text>
-            <Text style={styles.tableCell}>Subtotal</Text>
+            <Text style={styles.tableCell}>{isRTL ? 'المنتج' : 'Item'}</Text>
+            <Text style={styles.tableCell}>{isRTL ? 'الكمية' : 'Quantity'}</Text>
+            <Text style={styles.tableCell}>{isRTL ? 'سعر الوحدة' : 'Unit Price'}</Text>
+            <Text style={styles.tableCell}>{isRTL ? 'المجموع الفرعي' : 'Subtotal'}</Text>
           </View>
-          {quotation.items.map((item, index) => (
+          {items.map((item, index) => (
             <View key={index} style={styles.tableRow}>
               <Text style={styles.tableCell}>{item.productId}</Text>
               <Text style={styles.tableCell}>{item.quantity}</Text>
@@ -111,29 +120,32 @@ export const QuotationPDF = ({ quotation, customerName }: QuotationPDFProps) => 
 
         <View style={styles.totals}>
           <View style={styles.totalRow}>
-            <Text style={styles.totalLabel}>Subtotal:</Text>
+            <Text style={styles.totalLabel}>{isRTL ? 'المجموع الفرعي:' : 'Subtotal:'}</Text>
             <Text style={styles.totalValue}>{currency} {safeFormatNumber(quotation.subtotal)}</Text>
           </View>
           <View style={styles.totalRow}>
-            <Text style={styles.totalLabel}>VAT ({(quotation.vatRate * 100).toFixed()}%):</Text>
+            <Text style={styles.totalLabel}>
+              {isRTL ? `ضريبة القيمة المضافة (${(quotation.vatRate * 100).toFixed()}%):` : 
+                `VAT (${(quotation.vatRate * 100).toFixed()}%):`}
+            </Text>
             <Text style={styles.totalValue}>{currency} {safeFormatNumber(quotation.vatAmount)}</Text>
           </View>
           <View style={[styles.totalRow, styles.grandTotal]}>
-            <Text style={styles.totalLabel}>Total:</Text>
+            <Text style={styles.totalLabel}>{isRTL ? 'المجموع:' : 'Total:'}</Text>
             <Text style={styles.totalValue}>{currency} {safeFormatNumber(quotation.total)}</Text>
           </View>
         </View>
 
         {quotation.notes && (
           <View style={styles.notes}>
-            <Text style={styles.notesTitle}>Notes:</Text>
+            <Text style={styles.notesTitle}>{isRTL ? 'ملاحظات:' : 'Notes:'}</Text>
             <Text>{quotation.notes}</Text>
           </View>
         )}
 
         <View style={styles.footer}>
           <Text>{companyName} • {companyAddress} • {companyPhone}</Text>
-          <Text>Generated on {new Date().toLocaleDateString()}</Text>
+          <Text>{isRTL ? 'تم إنشاؤه في ' : 'Generated on '} {new Date().toLocaleDateString()}</Text>
         </View>
       </Page>
     </Document>

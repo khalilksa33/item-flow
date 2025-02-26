@@ -85,14 +85,14 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex items-center justify-center min-h-screen bg-gray-100" dir={isRTL ? "rtl" : "ltr"}>
       <div className="absolute top-4 right-4">
         <LanguageSwitcher />
       </div>
       <Card className="w-[350px]">
         <CardHeader>
-          <CardTitle>{t("auth:login")}</CardTitle>
-          <CardDescription>
+          <CardTitle className={isRTL ? "text-right" : ""}>{t("auth:login")}</CardTitle>
+          <CardDescription className={isRTL ? "text-right" : ""}>
             {t("auth:pleaseLogin")}
           </CardDescription>
         </CardHeader>
@@ -100,21 +100,22 @@ const LoginPage = () => {
           <form onSubmit={handleSubmit} className="space-y-4">
             {error && (
               <Alert variant="destructive">
-                <AlertDescription>{error}</AlertDescription>
+                <AlertDescription className={isRTL ? "text-right" : ""}>{error}</AlertDescription>
               </Alert>
             )}
             <div className="space-y-2">
-              <Label htmlFor="username">{t("auth:username")}</Label>
+              <Label htmlFor="username" className={isRTL ? "block text-right" : ""}>{t("auth:username")}</Label>
               <Input
                 id="username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder={t("auth:enterUsername")}
                 dir={isRTL ? "rtl" : "ltr"}
+                className={isRTL ? "text-right" : ""}
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">{t("auth:password")}</Label>
+              <Label htmlFor="password" className={isRTL ? "block text-right" : ""}>{t("auth:password")}</Label>
               <Input
                 id="password"
                 type="password"
@@ -122,6 +123,7 @@ const LoginPage = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder={t("auth:enterPassword")}
                 dir={isRTL ? "rtl" : "ltr"}
+                className={isRTL ? "text-right" : ""}
               />
             </div>
             <Button type="submit" className="w-full">
@@ -129,23 +131,6 @@ const LoginPage = () => {
             </Button>
           </form>
         </CardContent>
-        <CardFooter className="flex flex-col space-y-2">
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={() => setShowCredentials(!showCredentials)}
-            className="text-xs text-gray-500 w-full"
-          >
-            {showCredentials ? t("common:hide") : t("common:show")} {t("auth:defaultAccounts")}
-          </Button>
-          
-          {showCredentials && (
-            <div className="text-sm text-gray-500 p-2 bg-gray-50 rounded w-full">
-              <p>admin / admin123</p>
-              <p>manager / manager123</p>
-            </div>
-          )}
-        </CardFooter>
       </Card>
     </div>
   );
