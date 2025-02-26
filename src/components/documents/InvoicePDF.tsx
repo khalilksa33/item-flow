@@ -26,7 +26,8 @@ export const InvoicePDF = ({ invoice, customerName }: InvoicePDFProps) => {
 
   // Generate QR code URL with proper encoding
   const qrCodeData = `INV:${invoice.id}|COMP:${encodeURIComponent(companyName)}|CUST:${encodeURIComponent(customerName)}|AMT:${invoice.total}`;
-  const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${encodeURIComponent(qrCodeData)}`;
+  // Use a reliable QR code service
+  const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrCodeData)}`;
 
   // Add safe number formatting helper
   const formatNumber = (value: number | undefined) => {

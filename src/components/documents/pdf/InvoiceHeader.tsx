@@ -36,14 +36,13 @@ export function InvoiceHeader({
         {companyPhone && <Text style={styles.companyInfo}>{t("invoices.phone")}: {companyPhone}</Text>}
         {companyEmail && <Text style={styles.companyInfo}>{t("invoices.email")}: {companyEmail}</Text>}
       </View>
-      <View style={styles.logoContainer}>
-        {companyLogo && (
-          <Image
-            src={companyLogo}
-            style={styles.logo}
-          />
-        )}
-      </View>
+      
+      {companyLogo && (
+        <View style={styles.logoContainer}>
+          <Image src={companyLogo} style={styles.logo} />
+        </View>
+      )}
+      
       <View style={styles.headerRight}>
         <Image style={styles.qrCode} src={qrCodeUrl} />
       </View>

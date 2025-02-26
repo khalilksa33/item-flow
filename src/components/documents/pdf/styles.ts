@@ -1,156 +1,172 @@
 
 import { StyleSheet } from '@react-pdf/renderer';
 
-// Define styles with appropriate font sizes
 export const styles = StyleSheet.create({
-  page: { 
+  page: {
     padding: 30,
-    fontSize: 10, // Default smaller font size
     fontFamily: 'Helvetica',
+    fontSize: 12,
+    lineHeight: 1.5,
   },
-  header: { 
+  
+  // Header styles
+  header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 20,
-    borderBottom: '1px solid #cccccc',
-    paddingBottom: 10,
   },
   headerLeft: {
+    flex: 2,
+  },
+  logoContainer: {
     flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    maxHeight: 80,
+  },
+  logo: {
+    maxWidth: '100%',
+    maxHeight: '100%',
+    objectFit: 'contain',
   },
   headerRight: {
     flex: 1,
     alignItems: 'flex-end',
-  },
-  logo: {
-    width: 80,
-    height: 80,
-    objectFit: 'contain',
+    justifyContent: 'center',
   },
   qrCode: {
     width: 80,
     height: 80,
   },
-  companyName: { 
-    fontSize: 16, // Smaller company name size
+  companyName: {
+    fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 5,
   },
-  companyInfo: { 
-    fontSize: 8, // Smaller company info
+  companyInfo: {
+    fontSize: 10,
     color: '#666',
     marginBottom: 2,
   },
-  title: { 
-    fontSize: 18, // Smaller title
+  
+  // Invoice title and info section
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
     marginBottom: 10,
-    color: '#333',
-    textTransform: 'uppercase',
   },
   invoiceInfo: {
-    marginBottom: 15,
-  },
-  invoiceDetail: {
-    marginBottom: 2,
-  },
-  section: {
-    marginBottom: 15,
+    marginBottom: 20,
   },
   sectionTitle: {
-    fontSize: 12,
     fontWeight: 'bold',
     marginBottom: 5,
   },
-  table: { 
-    marginTop: 10,
-    borderWidth: 1,
-    borderColor: '#f0f0f0',
-    borderRadius: 4,
-    overflow: 'hidden',
+  invoiceDetail: {
+    fontSize: 10,
+    marginBottom: 2,
   },
-  tableRow: { 
+  
+  // Table styles
+  table: {
+    marginTop: 10,
+    marginBottom: 10,
+  },
+  tableHeader: {
+    backgroundColor: '#f0f0f0',
     flexDirection: 'row',
     borderBottomWidth: 1,
-    borderColor: '#f0f0f0',
-    minHeight: 25,
-    alignItems: 'center',
+    borderBottomColor: '#000',
+    padding: 5,
   },
-  tableHeader: { 
-    backgroundColor: '#f8f9fa',
-    fontWeight: 'bold',
+  tableRow: {
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+    padding: 5,
   },
-  tableCell: { 
+  tableCell: {
     flex: 1,
-    padding: 5,
-    fontSize: 9,
+    fontSize: 10,
+    padding: 3,
   },
-  tableCellNarrow: {
-    flex: 0.5,
-    padding: 5,
-    fontSize: 9,
+  tableCellHeader: {
+    flex: 1,
+    fontSize: 10,
+    fontWeight: 'bold',
+    padding: 3,
   },
-  tableCellWide: {
+  itemCell: {
     flex: 2,
-    padding: 5,
-    fontSize: 9,
   },
-  totals: { 
-    marginTop: 20,
-    alignItems: 'flex-end',
+  quantityCell: {
+    flex: 1,
+    textAlign: 'center',
+  },
+  priceCell: {
+    flex: 1,
+    textAlign: 'right',
+  },
+  
+  // Totals section
+  totals: {
+    marginTop: 30,
+    paddingTop: 10,
+    borderTopWidth: 1,
+    borderTopColor: '#ccc',
   },
   totalRow: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
-    marginBottom: 3,
+    marginBottom: 5,
   },
   totalLabel: {
-    width: 100,
+    flex: 1,
     textAlign: 'right',
     paddingRight: 10,
+    maxWidth: 150,
   },
   totalValue: {
-    width: 80,
     textAlign: 'right',
+    minWidth: 100,
   },
   grandTotal: {
     fontWeight: 'bold',
-    fontSize: 12,
+    marginTop: 5,
+    paddingTop: 5,
+    borderTopWidth: 1,
+    borderTopColor: '#000',
   },
+  
+  // Notes and footer
   notes: {
-    marginTop: 20,
-    fontSize: 9,
-    fontStyle: 'italic',
-    color: '#666',
+    marginTop: 30,
+    paddingTop: 10,
+    borderTopWidth: 1,
+    borderTopColor: '#ccc',
+    fontSize: 10,
+  },
+  thankYou: {
+    marginTop: 40,
+    textAlign: 'center',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  watermark: {
+    position: 'absolute',
+    fontSize: 100,
+    color: 'rgba(200, 200, 200, 0.3)',
+    transform: 'rotate(-45deg)',
+    left: 100,
+    top: 300,
   },
   footer: {
     position: 'absolute',
     bottom: 30,
     left: 30,
     right: 30,
-    borderTopWidth: 1,
-    borderColor: '#cccccc',
-    paddingTop: 10,
-    fontSize: 8,
+    textAlign: 'center',
+    fontSize: 9,
     color: '#666',
-    textAlign: 'center',
   },
-  thankYou: {
-    marginTop: 30,
-    textAlign: 'center',
-    fontSize: 11,
-    color: '#333',
-  },
-  watermark: {
-    position: 'absolute',
-    bottom: 200,
-    right: 60,
-    fontSize: 60,
-    color: 'rgba(200, 200, 200, 0.3)',
-    transform: 'rotate(-45deg)',
-  },
-  logoContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  }
 });
