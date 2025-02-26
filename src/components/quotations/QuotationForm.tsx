@@ -28,13 +28,15 @@ export function QuotationForm({
   const isRTL = i18n.language === 'ar';
 
   const calculateItemTotal = (item: QuotationItem) => {
-    const subtotal = item.quantity * item.unitPrice;
+    const quantity = Number(item.quantity) || 0;
+    const unitPrice = Number(item.unitPrice) || 0;
+    const subtotal = quantity * unitPrice;
     const vat = subtotal * VAT_RATE;
     return { subtotal, vat };
   };
 
   const calculateTotals = (items: QuotationItem[]) => {
-    const subtotal = items.reduce((sum, item) => sum + item.subtotal, 0);
+    const subtotal = items.reduce((sum, item) => sum + (Number(item.subtotal) || 0), 0);
     const vatAmount = subtotal * VAT_RATE;
     const total = subtotal + vatAmount;
     return { subtotal, vatAmount, total };
@@ -66,7 +68,7 @@ export function QuotationForm({
         item.vat = vat;
       }
     } else if (field === 'quantity' || field === 'unitPrice') {
-      item[field] = Number(value);
+      item[field] = Number(value) || 0;
       const { subtotal, vat } = calculateItemTotal(item);
       item.subtotal = subtotal;
       item.vat = vat;

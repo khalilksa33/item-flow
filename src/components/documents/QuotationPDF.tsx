@@ -91,8 +91,8 @@ export const QuotationPDF = ({ quotation, customerName }: QuotationPDFProps) => 
           <Text style={styles.title}>{isRTL ? 'عرض أسعار' : 'Quotation'}</Text>
           <View style={styles.infoRow}>
             <View>
-              <Text style={styles.infoItem}>{isRTL ? 'التاريخ:' : 'Date:'} {formatDate(quotation.createdAt)}</Text>
-              <Text style={styles.infoItem}>{isRTL ? 'صالح حتى:' : 'Valid Until:'} {formatDate(quotation.validUntil)}</Text>
+              <Text style={styles.infoItem}>{isRTL ? 'التاريخ:' : 'Date:'} {formatDate(quotation.createdAt || new Date().toISOString())}</Text>
+              <Text style={styles.infoItem}>{isRTL ? 'صالح حتى:' : 'Valid Until:'} {formatDate(quotation.validUntil || '')}</Text>
               {quotation.terms && <Text style={styles.infoItem}>{isRTL ? 'الشروط:' : 'Terms:'} {quotation.terms}</Text>}
             </View>
             <View>
@@ -111,7 +111,7 @@ export const QuotationPDF = ({ quotation, customerName }: QuotationPDFProps) => 
           {items.map((item, index) => (
             <View key={index} style={styles.tableRow}>
               <Text style={styles.tableCell}>{item.productId}</Text>
-              <Text style={styles.tableCell}>{item.quantity}</Text>
+              <Text style={styles.tableCell}>{item.quantity || 0}</Text>
               <Text style={styles.tableCell}>{currency} {safeFormatNumber(item.unitPrice)}</Text>
               <Text style={styles.tableCell}>{currency} {safeFormatNumber(item.subtotal)}</Text>
             </View>
@@ -125,8 +125,8 @@ export const QuotationPDF = ({ quotation, customerName }: QuotationPDFProps) => 
           </View>
           <View style={styles.totalRow}>
             <Text style={styles.totalLabel}>
-              {isRTL ? `ضريبة القيمة المضافة (${(quotation.vatRate * 100).toFixed()}%):` : 
-                `VAT (${(quotation.vatRate * 100).toFixed()}%):`}
+              {isRTL ? `ضريبة القيمة المضافة (${((quotation.vatRate || 0) * 100).toFixed()}%):` : 
+                `VAT (${((quotation.vatRate || 0) * 100).toFixed()}%):`}
             </Text>
             <Text style={styles.totalValue}>{currency} {safeFormatNumber(quotation.vatAmount)}</Text>
           </View>

@@ -8,7 +8,12 @@ export function QuotationItemRow({ item, products, onItemChange, onRemove }: Quo
   const { t, i18n } = useTranslation(["quotations", "common"]);
   const isRTL = i18n.language === 'ar';
   
-  const formatCurrency = (amount: number) => {
+  const formatCurrency = (amount: number | undefined) => {
+    // Ensure amount is a number before trying to format it
+    if (amount === undefined || amount === null) {
+      amount = 0;
+    }
+    
     const currency = localStorage.getItem('currency') || 'SAR';
     return isRTL 
       ? `${amount.toFixed(2)} ${currency}` 
@@ -34,7 +39,7 @@ export function QuotationItemRow({ item, products, onItemChange, onRemove }: Quo
         type="number"
         min="0"
         step="0.01"
-        value={item.unitPrice}
+        value={item.unitPrice || 0}
         onChange={(e) => onItemChange('unitPrice', e.target.value)}
         placeholder={t("quotations:unitPrice")}
         className={isRTL ? "text-right" : "text-left"}
@@ -43,7 +48,7 @@ export function QuotationItemRow({ item, products, onItemChange, onRemove }: Quo
       <Input
         type="number"
         min="1"
-        value={item.quantity}
+        value={item.quantity || 1}
         onChange={(e) => onItemChange('quantity', e.target.value)}
         placeholder={t("quotations:quantity")}
         className={isRTL ? "text-right" : "text-left"}
