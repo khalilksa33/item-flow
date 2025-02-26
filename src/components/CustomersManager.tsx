@@ -18,7 +18,8 @@ export function CustomersManager() {
   const [customers, setCustomers] = useState<Customer[]>(storage.getCustomers());
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation(["customers", "common"]);
+  const isRTL = i18n.language === 'ar';
 
   const loadCustomers = () => {
     setCustomers(storage.getCustomers());
@@ -34,10 +35,10 @@ export function CustomersManager() {
 
     if (editingCustomer) {
       storage.updateCustomer(customerData);
-      toast.success(t("customers.customerUpdated"));
+      toast.success(t("customers:customerUpdated"));
     } else {
       storage.addCustomer(customerData);
-      toast.success(t("customers.customerAdded"));
+      toast.success(t("customers:customerAdded"));
     }
 
     loadCustomers();
@@ -53,18 +54,18 @@ export function CustomersManager() {
   const handleDelete = (id: string) => {
     storage.deleteCustomer(id);
     loadCustomers();
-    toast.success(t("customers.customerDeleted"));
+    toast.success(t("customers:customerDeleted"));
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" dir={isRTL ? "rtl" : "ltr"}>
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">{t("customers.title")}</h2>
+        <h2 className="text-2xl font-bold">{t("customers:title")}</h2>
         <Button onClick={() => {
           setEditingCustomer(null);
           setIsDialogOpen(true);
         }}>
-          {t("customers.addCustomer")}
+          {t("customers:addCustomer")}
         </Button>
       </div>
 
@@ -78,7 +79,7 @@ export function CustomersManager() {
         <DialogContent className="max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {editingCustomer ? t("customers.editCustomer") : t("customers.addNewCustomer")}
+              {editingCustomer ? t("customers:editCustomer") : t("customers:addNewCustomer")}
             </DialogTitle>
           </DialogHeader>
           <div className="overflow-y-auto pr-1">

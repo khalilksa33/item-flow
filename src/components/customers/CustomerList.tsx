@@ -18,24 +18,25 @@ interface CustomerListProps {
 }
 
 export function CustomerList({ customers, onEdit, onDelete }: CustomerListProps) {
-  const { t } = useTranslation();
-
+  const { t, i18n } = useTranslation(["customers", "common"]);
+  const isRTL = i18n.language === 'ar';
+  
   return (
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>{t("customers.name")}</TableHead>
-          <TableHead>{t("customers.type")}</TableHead>
-          <TableHead>{t("customers.email")}</TableHead>
-          <TableHead>{t("customers.phone")}</TableHead>
-          <TableHead>{t("common.actions")}</TableHead>
+          <TableHead>{t("customers:name")}</TableHead>
+          <TableHead>{t("customers:type")}</TableHead>
+          <TableHead>{t("customers:email")}</TableHead>
+          <TableHead>{t("customers:phone")}</TableHead>
+          <TableHead>{t("common:actions")}</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {customers.map((customer) => (
           <TableRow key={customer.id}>
             <TableCell>{customer.name}</TableCell>
-            <TableCell className="capitalize">{t(`customers.${customer.type}`)}</TableCell>
+            <TableCell className="capitalize">{t(`customers:${customer.type}`)}</TableCell>
             <TableCell>{customer.email}</TableCell>
             <TableCell>{customer.phone}</TableCell>
             <TableCell>
@@ -45,14 +46,14 @@ export function CustomerList({ customers, onEdit, onDelete }: CustomerListProps)
                   size="sm"
                   onClick={() => onEdit(customer)}
                 >
-                  {t("common.edit")}
+                  {t("common:edit")}
                 </Button>
                 <Button
                   variant="destructive"
                   size="sm"
                   onClick={() => onDelete(customer.id)}
                 >
-                  {t("common.delete")}
+                  {t("common:delete")}
                 </Button>
               </div>
             </TableCell>
