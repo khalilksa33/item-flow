@@ -23,7 +23,7 @@ export function InvoiceList({ invoices, customers, onEdit, onDelete }: InvoiceLi
   const isRTL = i18n.language === 'ar';
   
   const getCustomerName = (customerId: string) => {
-    return customers.find(c => c.id === customerId)?.name || t("unknownCustomer");
+    return customers.find(c => c.id === customerId)?.name || t("invoices:unknownCustomer");
   };
 
   const formatDate = (dateString: string) => {
@@ -44,11 +44,11 @@ export function InvoiceList({ invoices, customers, onEdit, onDelete }: InvoiceLi
     <Table className={isRTL ? "text-right" : ""}>
       <TableHeader>
         <TableRow>
-          <TableHead className={isRTL ? "text-right" : ""}>{t("date")}</TableHead>
+          <TableHead className={isRTL ? "text-right" : ""}>{t("invoices:date")}</TableHead>
           <TableHead className={isRTL ? "text-right" : ""}>{t("customers:title")}</TableHead>
-          <TableHead className={isRTL ? "text-right" : ""}>{t("total")}</TableHead>
-          <TableHead className={isRTL ? "text-right" : ""}>{t("status")}</TableHead>
-          <TableHead className={isRTL ? "text-right" : ""}>{t("dueDate")}</TableHead>
+          <TableHead className={isRTL ? "text-right" : ""}>{t("invoices:total")}</TableHead>
+          <TableHead className={isRTL ? "text-right" : ""}>{t("invoices:status")}</TableHead>
+          <TableHead className={isRTL ? "text-right" : ""}>{t("invoices:dueDate")}</TableHead>
           <TableHead className={isRTL ? "text-right" : ""}>{t("common:actions")}</TableHead>
         </TableRow>
       </TableHeader>
@@ -71,7 +71,7 @@ export function InvoiceList({ invoices, customers, onEdit, onDelete }: InvoiceLi
                 invoice.status === 'cancelled' ? 'bg-gray-100 text-gray-800' :
                 'bg-yellow-100 text-yellow-800'
               }`}>
-                {t(`status.${invoice.status}`)}
+                {t(`invoices:status.${invoice.status}`)}
               </span>
             </TableCell>
             <TableCell className={isRTL ? "text-right" : ""}>

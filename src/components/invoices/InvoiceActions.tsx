@@ -6,8 +6,9 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { Download, MoreHorizontal, Printer, Receipt, Pencil, Trash } from "lucide-react";
+import { Download, MoreHorizontal, Printer, Receipt, Pencil, Trash, FileText } from "lucide-react";
 import { Invoice, Customer } from "@/types/inventory";
 import { InvoicePDF } from "../documents/InvoicePDF";
 import { ReceiptPDF } from "../documents/ReceiptPDF";
@@ -24,7 +25,7 @@ interface InvoiceActionsProps {
 export function InvoiceActions({ invoice, customers, onEdit, onDelete }: InvoiceActionsProps) {
   const { t, i18n } = useTranslation(["invoices", "common"]);
   const isRTL = i18n.language === 'ar';
-  const customerName = customers.find(c => c.id === invoice.customerId)?.name || t("unknownCustomer");
+  const customerName = customers.find(c => c.id === invoice.customerId)?.name || t("invoices:unknownCustomer");
 
   const handlePrintDocument = (blob: Blob) => {
     // Create a URL for the blob
@@ -42,7 +43,7 @@ export function InvoiceActions({ invoice, customers, onEdit, onDelete }: Invoice
       };
     } else {
       // If popup is blocked, just download the file
-      toast.error(t("popupBlocked"));
+      toast.error(t("invoices:popupBlocked"));
       
       // Provide fallback download
       const link = document.createElement('a');
@@ -72,7 +73,7 @@ export function InvoiceActions({ invoice, customers, onEdit, onDelete }: Invoice
             ) : (
               <Receipt className={`h-4 w-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
             )}
-            {type === 'invoice' ? t("printInvoice") : t("printReceipt")}
+            {type === 'invoice' ? t("invoices:printInvoice") : t("invoices:printReceipt")}
           </DropdownMenuItem>
         )}
       </BlobProvider>
@@ -93,7 +94,7 @@ export function InvoiceActions({ invoice, customers, onEdit, onDelete }: Invoice
         {({ loading }) => (
           <DropdownMenuItem disabled={loading}>
             <Download className={`h-4 w-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
-            {type === 'invoice' ? t("downloadInvoice") : t("downloadReceipt")}
+            {type === 'invoice' ? t("invoices:downloadInvoice") : t("invoices:downloadReceipt")}
           </DropdownMenuItem>
         )}
       </PDFDownloadLink>
@@ -105,18 +106,42 @@ export function InvoiceActions({ invoice, customers, onEdit, onDelete }: Invoice
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon">
           <MoreHorizontal className="h-4 w-4" />
+          <span className="sr-only">{t("common:actions")}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align={isRTL ? "start" : "end"}>
-        {renderPrintButton('invoice')}
-        {renderDownloadButton('invoice')}
-        {invoice.status === 'paid' && renderPrintButton('receipt')}
-        {invoice.status === 'paid' && renderDownloadButton('receipt')}
         <DropdownMenuItem onClick={() => onEdit(invoice)}>
           <Pencil className={`h-4 w-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
           {t("common:edit")}
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => onDelete(invoice.id)}>
+        
+        <DropdownMenuSeparator />
+        
+        <DropdownMenuItem>
+          <FileText className={`h-4 w-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+          {t("invoices:invoice")}
+        </DropdownMenuItem>
+        {renderPrintButton('invoice')}
+        {renderDownloadButton('invoice')}
+        
+        {invoice.status === 'paid' && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>
+              <Receipt className={`h-4 w-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+              {t("invoices:paid")}
+            </DropdownMenuItem>
+            {renderPrintButton('receipt')}
+            {renderDownloadButton('receipt')}
+          </>
+        )}
+        
+        <DropdownMenuSeparator />
+        
+        <DropdownMenuItem 
+          onClick={() => onDelete(invoice.id)}
+          className="text-red-600 hover:text-red-800 hover:bg-red-50"
+        >
           <Trash className={`h-4 w-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
           {t("common:delete")}
         </DropdownMenuItem>

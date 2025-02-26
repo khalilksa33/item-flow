@@ -39,10 +39,10 @@ export function InvoicesManager() {
 
     if (editingInvoice) {
       storage.updateInvoice(invoiceData);
-      toast.success(t("invoiceUpdated"));
+      toast.success(t("invoices:invoiceUpdated"));
     } else {
       storage.addInvoice(invoiceData);
-      toast.success(t("invoiceCreated"));
+      toast.success(t("invoices:invoiceCreated"));
     }
 
     loadInvoices();
@@ -58,19 +58,19 @@ export function InvoicesManager() {
   const handleDelete = (id: string) => {
     storage.deleteInvoice(id);
     loadInvoices();
-    toast.success(t("invoiceDeleted"));
+    toast.success(t("invoices:invoiceDeleted"));
   };
 
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">{t("title")}</h2>
+        <h2 className="text-2xl font-bold">{t("invoices:title")}</h2>
         <Button onClick={() => {
           setEditingInvoice(null);
           setIsDialogOpen(true);
         }}>
           <Plus className={`h-4 w-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
-          {t("newInvoice")}
+          {t("invoices:newInvoice")}
         </Button>
       </div>
 
