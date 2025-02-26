@@ -25,7 +25,7 @@ export function InvoiceFooter({
   return (
     <>
       {notes && (
-        <View style={styles.notes}>
+        <View style={[styles.notes, isRTL && styles.rtlSection]}>
           <Text style={styles.sectionTitle}>{t("invoices.notes")}</Text>
           <Text>{notes}</Text>
         </View>
@@ -39,9 +39,8 @@ export function InvoiceFooter({
         <Text style={styles.watermark}>{t("invoices.paid")}</Text>
       )}
 
-      <View style={styles.footer}>
+      <View style={[styles.footer, isRTL && styles.rtlSection]}>
         <Text>{companyName} • {companyAddress} • {companyPhone}</Text>
-        <Text>{t("invoices.generatedOn")} {new Date().toLocaleDateString(isRTL ? 'ar-SA' : 'en-US')}</Text>
       </View>
     </>
   );

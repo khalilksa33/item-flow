@@ -9,7 +9,6 @@ export const styles = StyleSheet.create({
     lineHeight: 1.5,
   },
   
-  // Header styles
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -22,7 +21,8 @@ export const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    maxHeight: 80,
+    maxHeight: 100,
+    marginHorizontal: 20,
   },
   logo: {
     maxWidth: '100%',
@@ -49,7 +49,6 @@ export const styles = StyleSheet.create({
     marginBottom: 2,
   },
   
-  // Invoice title and info section
   title: {
     fontSize: 24,
     fontWeight: 'bold',
@@ -67,12 +66,10 @@ export const styles = StyleSheet.create({
     marginBottom: 2,
   },
   
-  // Section styles
   section: {
     marginBottom: 15,
   },
   
-  // Table styles
   table: {
     marginTop: 10,
     marginBottom: 10,
@@ -114,17 +111,6 @@ export const styles = StyleSheet.create({
     fontWeight: 'bold',
     padding: 3,
   },
-  itemCell: {
-    flex: 2,
-  },
-  quantityCell: {
-    flex: 1,
-    textAlign: 'center',
-  },
-  priceCell: {
-    flex: 1,
-    textAlign: 'right',
-  },
   tableCellNarrow: {
     flex: 0.5,
     fontSize: 10,
@@ -136,7 +122,6 @@ export const styles = StyleSheet.create({
     padding: 3,
   },
   
-  // Totals section
   totals: {
     marginTop: 30,
     paddingTop: 10,
@@ -182,7 +167,6 @@ export const styles = StyleSheet.create({
     borderTopColor: '#000',
   },
   
-  // Notes and footer
   notes: {
     marginTop: 30,
     paddingTop: 10,
@@ -214,14 +198,9 @@ export const styles = StyleSheet.create({
     color: '#666',
   },
   
-  // RTL support
   rtl: {
     direction: 'rtl',
     textAlign: 'right',
-  },
-  ltr: {
-    direction: 'ltr',
-    textAlign: 'left',
   },
   rtlRow: {
     flexDirection: 'row-reverse',

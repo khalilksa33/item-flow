@@ -15,22 +15,21 @@ interface InvoicePDFProps {
 }
 
 export const InvoicePDF = ({ invoice, customerName }: InvoicePDFProps) => {
-  // Get current language
+  // Get current language and currency
   const isRTL = i18n.language === 'ar';
+  const currency = localStorage.getItem('currency') || 'SAR';
   
   // Get company info from local storage
-  const companyName = localStorage.getItem('companyName') || 'Company Name';
+  const companyName = localStorage.getItem('companyName') || '';
   const vatNumber = localStorage.getItem('vatNumber') || '';
   const crNumber = localStorage.getItem('crNumber') || '';
   const companyAddress = localStorage.getItem('companyAddress') || '';
   const companyPhone = localStorage.getItem('companyPhone') || '';
   const companyEmail = localStorage.getItem('companyEmail') || '';
-  const currency = localStorage.getItem('currency') || 'USD';
   const companyLogo = localStorage.getItem('companyLogo') || '';
 
   // Generate QR code URL with proper encoding
-  const qrCodeData = `INV:${invoice.id}|COMP:${encodeURIComponent(companyName)}|CUST:${encodeURIComponent(customerName)}|AMT:${invoice.total}`;
-  // Use a reliable QR code service
+  const qrCodeData = `INV:${invoice.id}|VAT:${vatNumber}|DATE:${invoice.createdAt}|TOTAL:${invoice.total}|TAX:${invoice.vatAmount}`;
   const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrCodeData)}`;
 
   // Add safe number formatting helper
@@ -41,7 +40,7 @@ export const InvoicePDF = ({ invoice, customerName }: InvoicePDFProps) => {
   // Ensure items array exists
   const items = invoice.items || [];
   
-  // Format dates
+  // Format dates according to locale
   const dateFormatOptions = {
     year: 'numeric',
     month: 'long',
@@ -58,7 +57,6 @@ export const InvoicePDF = ({ invoice, customerName }: InvoicePDFProps) => {
   return (
     <Document>
       <Page size="A4" style={[styles.page, isRTL && styles.rtl]}>
-        {/* Header Section */}
         <InvoiceHeader
           companyName={companyName}
           vatNumber={vatNumber}
@@ -71,7 +69,6 @@ export const InvoicePDF = ({ invoice, customerName }: InvoicePDFProps) => {
           isRTL={isRTL}
         />
 
-        {/* Title and Invoice Info */}
         <InvoiceInfo
           invoiceRef={invoiceRef}
           createdAt={invoice.createdAt}
@@ -82,7 +79,6 @@ export const InvoicePDF = ({ invoice, customerName }: InvoicePDFProps) => {
           isRTL={isRTL}
         />
 
-        {/* Items Table */}
         <InvoiceItemsTable
           items={items}
           currency={currency}
@@ -90,7 +86,6 @@ export const InvoicePDF = ({ invoice, customerName }: InvoicePDFProps) => {
           isRTL={isRTL}
         />
 
-        {/* Totals Section */}
         <InvoiceTotals
           subtotal={invoice.subtotal}
           vatRate={invoice.vatRate ?? 0}
@@ -101,7 +96,6 @@ export const InvoicePDF = ({ invoice, customerName }: InvoicePDFProps) => {
           isRTL={isRTL}
         />
 
-        {/* Footer Sections */}
         <InvoiceFooter
           companyName={companyName}
           companyAddress={companyAddress}
