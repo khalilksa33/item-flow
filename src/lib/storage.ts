@@ -1,3 +1,4 @@
+
 import { InventoryItem, Category, Supplier, User, AuditLog, Customer, Vendor, Sale, Quotation, Invoice } from "@/types/inventory";
 
 const ITEMS_KEY = 'inventory_items';
@@ -361,6 +362,59 @@ export const storage = {
     const invoices = storage.getInvoices();
     const filteredInvoices = invoices.filter(i => i.id !== id);
     storage.setInvoices(filteredInvoices);
+  },
+
+  // Data management functions
+  // Export all data from localStorage
+  exportData: () => {
+    const data = {
+      items: storage.getItems(),
+      categories: storage.getCategories(),
+      suppliers: storage.getSuppliers(),
+      users: storage.getUsers(),
+      auditLogs: storage.getAuditLogs(),
+      customers: storage.getCustomers(),
+      vendors: storage.getVendors(),
+      sales: storage.getSales(),
+      quotations: storage.getQuotations(),
+      invoices: storage.getInvoices()
+    };
+    return data;
+  },
+
+  // Import data into localStorage
+  importData: (data: any) => {
+    try {
+      if (data.items) storage.setItems(data.items);
+      if (data.categories) storage.setCategories(data.categories);
+      if (data.suppliers) storage.setSuppliers(data.suppliers);
+      if (data.users) storage.setUsers(data.users);
+      if (data.auditLogs) localStorage.setItem(AUDIT_LOGS_KEY, JSON.stringify(data.auditLogs));
+      if (data.customers) storage.setCustomers(data.customers);
+      if (data.vendors) storage.setVendors(data.vendors);
+      if (data.sales) storage.setSales(data.sales);
+      if (data.quotations) storage.setQuotations(data.quotations);
+      if (data.invoices) storage.setInvoices(data.invoices);
+      return true;
+    } catch (error) {
+      console.error("Import error:", error);
+      return false;
+    }
+  },
+
+  // Clear all data from localStorage
+  clearData: () => {
+    localStorage.removeItem(ITEMS_KEY);
+    localStorage.removeItem(CATEGORIES_KEY);
+    localStorage.removeItem(SUPPLIERS_KEY);
+    localStorage.removeItem(USERS_KEY);
+    localStorage.removeItem(AUDIT_LOGS_KEY);
+    localStorage.removeItem(CUSTOMERS_KEY);
+    localStorage.removeItem(VENDORS_KEY);
+    localStorage.removeItem(SALES_KEY);
+    localStorage.removeItem(QUOTATIONS_KEY);
+    localStorage.removeItem(INVOICES_KEY);
+    // Don't remove current user or activation status
   },
 
   initializeData: () => {
