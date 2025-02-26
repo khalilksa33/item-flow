@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { QuotationFormProps } from "./types";
 import { QuotationItem } from "@/types/inventory";
 import { QuotationItemRow } from "./QuotationItemRow";
+import { useTranslation } from "react-i18next";
 
 const VAT_RATE = 0.15;
 
@@ -23,6 +24,8 @@ export function QuotationForm({
   const [validUntil, setValidUntil] = useState(editingQuotation?.validUntil || "");
   const [notes, setNotes] = useState(editingQuotation?.notes || "");
   const [terms, setTerms] = useState(editingQuotation?.terms || "");
+  const { t, i18n } = useTranslation(["quotations", "common"]);
+  const isRTL = i18n.language === 'ar';
 
   const calculateItemTotal = (item: QuotationItem) => {
     const subtotal = item.quantity * item.unitPrice;
@@ -90,19 +93,28 @@ export function QuotationForm({
     });
   };
 
+  const formatCurrency = (amount: number) => {
+    const currency = localStorage.getItem('currency') || 'SAR';
+    return isRTL 
+      ? `${amount.toFixed(2)} ${currency}` 
+      : `${currency} ${amount.toFixed(2)}`;
+  };
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4" dir={isRTL ? "rtl" : "ltr"}>
       <div className="space-y-4">
         <div>
-          <Label htmlFor="customer">Customer</Label>
+          <Label htmlFor="customer" className={isRTL ? "text-right block" : "text-left block"}>
+            {t("quotations:customer")}
+          </Label>
           <select
             id="customer"
-            className="w-full rounded-md border border-input bg-background px-3 py-2"
+            className={`w-full rounded-md border border-input bg-background px-3 py-2 ${isRTL ? "text-right" : "text-left"}`}
             value={selectedCustomer}
             onChange={(e) => setSelectedCustomer(e.target.value)}
             required
           >
-            <option value="">Select Customer</option>
+            <option value="">{t("quotations:selectCustomer")}</option>
             {customers.map(customer => (
               <option key={customer.id} value={customer.id}>
                 {customer.name}
@@ -112,21 +124,25 @@ export function QuotationForm({
         </div>
 
         <div>
-          <Label htmlFor="validUntil">Valid Until</Label>
+          <Label htmlFor="validUntil" className={isRTL ? "text-right block" : "text-left block"}>
+            {t("quotations:validUntil")}
+          </Label>
           <Input
             id="validUntil"
             type="date"
             value={validUntil}
             onChange={(e) => setValidUntil(e.target.value)}
             required
+            dir="ltr" // Dates are always LTR
+            className={isRTL ? "text-right" : "text-left"}
           />
         </div>
 
         <div>
           <div className="flex justify-between items-center mb-2">
-            <Label>Items</Label>
+            <Label className={isRTL ? "text-right" : "text-left"}>{t("quotations:items")}</Label>
             <Button type="button" onClick={handleAddItem} size="sm">
-              Add Item
+              {t("common:add")}
             </Button>
           </div>
           {quotationItems.map((item, index) => (
@@ -144,42 +160,48 @@ export function QuotationForm({
         </div>
 
         <div>
-          <Label htmlFor="terms">Terms & Conditions</Label>
+          <Label htmlFor="terms" className={isRTL ? "text-right block" : "text-left block"}>
+            {t("quotations:terms")}
+          </Label>
           <Input
             id="terms"
             value={terms}
             onChange={(e) => setTerms(e.target.value)}
+            className={isRTL ? "text-right" : "text-left"}
           />
         </div>
 
         <div>
-          <Label htmlFor="notes">Notes</Label>
+          <Label htmlFor="notes" className={isRTL ? "text-right block" : "text-left block"}>
+            {t("quotations:notes")}
+          </Label>
           <Input
             id="notes"
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
+            className={isRTL ? "text-right" : "text-left"}
           />
         </div>
 
-        <div className="text-right space-y-1">
+        <div className={`text-${isRTL ? "left" : "right"} space-y-1`}>
           <div className="text-gray-600">
-            Subtotal: ${calculateTotals(quotationItems).subtotal.toFixed(2)}
+            {t("quotations:subtotal")}: {formatCurrency(calculateTotals(quotationItems).subtotal)}
           </div>
           <div className="text-gray-600">
-            VAT (15%): ${calculateTotals(quotationItems).vatAmount.toFixed(2)}
+            {t("quotations:vat")} (15%): {formatCurrency(calculateTotals(quotationItems).vatAmount)}
           </div>
           <div className="text-lg font-semibold">
-            Total: ${calculateTotals(quotationItems).total.toFixed(2)}
+            {t("quotations:total")}: {formatCurrency(calculateTotals(quotationItems).total)}
           </div>
         </div>
       </div>
 
-      <div className="flex justify-end gap-2">
+      <div className={`flex justify-${isRTL ? "start" : "end"} gap-2`}>
         <Button type="button" variant="outline" onClick={onCancel}>
-          Cancel
+          {t("common:cancel")}
         </Button>
         <Button type="submit">
-          {editingQuotation ? "Update" : "Create"} Quotation
+          {editingQuotation ? t("common:update") : t("common:save")}
         </Button>
       </div>
     </form>

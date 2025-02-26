@@ -1,5 +1,30 @@
 
 {
   "title": "Quotations",
-  "description": "Create and manage quotations"
+  "description": "Create and manage quotations",
+  "newQuotation": "New Quotation",
+  "editQuotation": "Edit Quotation",
+  "date": "Date",
+  "customer": "Customer",
+  "total": "Total",
+  "status": "Status",
+  "status.draft": "Draft",
+  "status.sent": "Sent",
+  "status.accepted": "Accepted",
+  "status.rejected": "Rejected",
+  "status.expired": "Expired",
+  "validUntil": "Valid Until",
+  "items": "Items",
+  "selectCustomer": "Select Customer",
+  "selectProduct": "Select Product",
+  "unitPrice": "Unit Price",
+  "quantity": "Quantity",
+  "subtotal": "Subtotal",
+  "vat": "VAT",
+  "terms": "Terms & Conditions",
+  "notes": "Notes",
+  "print": "Print",
+  "createSuccess": "Quotation created successfully",
+  "updateSuccess": "Quotation updated successfully",
+  "deleteSuccess": "Quotation deleted successfully"
 }

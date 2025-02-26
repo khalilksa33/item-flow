@@ -35,7 +35,7 @@ interface QuotationPDFProps {
 }
 
 export const QuotationPDF = ({ quotation, customerName }: QuotationPDFProps) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   
   const companyName = localStorage.getItem('companyName') || 'Company Name';
   const vatNumber = localStorage.getItem('vatNumber') || '';
@@ -43,15 +43,20 @@ export const QuotationPDF = ({ quotation, customerName }: QuotationPDFProps) => 
   const companyAddress = localStorage.getItem('companyAddress') || '';
   const companyPhone = localStorage.getItem('companyPhone') || '';
   const companyEmail = localStorage.getItem('companyEmail') || '';
-  const currency = localStorage.getItem('currency') || 'USD';
+  const currency = localStorage.getItem('currency') || 'SAR';
   const companyLogo = localStorage.getItem('companyLogo') || '';
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
+    return new Date(dateString).toLocaleDateString(i18n.language === 'ar' ? 'ar-SA' : 'en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric'
     });
+  };
+
+  // Safe formatting function to handle undefined values
+  const safeFormatNumber = (value: number | undefined) => {
+    return typeof value === 'number' ? value.toFixed(2) : '0.00';
   };
 
   return (
@@ -60,11 +65,11 @@ export const QuotationPDF = ({ quotation, customerName }: QuotationPDFProps) => 
         <View style={styles.header}>
           <View style={styles.companyHeader}>
             <Text style={styles.companyName}>{companyName}</Text>
-            {vatNumber && <Text style={styles.companyInfo}>{t("invoices.vatNumber")}: {vatNumber}</Text>}
-            {crNumber && <Text style={styles.companyInfo}>{t("invoices.crNumber")}: {crNumber}</Text>}
-            {companyAddress && <Text style={styles.companyInfo}>{t("invoices.address")}: {companyAddress}</Text>}
-            {companyPhone && <Text style={styles.companyInfo}>{t("invoices.phone")}: {companyPhone}</Text>}
-            {companyEmail && <Text style={styles.companyInfo}>{t("invoices.email")}: {companyEmail}</Text>}
+            {vatNumber && <Text style={styles.companyInfo}>VAT Number: {vatNumber}</Text>}
+            {crNumber && <Text style={styles.companyInfo}>CR Number: {crNumber}</Text>}
+            {companyAddress && <Text style={styles.companyInfo}>Address: {companyAddress}</Text>}
+            {companyPhone && <Text style={styles.companyInfo}>Phone: {companyPhone}</Text>}
+            {companyEmail && <Text style={styles.companyInfo}>Email: {companyEmail}</Text>}
           </View>
           {companyLogo && (
             <View style={styles.logoContainer}>
@@ -74,61 +79,61 @@ export const QuotationPDF = ({ quotation, customerName }: QuotationPDFProps) => 
         </View>
 
         <View>
-          <Text style={styles.title}>{t("quotations.title")}</Text>
+          <Text style={styles.title}>Quotation</Text>
           <View style={styles.infoRow}>
             <View>
-              <Text style={styles.infoItem}>{t("invoices.date")}: {formatDate(quotation.createdAt)}</Text>
-              <Text style={styles.infoItem}>{t("quotations.validUntil")}: {formatDate(quotation.validUntil)}</Text>
-              {quotation.terms && <Text style={styles.infoItem}>{t("invoices.paymentTerms")}: {quotation.terms}</Text>}
+              <Text style={styles.infoItem}>Date: {formatDate(quotation.createdAt)}</Text>
+              <Text style={styles.infoItem}>Valid Until: {formatDate(quotation.validUntil)}</Text>
+              {quotation.terms && <Text style={styles.infoItem}>Terms: {quotation.terms}</Text>}
             </View>
             <View>
-              <Text style={styles.infoItem}>{t("invoices.billTo")}: {customerName}</Text>
+              <Text style={styles.infoItem}>Customer: {customerName}</Text>
             </View>
           </View>
         </View>
 
         <View style={styles.table}>
           <View style={[styles.tableRow, styles.tableHeader]}>
-            <Text style={styles.tableCell}>{t("invoices.item")}</Text>
-            <Text style={styles.tableCell}>{t("invoices.quantity")}</Text>
-            <Text style={styles.tableCell}>{t("invoices.unitPrice")}</Text>
-            <Text style={styles.tableCell}>{t("invoices.subtotal")}</Text>
+            <Text style={styles.tableCell}>Item</Text>
+            <Text style={styles.tableCell}>Quantity</Text>
+            <Text style={styles.tableCell}>Unit Price</Text>
+            <Text style={styles.tableCell}>Subtotal</Text>
           </View>
           {quotation.items.map((item, index) => (
             <View key={index} style={styles.tableRow}>
               <Text style={styles.tableCell}>{item.productId}</Text>
               <Text style={styles.tableCell}>{item.quantity}</Text>
-              <Text style={styles.tableCell}>{currency} {item.unitPrice.toFixed(2)}</Text>
-              <Text style={styles.tableCell}>{currency} {item.subtotal.toFixed(2)}</Text>
+              <Text style={styles.tableCell}>{currency} {safeFormatNumber(item.unitPrice)}</Text>
+              <Text style={styles.tableCell}>{currency} {safeFormatNumber(item.subtotal)}</Text>
             </View>
           ))}
         </View>
 
         <View style={styles.totals}>
           <View style={styles.totalRow}>
-            <Text style={styles.totalLabel}>{t("invoices.subtotal")}:</Text>
-            <Text style={styles.totalValue}>{currency} {quotation.subtotal.toFixed(2)}</Text>
+            <Text style={styles.totalLabel}>Subtotal:</Text>
+            <Text style={styles.totalValue}>{currency} {safeFormatNumber(quotation.subtotal)}</Text>
           </View>
           <View style={styles.totalRow}>
-            <Text style={styles.totalLabel}>{t("invoices.vat")} ({(quotation.vatRate * 100).toFixed()}%):</Text>
-            <Text style={styles.totalValue}>{currency} {quotation.vatAmount.toFixed(2)}</Text>
+            <Text style={styles.totalLabel}>VAT ({(quotation.vatRate * 100).toFixed()}%):</Text>
+            <Text style={styles.totalValue}>{currency} {safeFormatNumber(quotation.vatAmount)}</Text>
           </View>
           <View style={[styles.totalRow, styles.grandTotal]}>
-            <Text style={styles.totalLabel}>{t("invoices.total")}:</Text>
-            <Text style={styles.totalValue}>{currency} {quotation.total.toFixed(2)}</Text>
+            <Text style={styles.totalLabel}>Total:</Text>
+            <Text style={styles.totalValue}>{currency} {safeFormatNumber(quotation.total)}</Text>
           </View>
         </View>
 
         {quotation.notes && (
           <View style={styles.notes}>
-            <Text style={styles.notesTitle}>{t("invoices.notes")}:</Text>
+            <Text style={styles.notesTitle}>Notes:</Text>
             <Text>{quotation.notes}</Text>
           </View>
         )}
 
         <View style={styles.footer}>
           <Text>{companyName} • {companyAddress} • {companyPhone}</Text>
-          <Text>{t("invoices.generatedOn")} {new Date().toLocaleDateString()}</Text>
+          <Text>Generated on {new Date().toLocaleDateString()}</Text>
         </View>
       </Page>
     </Document>

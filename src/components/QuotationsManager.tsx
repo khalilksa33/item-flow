@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import {
   Dialog,
@@ -19,8 +20,16 @@ import { Quotation, Customer, InventoryItem } from "@/types/inventory";
 import { toast } from "sonner";
 import { QuotationForm } from "./quotations/QuotationForm";
 import { PDFDownloadLink } from '@react-pdf/renderer';
-import { Printer } from "lucide-react";
+import { Printer, Plus, MoreVertical, Trash, Edit } from "lucide-react";
 import { QuotationPDF } from "./documents/QuotationPDF";
+import { useTranslation } from "react-i18next";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 
 export function QuotationsManager() {
   const [quotations, setQuotations] = useState<Quotation[]>([]);
@@ -28,6 +37,8 @@ export function QuotationsManager() {
   const [editingQuotation, setEditingQuotation] = useState<Quotation | null>(null);
   const [customers] = useState<Customer[]>(storage.getCustomers());
   const [products] = useState<InventoryItem[]>(storage.getItems());
+  const { t, i18n } = useTranslation(["quotations", "common"]);
+  const isRTL = i18n.language === 'ar';
 
   useEffect(() => {
     loadQuotations();
@@ -48,10 +59,10 @@ export function QuotationsManager() {
 
     if (editingQuotation) {
       storage.updateQuotation(quotationData);
-      toast.success("Quotation updated successfully");
+      toast.success(t("common:success"));
     } else {
       storage.addQuotation(quotationData);
-      toast.success("Quotation created successfully");
+      toast.success(t("common:success"));
     }
 
     loadQuotations();
@@ -67,103 +78,141 @@ export function QuotationsManager() {
   const handleDelete = (id: string) => {
     storage.deleteQuotation(id);
     loadQuotations();
-    toast.success("Quotation deleted successfully");
+    toast.success(t("common:success"));
   };
 
   const getCustomerName = (customerId: string) => {
     return customers.find(c => c.id === customerId)?.name || 'Unknown Customer';
   };
 
-  const handlePrint = (quotation: Quotation) => {
-    const customerName = customers.find(c => c.id === quotation.customerId)?.name || 'Unknown Customer';
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat(i18n.language, { 
+      year: 'numeric', 
+      month: 'short', 
+      day: 'numeric' 
+    }).format(date);
+  };
+
+  const formatCurrency = (amount: number) => {
+    const currency = localStorage.getItem('currency') || 'SAR';
+    return isRTL 
+      ? `${amount.toFixed(2)} ${currency}` 
+      : `${currency} ${amount.toFixed(2)}`;
+  };
+
+  const renderActions = (quotation: Quotation) => {
+    const customerName = getCustomerName(quotation.customerId);
+    
     return (
-      <PDFDownloadLink
-        document={<QuotationPDF quotation={quotation} customerName={customerName} />}
-        fileName={`quotation-${quotation.id.slice(0, 8)}.pdf`}
-      >
-        {({ loading }) => (
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={loading}
-          >
-            <Printer className="h-4 w-4 mr-2" />
-            Print
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+            <span className="sr-only">{t("common:actions")}</span>
+            <MoreVertical className="h-4 w-4" />
           </Button>
-        )}
-      </PDFDownloadLink>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align={isRTL ? "start" : "end"}>
+          <DropdownMenuItem onClick={() => handleEdit(quotation)}>
+            <Edit className={`h-4 w-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+            {t("common:edit")}
+          </DropdownMenuItem>
+          
+          <DropdownMenuSeparator />
+          
+          <PDFDownloadLink
+            document={<QuotationPDF quotation={quotation} customerName={customerName} />}
+            fileName={`quotation-${quotation.id.slice(0, 8)}.pdf`}
+            style={{ textDecoration: 'none' }}
+          >
+            {({ loading }) => (
+              <DropdownMenuItem disabled={loading}>
+                <Printer className={`h-4 w-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+                {t("common:print")}
+              </DropdownMenuItem>
+            )}
+          </PDFDownloadLink>
+          
+          <DropdownMenuSeparator />
+          
+          <DropdownMenuItem 
+            onClick={() => handleDelete(quotation.id)}
+            className="text-red-600 hover:text-red-800 hover:bg-red-50"
+          >
+            <Trash className={`h-4 w-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+            {t("common:delete")}
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     );
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" dir={isRTL ? "rtl" : "ltr"}>
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Quotations</h2>
+        <h2 className="text-2xl font-bold">{t("quotations:title")}</h2>
         <Button onClick={() => {
           setEditingQuotation(null);
           setIsDialogOpen(true);
         }}>
-          New Quotation
+          <Plus className={`h-4 w-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+          {t("quotations:newQuotation")}
         </Button>
       </div>
 
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Date</TableHead>
-            <TableHead>Customer</TableHead>
-            <TableHead>Total</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Valid Until</TableHead>
-            <TableHead>Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {quotations.map((quotation) => (
-            <TableRow key={quotation.id}>
-              <TableCell>{new Date(quotation.createdAt).toLocaleDateString()}</TableCell>
-              <TableCell>{getCustomerName(quotation.customerId)}</TableCell>
-              <TableCell>${quotation.total.toFixed(2)}</TableCell>
-              <TableCell>
-                <span className={`px-2 py-1 rounded-full text-xs ${
-                  quotation.status === 'accepted' ? 'bg-green-100 text-green-800' :
-                  quotation.status === 'rejected' ? 'bg-red-100 text-red-800' :
-                  quotation.status === 'expired' ? 'bg-gray-100 text-gray-800' :
-                  'bg-yellow-100 text-yellow-800'
-                }`}>
-                  {quotation.status}
-                </span>
-              </TableCell>
-              <TableCell>{new Date(quotation.validUntil).toLocaleDateString()}</TableCell>
-              <TableCell>
-                <div className="flex gap-2">
-                  {handlePrint(quotation)}
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleEdit(quotation)}
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => handleDelete(quotation.id)}
-                  >
-                    Delete
-                  </Button>
-                </div>
-              </TableCell>
+      <div>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className={isRTL ? "text-right" : ""}>{t("quotations:date")}</TableHead>
+              <TableHead className={isRTL ? "text-right" : ""}>{t("quotations:customer")}</TableHead>
+              <TableHead className={isRTL ? "text-right" : ""}>{t("quotations:total")}</TableHead>
+              <TableHead className={isRTL ? "text-right" : ""}>{t("quotations:status")}</TableHead>
+              <TableHead className={isRTL ? "text-right" : ""}>{t("quotations:validUntil")}</TableHead>
+              <TableHead className={isRTL ? "text-right" : ""}>{t("common:actions")}</TableHead>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHeader>
+          <TableBody>
+            {quotations.map((quotation) => (
+              <TableRow key={quotation.id}>
+                <TableCell className={isRTL ? "text-right" : ""}>
+                  {formatDate(quotation.createdAt)}
+                </TableCell>
+                <TableCell className={isRTL ? "text-right" : ""}>
+                  {getCustomerName(quotation.customerId)}
+                </TableCell>
+                <TableCell className={isRTL ? "text-right" : ""}>
+                  {formatCurrency(quotation.total)}
+                </TableCell>
+                <TableCell className={isRTL ? "text-right" : ""}>
+                  <span className={`px-2 py-1 rounded-full text-xs ${
+                    quotation.status === 'accepted' ? 'bg-green-100 text-green-800' :
+                    quotation.status === 'rejected' ? 'bg-red-100 text-red-800' :
+                    quotation.status === 'expired' ? 'bg-gray-100 text-gray-800' :
+                    'bg-yellow-100 text-yellow-800'
+                  }`}>
+                    {t(`quotations:status.${quotation.status}`)}
+                  </span>
+                </TableCell>
+                <TableCell className={isRTL ? "text-right" : ""}>
+                  {formatDate(quotation.validUntil)}
+                </TableCell>
+                <TableCell>
+                  <div className={`flex ${isRTL ? "justify-start" : "justify-end"}`}>
+                    {renderActions(quotation)}
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-3xl">
           <DialogHeader>
             <DialogTitle>
-              {editingQuotation ? "Edit Quotation" : "New Quotation"}
+              {editingQuotation ? t("quotations:editQuotation") : t("quotations:newQuotation")}
             </DialogTitle>
           </DialogHeader>
           <QuotationForm

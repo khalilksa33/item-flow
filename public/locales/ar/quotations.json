@@ -1,5 +1,30 @@
 
 {
   "title": "عروض الأسعار",
-  "description": "إنشاء وإدارة عروض الأسعار"
+  "description": "إنشاء وإدارة عروض الأسعار",
+  "newQuotation": "عرض أسعار جديد",
+  "editQuotation": "تعديل عرض الأسعار",
+  "date": "التاريخ",
+  "customer": "العميل",
+  "total": "المجموع",
+  "status": "الحالة",
+  "status.draft": "مسودة",
+  "status.sent": "تم الإرسال",
+  "status.accepted": "مقبول",
+  "status.rejected": "مرفوض",
+  "status.expired": "منتهي الصلاحية",
+  "validUntil": "صالح حتى",
+  "items": "العناصر",
+  "selectCustomer": "اختر العميل",
+  "selectProduct": "اختر المنتج",
+  "unitPrice": "سعر الوحدة",
+  "quantity": "الكمية",
+  "subtotal": "المجموع الفرعي",
+  "vat": "ضريبة القيمة المضافة",
+  "terms": "الشروط والأحكام",
+  "notes": "ملاحظات",
+  "print": "طباعة",
+  "createSuccess": "تم إنشاء عرض الأسعار بنجاح",
+  "updateSuccess": "تم تحديث عرض الأسعار بنجاح",
+  "deleteSuccess": "تم حذف عرض الأسعار بنجاح"
 }
