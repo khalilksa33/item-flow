@@ -49,9 +49,9 @@
     "licenseMessage": "Your application license has expired. Please contact support to renew.",
     "lowStockWarning": "Low Stock Alert: {{count}} items below minimum level",
     "checkLevels": "Please check your inventory levels",
-    "exportSuccess": "Inventory exported successfully",
-    "importSuccess": "Inventory imported successfully",
-    "importError": "Error importing inventory",
+    "exportSuccess": "Data exported successfully",
+    "importSuccess": "Data imported successfully",
+    "importError": "Error importing data",
     "importFormatError": "Invalid file format",
     "itemDeleted": "Item deleted successfully",
     "quickTips": "Quick Tips",
@@ -97,7 +97,11 @@
     "crNumber": "CR Number",
     "address": "Address",
     "phone": "Phone",
-    "email": "Email"
+    "email": "Email",
+    "newInvoice": "New Invoice",
+    "invoiceUpdated": "Invoice updated successfully",
+    "invoiceCreated": "Invoice created successfully",
+    "invoiceDeleted": "Invoice deleted successfully"
   },
   "vendors": {
     "title": "Vendors",

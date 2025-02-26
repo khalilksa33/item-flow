@@ -26,15 +26,13 @@ export function DataManagement() {
       invoices: storage.getInvoices(),
     };
     
-    const csvData = Object.entries(data).map(([key, value]) => 
-      `### ${key} ###\n${storage.exportToCSV()}`
-    ).join('\n\n');
-
-    const blob = new Blob([csvData], { type: "text/csv" });
+    // Export as JSON instead of CSV
+    const jsonData = JSON.stringify(data, null, 2);
+    const blob = new Blob([jsonData], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "business-data-export.csv";
+    a.download = "business-data-export.json";
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);

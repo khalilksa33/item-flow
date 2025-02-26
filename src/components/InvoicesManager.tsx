@@ -6,6 +6,7 @@ import { Invoice } from "@/types/inventory";
 import { toast } from "sonner";
 import { InvoiceList } from "./invoices/InvoiceList";
 import { InvoiceDialog } from "./invoices/InvoiceDialog";
+import { useTranslation } from "react-i18next";
 
 export function InvoicesManager() {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
@@ -14,6 +15,7 @@ export function InvoicesManager() {
   const [customers] = useState(storage.getCustomers());
   const [products] = useState(storage.getItems());
   const [quotations] = useState(storage.getQuotations());
+  const { t } = useTranslation();
 
   useEffect(() => {
     loadInvoices();
@@ -35,10 +37,10 @@ export function InvoicesManager() {
 
     if (editingInvoice) {
       storage.updateInvoice(invoiceData);
-      toast.success("Invoice updated successfully");
+      toast.success(t("invoices.invoiceUpdated", "Invoice updated successfully"));
     } else {
       storage.addInvoice(invoiceData);
-      toast.success("Invoice created successfully");
+      toast.success(t("invoices.invoiceCreated", "Invoice created successfully"));
     }
 
     loadInvoices();
@@ -54,18 +56,18 @@ export function InvoicesManager() {
   const handleDelete = (id: string) => {
     storage.deleteInvoice(id);
     loadInvoices();
-    toast.success("Invoice deleted successfully");
+    toast.success(t("invoices.invoiceDeleted", "Invoice deleted successfully"));
   };
 
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Invoices</h2>
+        <h2 className="text-2xl font-bold">{t("invoices.title")}</h2>
         <Button onClick={() => {
           setEditingInvoice(null);
           setIsDialogOpen(true);
         }}>
-          New Invoice
+          {t("invoices.newInvoice", "New Invoice")}
         </Button>
       </div>
 
