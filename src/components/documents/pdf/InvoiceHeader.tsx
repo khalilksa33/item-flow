@@ -12,6 +12,7 @@ interface InvoiceHeaderProps {
   companyEmail: string;
   companyLogo: string;
   qrCodeUrl: string;
+  isRTL?: boolean;
 }
 
 export function InvoiceHeader({
@@ -22,12 +23,13 @@ export function InvoiceHeader({
   companyPhone,
   companyEmail,
   companyLogo,
-  qrCodeUrl
+  qrCodeUrl,
+  isRTL = false
 }: InvoiceHeaderProps) {
   const { t } = useTranslation();
   
   return (
-    <View style={styles.header}>
+    <View style={[styles.header, isRTL && styles.rtlRow]}>
       <View style={styles.headerLeft}>
         <Text style={styles.companyName}>{companyName}</Text>
         {vatNumber && <Text style={styles.companyInfo}>{t("invoices.vatNumber")}: {vatNumber}</Text>}

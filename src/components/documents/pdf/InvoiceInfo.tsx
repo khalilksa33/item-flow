@@ -10,6 +10,7 @@ interface InvoiceInfoProps {
   paymentTerms?: string;
   customerName: string;
   formatDate: (dateString: string) => string;
+  isRTL?: boolean;
 }
 
 export function InvoiceInfo({
@@ -18,14 +19,15 @@ export function InvoiceInfo({
   paymentDue,
   paymentTerms,
   customerName,
-  formatDate
+  formatDate,
+  isRTL = false
 }: InvoiceInfoProps) {
   const { t } = useTranslation();
   
   return (
     <View style={styles.invoiceInfo}>
       <Text style={styles.title}>{t("invoices.invoice")}</Text>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+      <View style={[{ flexDirection: 'row', justifyContent: 'space-between' }, isRTL && styles.rtlRow]}>
         <View>
           <Text style={styles.invoiceDetail}>{t("invoices.reference")}: {invoiceRef}</Text>
           <Text style={styles.invoiceDetail}>{t("invoices.date")}: {formatDate(createdAt)}</Text>

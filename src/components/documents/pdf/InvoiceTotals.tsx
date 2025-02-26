@@ -10,6 +10,7 @@ interface InvoiceTotalsProps {
   total: number;
   currency: string;
   formatNumber: (value: number | undefined) => string;
+  isRTL?: boolean;
 }
 
 export function InvoiceTotals({ 
@@ -18,23 +19,33 @@ export function InvoiceTotals({
   vatAmount, 
   total, 
   currency,
-  formatNumber 
+  formatNumber,
+  isRTL = false
 }: InvoiceTotalsProps) {
   const { t } = useTranslation();
   
+  const totalRowStyle = [styles.totalRow];
+  if (isRTL) totalRowStyle.push(styles.rtlRow);
+  
+  const totalLabelStyle = [styles.totalLabel];
+  if (isRTL) totalLabelStyle.push(styles.rtlValue);
+  
+  const totalValueStyle = [styles.totalValue];
+  if (isRTL) totalValueStyle.push(styles.rtlValue);
+  
   return (
     <View style={styles.totals}>
-      <View style={styles.totalRow}>
-        <Text style={styles.totalLabel}>{t("invoices.subtotal")}:</Text>
-        <Text style={styles.totalValue}>{currency} {formatNumber(subtotal)}</Text>
+      <View style={totalRowStyle}>
+        <Text style={totalLabelStyle}>{t("invoices.subtotal")}:</Text>
+        <Text style={totalValueStyle}>{currency} {formatNumber(subtotal)}</Text>
       </View>
-      <View style={styles.totalRow}>
-        <Text style={styles.totalLabel}>{t("invoices.vat")} ({(vatRate * 100).toFixed()}%):</Text>
-        <Text style={styles.totalValue}>{currency} {formatNumber(vatAmount)}</Text>
+      <View style={totalRowStyle}>
+        <Text style={totalLabelStyle}>{t("invoices.vat")} ({(vatRate * 100).toFixed()}%):</Text>
+        <Text style={totalValueStyle}>{currency} {formatNumber(vatAmount)}</Text>
       </View>
-      <View style={[styles.totalRow, styles.grandTotal]}>
-        <Text style={styles.totalLabel}>{t("invoices.total")}:</Text>
-        <Text style={styles.totalValue}>{currency} {formatNumber(total)}</Text>
+      <View style={[...totalRowStyle, styles.grandTotal]}>
+        <Text style={totalLabelStyle}>{t("invoices.total")}:</Text>
+        <Text style={totalValueStyle}>{currency} {formatNumber(total)}</Text>
       </View>
     </View>
   );

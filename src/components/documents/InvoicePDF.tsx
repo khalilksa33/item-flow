@@ -1,5 +1,5 @@
 
-import { Document, Page } from '@react-pdf/renderer';
+import { Document, Page, View } from '@react-pdf/renderer';
 import { Invoice } from '@/types/inventory';
 import { styles } from './pdf/styles';
 import { InvoiceHeader } from './pdf/InvoiceHeader';
@@ -7,6 +7,7 @@ import { InvoiceInfo } from './pdf/InvoiceInfo';
 import { InvoiceItemsTable } from './pdf/InvoiceItemsTable';
 import { InvoiceTotals } from './pdf/InvoiceTotals';
 import { InvoiceFooter } from './pdf/InvoiceFooter';
+import i18n from '@/i18n';
 
 interface InvoicePDFProps {
   invoice: Invoice;
@@ -14,6 +15,9 @@ interface InvoicePDFProps {
 }
 
 export const InvoicePDF = ({ invoice, customerName }: InvoicePDFProps) => {
+  // Get current language
+  const isRTL = i18n.language === 'ar';
+  
   // Get company info from local storage
   const companyName = localStorage.getItem('companyName') || 'Company Name';
   const vatNumber = localStorage.getItem('vatNumber') || '';
@@ -38,12 +42,14 @@ export const InvoicePDF = ({ invoice, customerName }: InvoicePDFProps) => {
   const items = invoice.items || [];
   
   // Format dates
+  const dateFormatOptions = {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  } as Intl.DateTimeFormatOptions;
+  
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
+    return new Date(dateString).toLocaleDateString(isRTL ? 'ar-SA' : 'en-US', dateFormatOptions);
   };
 
   // Generate invoice reference number
@@ -51,7 +57,7 @@ export const InvoicePDF = ({ invoice, customerName }: InvoicePDFProps) => {
   
   return (
     <Document>
-      <Page size="A4" style={styles.page}>
+      <Page size="A4" style={[styles.page, isRTL && styles.rtl]}>
         {/* Header Section */}
         <InvoiceHeader
           companyName={companyName}
@@ -62,6 +68,7 @@ export const InvoicePDF = ({ invoice, customerName }: InvoicePDFProps) => {
           companyEmail={companyEmail}
           companyLogo={companyLogo}
           qrCodeUrl={qrCodeUrl}
+          isRTL={isRTL}
         />
 
         {/* Title and Invoice Info */}
@@ -72,6 +79,7 @@ export const InvoicePDF = ({ invoice, customerName }: InvoicePDFProps) => {
           paymentTerms={invoice.paymentTerms}
           customerName={customerName}
           formatDate={formatDate}
+          isRTL={isRTL}
         />
 
         {/* Items Table */}
@@ -79,6 +87,7 @@ export const InvoicePDF = ({ invoice, customerName }: InvoicePDFProps) => {
           items={items}
           currency={currency}
           formatNumber={formatNumber}
+          isRTL={isRTL}
         />
 
         {/* Totals Section */}
@@ -89,6 +98,7 @@ export const InvoicePDF = ({ invoice, customerName }: InvoicePDFProps) => {
           total={invoice.total}
           currency={currency}
           formatNumber={formatNumber}
+          isRTL={isRTL}
         />
 
         {/* Footer Sections */}
@@ -98,6 +108,7 @@ export const InvoicePDF = ({ invoice, customerName }: InvoicePDFProps) => {
           companyPhone={companyPhone}
           notes={invoice.notes}
           status={invoice.status}
+          isRTL={isRTL}
         />
       </Page>
     </Document>

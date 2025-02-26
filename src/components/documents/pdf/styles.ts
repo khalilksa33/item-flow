@@ -184,4 +184,23 @@ export const styles = StyleSheet.create({
     fontSize: 9,
     color: '#666',
   },
+  
+  // RTL support
+  rtl: {
+    direction: 'rtl',
+    textAlign: 'right',
+  },
+  ltr: {
+    direction: 'ltr',
+    textAlign: 'left',
+  },
+  rtlRow: {
+    flexDirection: 'row-reverse',
+  },
+  rtlSection: {
+    alignItems: 'flex-end',
+  },
+  rtlValue: {
+    textAlign: 'left',
+  },
 });

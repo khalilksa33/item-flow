@@ -9,6 +9,7 @@ interface InvoiceFooterProps {
   companyPhone: string;
   notes?: string;
   status?: string;
+  isRTL?: boolean;
 }
 
 export function InvoiceFooter({ 
@@ -16,7 +17,8 @@ export function InvoiceFooter({
   companyAddress, 
   companyPhone, 
   notes,
-  status
+  status,
+  isRTL = false
 }: InvoiceFooterProps) {
   const { t } = useTranslation();
   
@@ -39,7 +41,7 @@ export function InvoiceFooter({
 
       <View style={styles.footer}>
         <Text>{companyName} • {companyAddress} • {companyPhone}</Text>
-        <Text>{t("invoices.generatedOn")} {new Date().toLocaleDateString()}</Text>
+        <Text>{t("invoices.generatedOn")} {new Date().toLocaleDateString(isRTL ? 'ar-SA' : 'en-US')}</Text>
       </View>
     </>
   );
