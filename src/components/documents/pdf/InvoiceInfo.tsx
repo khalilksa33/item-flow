@@ -22,22 +22,21 @@ export function InvoiceInfo({
   formatDate,
   isRTL = false
 }: InvoiceInfoProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation("invoices");
   
   return (
     <View style={styles.invoiceInfo}>
-      <Text style={styles.title}>{t("invoices.invoice")}</Text>
+      <Text style={styles.title}>{t("invoice")}</Text>
       <View style={[{ flexDirection: 'row', justifyContent: 'space-between' }, isRTL && styles.rtlRow]}>
-        <View>
-          <Text style={styles.invoiceDetail}>{t("invoices.reference")}: {invoiceRef}</Text>
-          <Text style={styles.invoiceDetail}>{t("invoices.date")}: {formatDate(createdAt)}</Text>
-          <Text style={styles.invoiceDetail}>{t("invoices.dueDate")}: {formatDate(paymentDue)}</Text>
-          {paymentTerms && <Text style={styles.invoiceDetail}>{t("invoices.paymentTerms")}: {paymentTerms}</Text>}
+        <View style={isRTL ? { alignItems: 'flex-end' } : {}}>
+          <Text style={styles.invoiceDetail}>{t("reference")}: {invoiceRef}</Text>
+          <Text style={styles.invoiceDetail}>{t("date")}: {formatDate(createdAt)}</Text>
+          <Text style={styles.invoiceDetail}>{t("dueDate")}: {formatDate(paymentDue)}</Text>
+          {paymentTerms && <Text style={styles.invoiceDetail}>{t("paymentTerms")}: {paymentTerms}</Text>}
         </View>
-        <View>
-          <Text style={styles.sectionTitle}>{t("invoices.billTo")}:</Text>
+        <View style={isRTL ? { alignItems: 'flex-start' } : {}}>
+          <Text style={styles.sectionTitle}>{t("billTo")}:</Text>
           <Text style={styles.invoiceDetail}>{customerName}</Text>
-          {/* Add more customer details if available */}
         </View>
       </View>
     </View>

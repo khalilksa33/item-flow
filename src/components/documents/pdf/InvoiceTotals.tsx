@@ -22,20 +22,20 @@ export function InvoiceTotals({
   formatNumber,
   isRTL = false
 }: InvoiceTotalsProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation("invoices");
   
   return (
     <View style={styles.totals}>
       <View style={isRTL ? styles.totalRowRTL : styles.totalRow}>
-        <Text style={isRTL ? styles.totalLabelRTL : styles.totalLabel}>{t("invoices.subtotal")}:</Text>
+        <Text style={isRTL ? styles.totalLabelRTL : styles.totalLabel}>{t("subtotal")}:</Text>
         <Text style={isRTL ? styles.totalValueRTL : styles.totalValue}>{currency} {formatNumber(subtotal)}</Text>
       </View>
       <View style={isRTL ? styles.totalRowRTL : styles.totalRow}>
-        <Text style={isRTL ? styles.totalLabelRTL : styles.totalLabel}>{t("invoices.vat")} ({(vatRate * 100).toFixed()}%):</Text>
+        <Text style={isRTL ? styles.totalLabelRTL : styles.totalLabel}>{t("vat")} ({(vatRate * 100).toFixed()}%):</Text>
         <Text style={isRTL ? styles.totalValueRTL : styles.totalValue}>{currency} {formatNumber(vatAmount)}</Text>
       </View>
       <View style={[isRTL ? styles.totalRowRTL : styles.totalRow, styles.grandTotal]}>
-        <Text style={isRTL ? styles.totalLabelRTL : styles.totalLabel}>{t("invoices.total")}:</Text>
+        <Text style={isRTL ? styles.totalLabelRTL : styles.totalLabel}>{t("total")}:</Text>
         <Text style={isRTL ? styles.totalValueRTL : styles.totalValue}>{currency} {formatNumber(total)}</Text>
       </View>
     </View>

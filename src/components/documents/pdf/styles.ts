@@ -9,6 +9,7 @@ export const styles = StyleSheet.create({
     lineHeight: 1.5,
   },
   
+  // Header styles
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -21,8 +22,7 @@ export const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    maxHeight: 100,
-    marginHorizontal: 20,
+    height: 80,
   },
   logo: {
     maxWidth: '100%',
@@ -49,6 +49,7 @@ export const styles = StyleSheet.create({
     marginBottom: 2,
   },
   
+  // Invoice info styles
   title: {
     fontSize: 24,
     fontWeight: 'bold',
@@ -66,10 +67,10 @@ export const styles = StyleSheet.create({
     marginBottom: 2,
   },
   
+  // Table styles
   section: {
     marginBottom: 15,
   },
-  
   table: {
     marginTop: 10,
     marginBottom: 10,
@@ -122,6 +123,7 @@ export const styles = StyleSheet.create({
     padding: 3,
   },
   
+  // Totals styles
   totals: {
     marginTop: 30,
     paddingTop: 10,
@@ -167,6 +169,7 @@ export const styles = StyleSheet.create({
     borderTopColor: '#000',
   },
   
+  // Footer styles
   notes: {
     marginTop: 30,
     paddingTop: 10,
@@ -198,6 +201,7 @@ export const styles = StyleSheet.create({
     color: '#666',
   },
   
+  // RTL styles
   rtl: {
     direction: 'rtl',
     textAlign: 'right',
@@ -207,6 +211,7 @@ export const styles = StyleSheet.create({
   },
   rtlSection: {
     alignItems: 'flex-end',
+    textAlign: 'right',
   },
   rtlValue: {
     textAlign: 'left',

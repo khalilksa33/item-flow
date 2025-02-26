@@ -1,7 +1,13 @@
 
 import { BlobProvider, PDFDownloadLink } from "@react-pdf/renderer";
 import { Button } from "@/components/ui/button";
-import { Download, Printer, Receipt } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Download, MoreHorizontal, Printer, Receipt, Pencil, Trash } from "lucide-react";
 import { Invoice, Customer } from "@/types/inventory";
 import { InvoicePDF } from "../documents/InvoicePDF";
 import { ReceiptPDF } from "../documents/ReceiptPDF";
@@ -16,8 +22,9 @@ interface InvoiceActionsProps {
 }
 
 export function InvoiceActions({ invoice, customers, onEdit, onDelete }: InvoiceActionsProps) {
-  const { t } = useTranslation(["invoices", "common"]);
-  const customerName = customers.find(c => c.id === invoice.customerId)?.name || t("unknownCustomer", "Unknown Customer");
+  const { t, i18n } = useTranslation(["invoices", "common"]);
+  const isRTL = i18n.language === 'ar';
+  const customerName = customers.find(c => c.id === invoice.customerId)?.name || t("unknownCustomer");
 
   const handlePrintDocument = (blob: Blob) => {
     // Create a URL for the blob
@@ -35,7 +42,7 @@ export function InvoiceActions({ invoice, customers, onEdit, onDelete }: Invoice
       };
     } else {
       // If popup is blocked, just download the file
-      toast.error(t("popupBlocked", "Pop-up blocked. Please allow pop-ups to print directly."));
+      toast.error(t("popupBlocked"));
       
       // Provide fallback download
       const link = document.createElement('a');
@@ -56,19 +63,17 @@ export function InvoiceActions({ invoice, customers, onEdit, onDelete }: Invoice
     return (
       <BlobProvider document={Document}>
         {({ blob, loading, error }) => (
-          <Button
-            variant="outline"
-            size="sm"
+          <DropdownMenuItem
             disabled={loading || !!error}
             onClick={() => blob && handlePrintDocument(blob)}
           >
             {type === 'invoice' ? (
-              <Printer className="h-4 w-4 mr-2" />
+              <Printer className={`h-4 w-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
             ) : (
-              <Receipt className="h-4 w-4 mr-2" />
+              <Receipt className={`h-4 w-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
             )}
-            {type === 'invoice' ? t("printInvoice", "Print Invoice") : t("printReceipt", "Print Receipt")}
-          </Button>
+            {type === 'invoice' ? t("printInvoice") : t("printReceipt")}
+          </DropdownMenuItem>
         )}
       </BlobProvider>
     );
@@ -83,41 +88,39 @@ export function InvoiceActions({ invoice, customers, onEdit, onDelete }: Invoice
       <PDFDownloadLink
         document={Document}
         fileName={`${type}-${invoice.id.slice(0, 8)}.pdf`}
+        style={{ textDecoration: 'none' }}
       >
         {({ loading }) => (
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={loading}
-          >
-            <Download className="h-4 w-4 mr-2" />
-            {type === 'invoice' ? t("downloadInvoice", "Download Invoice") : t("downloadReceipt", "Download Receipt")}
-          </Button>
+          <DropdownMenuItem disabled={loading}>
+            <Download className={`h-4 w-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+            {type === 'invoice' ? t("downloadInvoice") : t("downloadReceipt")}
+          </DropdownMenuItem>
         )}
       </PDFDownloadLink>
     );
   };
 
   return (
-    <div className="flex gap-2 flex-wrap">
-      {renderPrintButton('invoice')}
-      {renderDownloadButton('invoice')}
-      {invoice.status === 'paid' && renderPrintButton('receipt')}
-      {invoice.status === 'paid' && renderDownloadButton('receipt')}
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={() => onEdit(invoice)}
-      >
-        {t("common:edit")}
-      </Button>
-      <Button
-        variant="destructive"
-        size="sm"
-        onClick={() => onDelete(invoice.id)}
-      >
-        {t("common:delete")}
-      </Button>
-    </div>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" size="icon">
+          <MoreHorizontal className="h-4 w-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align={isRTL ? "start" : "end"}>
+        {renderPrintButton('invoice')}
+        {renderDownloadButton('invoice')}
+        {invoice.status === 'paid' && renderPrintButton('receipt')}
+        {invoice.status === 'paid' && renderDownloadButton('receipt')}
+        <DropdownMenuItem onClick={() => onEdit(invoice)}>
+          <Pencil className={`h-4 w-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+          {t("common:edit")}
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => onDelete(invoice.id)}>
+          <Trash className={`h-4 w-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+          {t("common:delete")}
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

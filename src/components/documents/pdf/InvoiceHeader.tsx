@@ -26,32 +26,31 @@ export function InvoiceHeader({
   qrCodeUrl,
   isRTL = false
 }: InvoiceHeaderProps) {
-  const { t } = useTranslation();
-  
-  // Use the logo provided or a transparent placeholder (to maintain layout)
-  const logoUrl = companyLogo || 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
+  const { t } = useTranslation("invoices");
   
   return (
     <View style={[styles.header, isRTL && styles.rtlRow]}>
-      {/* Left section (or right in RTL) */}
+      {/* Left section (or right in RTL) with company info */}
       <View style={[
         styles.headerLeft,
         isRTL ? { alignItems: 'flex-end', textAlign: 'right' } : {}
       ]}>
         <Text style={styles.companyName}>{companyName}</Text>
-        {vatNumber && <Text style={styles.companyInfo}>{t("invoices.vatNumber")}: {vatNumber}</Text>}
-        {crNumber && <Text style={styles.companyInfo}>{t("invoices.crNumber")}: {crNumber}</Text>}
-        {companyAddress && <Text style={styles.companyInfo}>{t("invoices.address")}: {companyAddress}</Text>}
-        {companyPhone && <Text style={styles.companyInfo}>{t("invoices.phone")}: {companyPhone}</Text>}
-        {companyEmail && <Text style={styles.companyInfo}>{t("invoices.email")}: {companyEmail}</Text>}
+        {vatNumber && <Text style={styles.companyInfo}>{t("vatNumber")}: {vatNumber}</Text>}
+        {crNumber && <Text style={styles.companyInfo}>{t("crNumber")}: {crNumber}</Text>}
+        {companyAddress && <Text style={styles.companyInfo}>{t("address")}: {companyAddress}</Text>}
+        {companyPhone && <Text style={styles.companyInfo}>{t("phone")}: {companyPhone}</Text>}
+        {companyEmail && <Text style={styles.companyInfo}>{t("email")}: {companyEmail}</Text>}
       </View>
       
-      {/* Center section - Logo */}
-      <View style={styles.logoContainer}>
-        <Image src={logoUrl} style={styles.logo} />
-      </View>
+      {/* Center section with logo */}
+      {companyLogo && (
+        <View style={styles.logoContainer}>
+          <Image src={companyLogo} style={styles.logo} />
+        </View>
+      )}
       
-      {/* Right section (or left in RTL) - QR Code */}
+      {/* Right section (or left in RTL) with QR code */}
       <View style={styles.headerRight}>
         <Image style={styles.qrCode} src={qrCodeUrl} />
       </View>

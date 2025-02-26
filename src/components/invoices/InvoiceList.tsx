@@ -19,11 +19,11 @@ interface InvoiceListProps {
 }
 
 export function InvoiceList({ invoices, customers, onEdit, onDelete }: InvoiceListProps) {
-  const { t, i18n } = useTranslation("invoices");
+  const { t, i18n } = useTranslation(["invoices", "customers", "common"]);
   const isRTL = i18n.language === 'ar';
   
   const getCustomerName = (customerId: string) => {
-    return customers.find(c => c.id === customerId)?.name || t("unknownCustomer", "Unknown Customer");
+    return customers.find(c => c.id === customerId)?.name || t("unknownCustomer");
   };
 
   const formatDate = (dateString: string) => {
@@ -35,6 +35,11 @@ export function InvoiceList({ invoices, customers, onEdit, onDelete }: InvoiceLi
     }).format(date);
   };
 
+  const formatCurrency = (amount: number) => {
+    const currency = localStorage.getItem('currency') || 'SAR';
+    return `${currency} ${amount.toFixed(2)}`;
+  };
+
   return (
     <Table className={isRTL ? "text-right" : ""}>
       <TableHeader>
@@ -42,7 +47,7 @@ export function InvoiceList({ invoices, customers, onEdit, onDelete }: InvoiceLi
           <TableHead className={isRTL ? "text-right" : ""}>{t("date")}</TableHead>
           <TableHead className={isRTL ? "text-right" : ""}>{t("customers:title")}</TableHead>
           <TableHead className={isRTL ? "text-right" : ""}>{t("total")}</TableHead>
-          <TableHead className={isRTL ? "text-right" : ""}>{t("status", "Status")}</TableHead>
+          <TableHead className={isRTL ? "text-right" : ""}>{t("status")}</TableHead>
           <TableHead className={isRTL ? "text-right" : ""}>{t("dueDate")}</TableHead>
           <TableHead className={isRTL ? "text-right" : ""}>{t("common:actions")}</TableHead>
         </TableRow>
@@ -57,7 +62,7 @@ export function InvoiceList({ invoices, customers, onEdit, onDelete }: InvoiceLi
               {getCustomerName(invoice.customerId)}
             </TableCell>
             <TableCell className={isRTL ? "text-right" : ""}>
-              ${invoice.total.toFixed(2)}
+              {formatCurrency(invoice.total)}
             </TableCell>
             <TableCell className={isRTL ? "text-right" : ""}>
               <span className={`px-2 py-1 rounded-full text-xs ${
@@ -66,13 +71,13 @@ export function InvoiceList({ invoices, customers, onEdit, onDelete }: InvoiceLi
                 invoice.status === 'cancelled' ? 'bg-gray-100 text-gray-800' :
                 'bg-yellow-100 text-yellow-800'
               }`}>
-                {t(`status.${invoice.status}`, invoice.status)}
+                {t(`status.${invoice.status}`)}
               </span>
             </TableCell>
             <TableCell className={isRTL ? "text-right" : ""}>
               {formatDate(invoice.paymentDue)}
             </TableCell>
-            <TableCell>
+            <TableCell className={isRTL ? "text-right" : ""}>
               <InvoiceActions 
                 invoice={invoice} 
                 customers={customers} 

@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { InvoiceList } from "./invoices/InvoiceList";
 import { InvoiceDialog } from "./invoices/InvoiceDialog";
 import { useTranslation } from "react-i18next";
+import { Plus } from "lucide-react";
 
 export function InvoicesManager() {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
@@ -15,7 +16,8 @@ export function InvoicesManager() {
   const [customers] = useState(storage.getCustomers());
   const [products] = useState(storage.getItems());
   const [quotations] = useState(storage.getQuotations());
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation(["invoices", "common"]);
+  const isRTL = i18n.language === 'ar';
 
   useEffect(() => {
     loadInvoices();
@@ -37,10 +39,10 @@ export function InvoicesManager() {
 
     if (editingInvoice) {
       storage.updateInvoice(invoiceData);
-      toast.success(t("invoices.invoiceUpdated", "Invoice updated successfully"));
+      toast.success(t("invoiceUpdated"));
     } else {
       storage.addInvoice(invoiceData);
-      toast.success(t("invoices.invoiceCreated", "Invoice created successfully"));
+      toast.success(t("invoiceCreated"));
     }
 
     loadInvoices();
@@ -56,18 +58,19 @@ export function InvoicesManager() {
   const handleDelete = (id: string) => {
     storage.deleteInvoice(id);
     loadInvoices();
-    toast.success(t("invoices.invoiceDeleted", "Invoice deleted successfully"));
+    toast.success(t("invoiceDeleted"));
   };
 
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">{t("invoices.title")}</h2>
+        <h2 className="text-2xl font-bold">{t("title")}</h2>
         <Button onClick={() => {
           setEditingInvoice(null);
           setIsDialogOpen(true);
         }}>
-          {t("invoices.newInvoice", "New Invoice")}
+          <Plus className={`h-4 w-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+          {t("newInvoice")}
         </Button>
       </div>
 

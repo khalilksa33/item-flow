@@ -13,7 +13,7 @@ interface InvoiceItemsTableProps {
 }
 
 export function InvoiceItemsTable({ items, currency, formatNumber, isRTL = false }: InvoiceItemsTableProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation("invoices");
   
   // Get all inventory items to map product IDs to names
   const inventoryItems = storage.getItems();
@@ -26,14 +26,14 @@ export function InvoiceItemsTable({ items, currency, formatNumber, isRTL = false
 
   return (
     <View style={styles.section}>
-      <Text style={styles.sectionTitle}>{t("invoices.items")}</Text>
+      <Text style={styles.sectionTitle}>{t("items")}</Text>
       <View style={styles.table}>
         <View style={isRTL ? styles.tableHeaderRTL : styles.tableHeader}>
           <Text style={styles.tableCellNarrow}>#</Text>
-          <Text style={styles.tableCellWide}>{t("invoices.item")}</Text>
-          <Text style={styles.tableCell}>{t("invoices.quantity")}</Text>
-          <Text style={styles.tableCell}>{t("invoices.unitPrice")}</Text>
-          <Text style={styles.tableCell}>{t("invoices.subtotal")}</Text>
+          <Text style={styles.tableCellWide}>{t("item")}</Text>
+          <Text style={styles.tableCell}>{t("quantity")}</Text>
+          <Text style={styles.tableCell}>{t("unitPrice")}</Text>
+          <Text style={styles.tableCell}>{t("subtotal")}</Text>
         </View>
         {items.map((item, index) => (
           <View key={index} style={isRTL ? styles.tableRowRTL : styles.tableRow}>
