@@ -37,57 +37,63 @@ export function InvoiceList({ invoices, customers, onEdit, onDelete }: InvoiceLi
 
   const formatCurrency = (amount: number) => {
     const currency = localStorage.getItem('currency') || 'SAR';
-    return `${currency} ${amount.toFixed(2)}`;
+    return isRTL 
+      ? `${amount.toFixed(2)} ${currency}` 
+      : `${currency} ${amount.toFixed(2)}`;
   };
 
   return (
-    <Table className={isRTL ? "text-right" : ""}>
-      <TableHeader>
-        <TableRow>
-          <TableHead className={isRTL ? "text-right" : ""}>{t("invoices:date")}</TableHead>
-          <TableHead className={isRTL ? "text-right" : ""}>{t("customers:title")}</TableHead>
-          <TableHead className={isRTL ? "text-right" : ""}>{t("invoices:total")}</TableHead>
-          <TableHead className={isRTL ? "text-right" : ""}>{t("invoices:status")}</TableHead>
-          <TableHead className={isRTL ? "text-right" : ""}>{t("invoices:dueDate")}</TableHead>
-          <TableHead className={isRTL ? "text-right" : ""}>{t("common:actions")}</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {invoices.map((invoice) => (
-          <TableRow key={invoice.id}>
-            <TableCell className={isRTL ? "text-right" : ""}>
-              {formatDate(invoice.createdAt)}
-            </TableCell>
-            <TableCell className={isRTL ? "text-right" : ""}>
-              {getCustomerName(invoice.customerId)}
-            </TableCell>
-            <TableCell className={isRTL ? "text-right" : ""}>
-              {formatCurrency(invoice.total)}
-            </TableCell>
-            <TableCell className={isRTL ? "text-right" : ""}>
-              <span className={`px-2 py-1 rounded-full text-xs ${
-                invoice.status === 'paid' ? 'bg-green-100 text-green-800' :
-                invoice.status === 'overdue' ? 'bg-red-100 text-red-800' :
-                invoice.status === 'cancelled' ? 'bg-gray-100 text-gray-800' :
-                'bg-yellow-100 text-yellow-800'
-              }`}>
-                {t(`invoices:status.${invoice.status}`)}
-              </span>
-            </TableCell>
-            <TableCell className={isRTL ? "text-right" : ""}>
-              {formatDate(invoice.paymentDue)}
-            </TableCell>
-            <TableCell className={isRTL ? "text-right" : ""}>
-              <InvoiceActions 
-                invoice={invoice} 
-                customers={customers} 
-                onEdit={onEdit} 
-                onDelete={onDelete} 
-              />
-            </TableCell>
+    <div dir={isRTL ? "rtl" : "ltr"}>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead className={isRTL ? "text-right" : ""}>{t("invoices:date")}</TableHead>
+            <TableHead className={isRTL ? "text-right" : ""}>{t("customers:title")}</TableHead>
+            <TableHead className={isRTL ? "text-right" : ""}>{t("invoices:total")}</TableHead>
+            <TableHead className={isRTL ? "text-right" : ""}>{t("invoices:status")}</TableHead>
+            <TableHead className={isRTL ? "text-right" : ""}>{t("invoices:dueDate")}</TableHead>
+            <TableHead className={isRTL ? "text-right" : ""}>{t("common:actions")}</TableHead>
           </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+        </TableHeader>
+        <TableBody>
+          {invoices.map((invoice) => (
+            <TableRow key={invoice.id}>
+              <TableCell className={isRTL ? "text-right" : ""}>
+                {formatDate(invoice.createdAt)}
+              </TableCell>
+              <TableCell className={isRTL ? "text-right" : ""}>
+                {getCustomerName(invoice.customerId)}
+              </TableCell>
+              <TableCell className={isRTL ? "text-right" : ""}>
+                {formatCurrency(invoice.total)}
+              </TableCell>
+              <TableCell className={isRTL ? "text-right" : ""}>
+                <span className={`px-2 py-1 rounded-full text-xs ${
+                  invoice.status === 'paid' ? 'bg-green-100 text-green-800' :
+                  invoice.status === 'overdue' ? 'bg-red-100 text-red-800' :
+                  invoice.status === 'cancelled' ? 'bg-gray-100 text-gray-800' :
+                  'bg-yellow-100 text-yellow-800'
+                }`}>
+                  {t(`invoices:status.${invoice.status}`)}
+                </span>
+              </TableCell>
+              <TableCell className={isRTL ? "text-right" : ""}>
+                {formatDate(invoice.paymentDue)}
+              </TableCell>
+              <TableCell>
+                <div className={`flex ${isRTL ? "justify-start" : "justify-end"}`}>
+                  <InvoiceActions 
+                    invoice={invoice} 
+                    customers={customers} 
+                    onEdit={onEdit} 
+                    onDelete={onDelete} 
+                  />
+                </div>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
   );
 }

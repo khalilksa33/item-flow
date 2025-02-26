@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -97,5 +98,27 @@
 
   body {
     @apply bg-background text-foreground;
+  }
+
+  /* RTL Support */
+  body.rtl {
+    direction: rtl;
+    text-align: right;
+  }
+
+  body.rtl .prose {
+    direction: rtl;
+    text-align: right;
+  }
+
+  /* RTL table fixes */
+  body.rtl table th,
+  body.rtl table td {
+    text-align: right;
+  }
+
+  /* RTL dropdown fixes */
+  body.rtl .dropdown-menu {
+    --tw-translate-x: -10px;
   }
 }

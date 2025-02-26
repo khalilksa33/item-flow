@@ -7,8 +7,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
   DropdownMenuSeparator,
+  DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
-import { Download, MoreHorizontal, Printer, Receipt, Pencil, Trash, FileText } from "lucide-react";
+import { MoreVertical, Download, Printer, Receipt, Pencil, Trash, FileText, Eye } from "lucide-react";
 import { Invoice, Customer } from "@/types/inventory";
 import { InvoicePDF } from "../documents/InvoicePDF";
 import { ReceiptPDF } from "../documents/ReceiptPDF";
@@ -56,83 +57,85 @@ export function InvoiceActions({ invoice, customers, onEdit, onDelete }: Invoice
     }
   };
 
-  const renderPrintButton = (type: 'invoice' | 'receipt' = 'invoice') => {
+  // Helper function to render a document view/print/download menu item
+  const renderDocumentActions = (type: 'invoice' | 'receipt' = 'invoice') => {
     const Document = type === 'invoice' 
       ? <InvoicePDF invoice={invoice} customerName={customerName} />
       : <ReceiptPDF invoice={invoice} customerName={customerName} />;
     
     return (
-      <BlobProvider document={Document}>
-        {({ blob, loading, error }) => (
-          <DropdownMenuItem
-            disabled={loading || !!error}
-            onClick={() => blob && handlePrintDocument(blob)}
-          >
-            {type === 'invoice' ? (
+      <>
+        <DropdownMenuLabel className={isRTL ? "text-right" : ""}>
+          {type === 'invoice' ? t("invoices:invoice") : t("invoices:receipt")}
+        </DropdownMenuLabel>
+        
+        {/* View option */}
+        <BlobProvider document={Document}>
+          {({ blob, url, loading, error }) => (
+            <DropdownMenuItem
+              disabled={loading || !!error}
+              onClick={() => url && window.open(url, '_blank')}
+            >
+              <Eye className={`h-4 w-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+              {type === 'invoice' ? t("invoices:viewInvoice") : t("invoices:viewReceipt")}
+            </DropdownMenuItem>
+          )}
+        </BlobProvider>
+        
+        {/* Print option */}
+        <BlobProvider document={Document}>
+          {({ blob, loading, error }) => (
+            <DropdownMenuItem
+              disabled={loading || !!error}
+              onClick={() => blob && handlePrintDocument(blob)}
+            >
               <Printer className={`h-4 w-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
-            ) : (
-              <Receipt className={`h-4 w-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
-            )}
-            {type === 'invoice' ? t("invoices:printInvoice") : t("invoices:printReceipt")}
-          </DropdownMenuItem>
-        )}
-      </BlobProvider>
-    );
-  };
-
-  const renderDownloadButton = (type: 'invoice' | 'receipt' = 'invoice') => {
-    const Document = type === 'invoice' 
-      ? <InvoicePDF invoice={invoice} customerName={customerName} />
-      : <ReceiptPDF invoice={invoice} customerName={customerName} />;
-    
-    return (
-      <PDFDownloadLink
-        document={Document}
-        fileName={`${type}-${invoice.id.slice(0, 8)}.pdf`}
-        style={{ textDecoration: 'none' }}
-      >
-        {({ loading }) => (
-          <DropdownMenuItem disabled={loading}>
-            <Download className={`h-4 w-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
-            {type === 'invoice' ? t("invoices:downloadInvoice") : t("invoices:downloadReceipt")}
-          </DropdownMenuItem>
-        )}
-      </PDFDownloadLink>
+              {type === 'invoice' ? t("invoices:printInvoice") : t("invoices:printReceipt")}
+            </DropdownMenuItem>
+          )}
+        </BlobProvider>
+        
+        {/* Download option */}
+        <PDFDownloadLink
+          document={Document}
+          fileName={`${type}-${invoice.id.slice(0, 8)}.pdf`}
+          style={{ textDecoration: 'none' }}
+        >
+          {({ loading }) => (
+            <DropdownMenuItem disabled={loading}>
+              <Download className={`h-4 w-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+              {type === 'invoice' ? t("invoices:downloadInvoice") : t("invoices:downloadReceipt")}
+            </DropdownMenuItem>
+          )}
+        </PDFDownloadLink>
+      </>
     );
   };
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon">
-          <MoreHorizontal className="h-4 w-4" />
+        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
           <span className="sr-only">{t("common:actions")}</span>
+          <MoreVertical className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align={isRTL ? "start" : "end"}>
-        <DropdownMenuItem onClick={() => onEdit(invoice)}>
+        <DropdownMenuItem onClick={() => onEdit(invoice)} className={isRTL ? "text-right" : ""}>
           <Pencil className={`h-4 w-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
           {t("common:edit")}
         </DropdownMenuItem>
         
         <DropdownMenuSeparator />
         
-        <DropdownMenuItem>
-          <FileText className={`h-4 w-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
-          {t("invoices:invoice")}
-        </DropdownMenuItem>
-        {renderPrintButton('invoice')}
-        {renderDownloadButton('invoice')}
+        {/* Invoice documents */}
+        {renderDocumentActions('invoice')}
         
+        {/* Receipt documents (only if paid) */}
         {invoice.status === 'paid' && (
           <>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <Receipt className={`h-4 w-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
-              {t("invoices:paid")}
-            </DropdownMenuItem>
-            {renderPrintButton('receipt')}
-            {renderDownloadButton('receipt')}
+            {renderDocumentActions('receipt')}
           </>
         )}
         
@@ -140,7 +143,7 @@ export function InvoiceActions({ invoice, customers, onEdit, onDelete }: Invoice
         
         <DropdownMenuItem 
           onClick={() => onDelete(invoice.id)}
-          className="text-red-600 hover:text-red-800 hover:bg-red-50"
+          className={`text-red-600 hover:text-red-800 hover:bg-red-50 ${isRTL ? "text-right" : ""}`}
         >
           <Trash className={`h-4 w-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
           {t("common:delete")}

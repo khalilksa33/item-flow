@@ -8,41 +8,47 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from '@/components/ui/button';
 import { Languages } from 'lucide-react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 export function LanguageSwitcher() {
-  const { i18n, t } = useTranslation();
+  const { i18n } = useTranslation();
+  const [mounted, setMounted] = useState(false);
+
+  // Wait for component to mount before showing languages
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const changeLanguage = (language: string) => {
+    console.log('Changing language to:', language);
     i18n.changeLanguage(language);
-    // Store the language preference
     localStorage.setItem('preferredLanguage', language);
-    // Update document direction
-    document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
-    document.documentElement.lang = language;
+    
+    // Force reload to ensure all components update properly
+    window.location.reload();
   };
 
-  // Initialize language direction
-  useEffect(() => {
-    const currentLanguage = i18n.language || 'en';
-    document.documentElement.dir = currentLanguage === 'ar' ? 'rtl' : 'ltr';
-    document.documentElement.lang = currentLanguage;
-  }, [i18n.language]);
+  if (!mounted) return null;
+  
+  const currentLanguage = i18n.language;
+  const isRTL = currentLanguage === 'ar';
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="outline" size="icon">
           <Languages className="h-4 w-4" />
-          <span className="sr-only">{t('language.changeLanguage')}</span>
+          <span className="sr-only">
+            {isRTL ? 'تغيير اللغة' : 'Change Language'}
+          </span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem onClick={() => changeLanguage('en')}>
-          {t('language.english')}
+          English {currentLanguage === 'en' && '✓'}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => changeLanguage('ar')}>
-          {t('language.arabic')}
+          العربية {currentLanguage === 'ar' && '✓'}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

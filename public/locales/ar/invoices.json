@@ -39,5 +39,7 @@
   "printReceipt": "طباعة الإيصال",
   "downloadInvoice": "تنزيل الفاتورة",
   "downloadReceipt": "تنزيل الإيصال",
+  "viewInvoice": "عرض الفاتورة",
+  "viewReceipt": "عرض الإيصال",
   "popupBlocked": "تم حظر النافذة المنبثقة. يرجى السماح بالنوافذ المنبثقة للطباعة المباشرة."
 }

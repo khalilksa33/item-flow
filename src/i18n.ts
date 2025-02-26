@@ -68,22 +68,33 @@ i18n
     },
     react: {
       useSuspense: false,
-    },
+    }
   });
 
 // Initialize language direction based on stored preference or detected language
 const updateDocumentLanguage = (language: string) => {
   document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
   document.documentElement.lang = language;
+  
+  // Add RTL class to the body for CSS targeting
+  if (language === 'ar') {
+    document.body.classList.add('rtl');
+  } else {
+    document.body.classList.remove('rtl');
+  }
 };
 
 // Set initial direction
 const currentLanguage = localStorage.getItem('preferredLanguage') || i18n.language || 'en';
+i18n.changeLanguage(currentLanguage);
 updateDocumentLanguage(currentLanguage);
 
 // Also listen for language changes
 i18n.on('languageChanged', (lang) => {
   updateDocumentLanguage(lang);
+  
+  // Force a reload of the page to ensure all components update
+  localStorage.setItem('preferredLanguage', lang);
 });
 
 export default i18n;

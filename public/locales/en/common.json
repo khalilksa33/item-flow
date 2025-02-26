@@ -19,5 +19,7 @@
   "success": "Success",
   "error": "Error",
   "warning": "Warning",
-  "info": "Information"
+  "info": "Information",
+  "show": "Show",
+  "hide": "Hide"
 }

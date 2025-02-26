@@ -15,9 +15,11 @@ const LoginPage = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [showCredentials, setShowCredentials] = useState(false);
   const { login } = useUser();
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation(["auth", "common"]);
+  const isRTL = i18n.language === 'ar';
 
   // Check if user is already logged in
   useEffect(() => {
@@ -61,7 +63,7 @@ const LoginPage = () => {
     setError("");
 
     if (!username || !password) {
-      setError(t("auth.required"));
+      setError(t("auth:required"));
       return;
     }
 
@@ -78,7 +80,7 @@ const LoginPage = () => {
       }
       navigate("/dashboard");
     } else {
-      setError(t("auth.invalid"));
+      setError(t("auth:invalid"));
     }
   };
 
@@ -89,9 +91,9 @@ const LoginPage = () => {
       </div>
       <Card className="w-[350px]">
         <CardHeader>
-          <CardTitle>{t("auth.login")}</CardTitle>
+          <CardTitle>{t("auth:login")}</CardTitle>
           <CardDescription>
-            {t("auth.pleaseLogin")}
+            {t("auth:pleaseLogin")}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -102,33 +104,47 @@ const LoginPage = () => {
               </Alert>
             )}
             <div className="space-y-2">
-              <Label htmlFor="username">{t("auth.username")}</Label>
+              <Label htmlFor="username">{t("auth:username")}</Label>
               <Input
                 id="username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder={t("auth.enterUsername")}
+                placeholder={t("auth:enterUsername")}
+                dir={isRTL ? "rtl" : "ltr"}
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">{t("auth.password")}</Label>
+              <Label htmlFor="password">{t("auth:password")}</Label>
               <Input
                 id="password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder={t("auth.enterPassword")}
+                placeholder={t("auth:enterPassword")}
+                dir={isRTL ? "rtl" : "ltr"}
               />
             </div>
             <Button type="submit" className="w-full">
-              {t("auth.login")}
+              {t("auth:login")}
             </Button>
           </form>
         </CardContent>
-        <CardFooter className="text-sm text-gray-500 justify-center">
-          <div>
-            {t("auth.defaultUsers")}
-          </div>
+        <CardFooter className="flex flex-col space-y-2">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => setShowCredentials(!showCredentials)}
+            className="text-xs text-gray-500 w-full"
+          >
+            {showCredentials ? t("common:hide") : t("common:show")} {t("auth:defaultAccounts")}
+          </Button>
+          
+          {showCredentials && (
+            <div className="text-sm text-gray-500 p-2 bg-gray-50 rounded w-full">
+              <p>admin / admin123</p>
+              <p>manager / manager123</p>
+            </div>
+          )}
         </CardFooter>
       </Card>
     </div>

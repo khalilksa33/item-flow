@@ -31,8 +31,8 @@ export function InvoicesManager() {
     const invoiceData: Invoice = {
       id: editingInvoice?.id || crypto.randomUUID(),
       ...data,
-      status: 'draft',
-      paymentStatus: 'unpaid',
+      status: editingInvoice?.status || 'draft',
+      paymentStatus: editingInvoice?.paymentStatus || 'unpaid',
       createdAt: editingInvoice?.createdAt || new Date().toISOString(),
       lastUpdated: new Date().toISOString(),
     } as Invoice;
@@ -62,7 +62,7 @@ export function InvoicesManager() {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" dir={isRTL ? "rtl" : "ltr"}>
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">{t("invoices:title")}</h2>
         <Button onClick={() => {
