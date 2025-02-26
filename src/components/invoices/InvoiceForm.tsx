@@ -9,6 +9,7 @@ import { InvoiceItemRow } from "./InvoiceItemRow";
 import { CustomerQuotationSelect } from "./CustomerQuotationSelect";
 import { PaymentDetails } from "./PaymentDetails";
 import { InvoiceTotals } from "./InvoiceTotals";
+import { useTranslation } from "react-i18next";
 
 const VAT_RATE = 0.15;
 
@@ -28,6 +29,8 @@ export function InvoiceForm({
   const [paymentDue, setPaymentDue] = useState(editingInvoice?.paymentDue || "");
   const [paymentTerms, setPaymentTerms] = useState(editingInvoice?.paymentTerms || "");
   const [notes, setNotes] = useState(editingInvoice?.notes || "");
+  const { t, i18n } = useTranslation(["invoices", "common"]);
+  const isRTL = i18n.language === 'ar';
 
   const calculateItemTotal = (item: InvoiceItem) => {
     const subtotal = item.quantity * item.unitPrice;
@@ -119,7 +122,7 @@ export function InvoiceForm({
   const totals = calculateTotals(invoiceItems);
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4" dir={isRTL ? "rtl" : "ltr"}>
       <CustomerQuotationSelect
         customers={customers}
         quotations={quotations}
@@ -138,9 +141,9 @@ export function InvoiceForm({
 
       <div>
         <div className="flex justify-between items-center mb-2">
-          <Label>Items</Label>
+          <Label>{t("invoices:items")}</Label>
           <Button type="button" onClick={handleAddItem} size="sm">
-            Add Item
+            {t("invoices:addItem", "Add Item")}
           </Button>
         </div>
         {invoiceItems.map((item, index) => (
@@ -158,11 +161,12 @@ export function InvoiceForm({
       </div>
 
       <div>
-        <Label htmlFor="notes">Notes</Label>
+        <Label htmlFor="notes" className={isRTL ? "block text-right" : "block"}>{t("invoices:notes")}</Label>
         <Input
           id="notes"
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
+          className={isRTL ? "text-right" : ""}
         />
       </div>
 
@@ -172,12 +176,12 @@ export function InvoiceForm({
         total={totals.total}
       />
 
-      <div className="flex justify-end gap-2">
+      <div className={`flex justify-${isRTL ? "start" : "end"} gap-2`}>
         <Button type="button" variant="outline" onClick={onCancel}>
-          Cancel
+          {t("common:cancel")}
         </Button>
         <Button type="submit">
-          {editingInvoice ? "Update" : "Create"} Invoice
+          {editingInvoice ? t("common:update") : t("common:create")} {t("invoices:invoice")}
         </Button>
       </div>
     </form>

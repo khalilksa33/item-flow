@@ -1,61 +1,76 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Key, Clock } from "lucide-react";
-import { storage } from "@/lib/storage";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Key } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 
 export function LicenseManagement() {
-  const { t } = useTranslation();
-  const activationStatus = storage.getActivationStatus();
-  const daysRemaining = activationStatus.isPerpetual ? 
-    '∞' : 
-    Math.ceil((new Date(activationStatus.expiryDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+  const [licenseKey, setLicenseKey] = useState(localStorage.getItem('licenseKey') || '');
+  const [licenseStatus] = useState(localStorage.getItem('licenseStatus') || 'inactive');
+  const { t, i18n } = useTranslation(["admin", "common"]);
+  const isRTL = i18n.language === 'ar';
 
-  const handlePerpetualActivation = () => {
-    storage.setPerpetualActivation();
-    toast.success(t("admin.validLicense"));
-  };
-
-  const handleExtendActivation = () => {
-    storage.extendActivation(30);
-    toast.success(t("admin.licenseExtended", "License extended by 30 days"));
+  const activateLicense = () => {
+    // In a real app, you'd validate with a backend service
+    if (licenseKey.length > 8) {
+      localStorage.setItem('licenseKey', licenseKey);
+      localStorage.setItem('licenseStatus', 'active');
+      toast.success(t("admin:licenseActivated"));
+      // Force refresh to update the status display
+      window.location.reload();
+    } else {
+      toast.error(t("admin:invalidLicense"));
+    }
   };
 
   return (
-    <Card>
+    <Card dir={isRTL ? "rtl" : "ltr"}>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Key className="h-5 w-5" />
-          {t("admin.license")}
+          {t("admin:licenseTab")}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="p-4 rounded-lg bg-muted">
-          <h3 className="font-semibold mb-2">{t("admin.licenseStatus")}</h3>
-          <p className="text-sm text-muted-foreground flex items-center gap-2">
-            <Clock className="h-4 w-4" />
-            {activationStatus.isPerpetual ? 
-              t("admin.perpetualLicense", "Perpetual License Active") : 
-              t("admin.daysRemaining", "{{days}} days remaining", { days: daysRemaining })
-            }
-          </p>
+        <div className="p-4 rounded-md bg-gray-100">
+          <div className="flex items-center justify-between">
+            <span className="font-medium">{t("admin:licenseStatus")}:</span>
+            <span
+              className={`px-2 py-1 rounded-full text-xs ${
+                licenseStatus === 'active'
+                  ? 'bg-green-100 text-green-800'
+                  : 'bg-red-100 text-red-800'
+              }`}
+            >
+              {licenseStatus === 'active' ? t("admin:licenseValid") : t("admin:licenseInvalid")}
+            </span>
+          </div>
         </div>
-
-        <div className="flex flex-col gap-2">
-          {!activationStatus.isPerpetual && (
-            <>
-              <Button onClick={handlePerpetualActivation} className="w-full">
-                <Key className="h-4 w-4 mr-2" />
-                {t("admin.activatePerpetual", "Activate Perpetually")}
-              </Button>
-              <Button onClick={handleExtendActivation} variant="outline" className="w-full">
-                <Clock className="h-4 w-4 mr-2" />
-                {t("admin.extendLicense", "Extend by 30 Days")}
-              </Button>
-            </>
-          )}
+        <div className="space-y-2">
+          <Label htmlFor="licenseKey" className={isRTL ? "text-right block" : "block"}>
+            {t("admin:licenseKey")}
+          </Label>
+          <Input
+            id="licenseKey"
+            value={licenseKey}
+            onChange={(e) => setLicenseKey(e.target.value)}
+            placeholder={t("admin:enterLicenseKey")}
+            className={isRTL ? "text-right" : ""}
+          />
+        </div>
+        <div className="flex space-x-2">
+          <Button onClick={activateLicense}>
+            {t("admin:activateLicense")}
+          </Button>
+          <Button variant="outline" onClick={() => {
+            window.open('https://example.com/purchase', '_blank');
+          }}>
+            {t("admin:purchaseLicense")}
+          </Button>
         </div>
       </CardContent>
     </Card>

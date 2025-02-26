@@ -1,9 +1,9 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { storage } from "@/lib/storage";
 import { Sale, Customer, InventoryItem } from "@/types/inventory";
 import { toast } from "sonner";
-import { SalesAnalytics } from "./SalesAnalytics";
 import { useTranslation } from "react-i18next";
 import { Plus } from "lucide-react";
 
@@ -63,7 +63,26 @@ export function SalesManager() {
       </div>
       
       {/* Sales Analytics Component */}
-      <SalesAnalytics sales={sales} />
+      <div className="grid gap-4 md:grid-cols-3">
+        <div className="rounded-lg border p-4 bg-white shadow-sm">
+          <h3 className="text-lg font-medium">{t("sales:totalSales", "Total Sales")}</h3>
+          <p className="text-2xl font-bold mt-2">
+            {formatCurrency(sales.reduce((sum, sale) => sum + sale.total, 0))}
+          </p>
+        </div>
+        <div className="rounded-lg border p-4 bg-white shadow-sm">
+          <h3 className="text-lg font-medium">{t("sales:completedSales", "Completed Sales")}</h3>
+          <p className="text-2xl font-bold mt-2">
+            {sales.filter(sale => sale.status === 'completed').length}
+          </p>
+        </div>
+        <div className="rounded-lg border p-4 bg-white shadow-sm">
+          <h3 className="text-lg font-medium">{t("sales:pendingSales", "Pending Sales")}</h3>
+          <p className="text-2xl font-bold mt-2">
+            {sales.filter(sale => sale.status === 'pending').length}
+          </p>
+        </div>
+      </div>
       
       {/* Sales Table */}
       <div className="rounded-md border">
@@ -96,8 +115,8 @@ export function SalesManager() {
                 <td className="p-2">
                   <span className={`px-2 py-1 rounded-full text-xs ${
                     sale.paymentStatus === 'paid' ? 'bg-green-100 text-green-800' :
-                    sale.paymentStatus === 'overdue' ? 'bg-red-100 text-red-800' :
-                    'bg-yellow-100 text-yellow-800'
+                    sale.paymentStatus === 'unpaid' || sale.paymentStatus === 'partial' ? 'bg-yellow-100 text-yellow-800' :
+                    'bg-red-100 text-red-800'
                   }`}>
                     {t(`sales:${sale.paymentStatus}`)}
                   </span>
