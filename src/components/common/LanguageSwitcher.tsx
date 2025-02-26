@@ -11,7 +11,7 @@ import { Languages } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 export function LanguageSwitcher() {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
   const [mounted, setMounted] = useState(false);
 
   // Wait for component to mount before showing languages
@@ -23,6 +23,16 @@ export function LanguageSwitcher() {
     console.log('Changing language to:', language);
     i18n.changeLanguage(language);
     localStorage.setItem('preferredLanguage', language);
+    
+    // Update document direction based on language
+    document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
+    document.documentElement.lang = language;
+    
+    if (language === 'ar') {
+      document.body.classList.add('rtl');
+    } else {
+      document.body.classList.remove('rtl');
+    }
     
     // Force reload to ensure all components update properly
     window.location.reload();

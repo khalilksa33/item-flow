@@ -23,8 +23,9 @@ import { useTranslation } from "react-i18next";
 const Index = () => {
   const navigate = useNavigate();
   const { currentUser, logout, isAdmin } = useUser();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation(["dashboard", "inventory", "customers", "sales", "quotations", "invoices", "vendors", "admin", "app", "common"]);
   const [userLoggedIn, setUserLoggedIn] = useState(false);
+  const isRTL = i18n.language === 'ar';
 
   useEffect(() => {
     // Initialize data on first load
@@ -45,51 +46,51 @@ const Index = () => {
 
   const menuItems = [
     {
-      title: t("dashboard.title"),
+      title: t("dashboard:title"),
       icon: <BarChartIcon className="h-5 w-5" />,
-      description: t("dashboard.description"),
+      description: t("dashboard:description"),
       href: "/dashboard",
       color: "bg-blue-500",
     },
     {
-      title: t("inventory.title"),
+      title: t("inventory:title"),
       icon: <BoxIcon className="h-5 w-5" />,
-      description: t("inventory.description"),
+      description: t("inventory:description"),
       href: "/inventory",
       color: "bg-green-500",
     },
     {
-      title: t("customers.title"),
+      title: t("customers:title"),
       icon: <UsersIcon className="h-5 w-5" />,
-      description: t("customers.description"),
+      description: t("customers:description"),
       href: "/customers",
       color: "bg-purple-500",
     },
     {
-      title: t("sales.title"),
+      title: t("sales:title"),
       icon: <ShoppingCartIcon className="h-5 w-5" />,
-      description: t("sales.description"),
+      description: t("sales:description"),
       href: "/sales",
       color: "bg-yellow-500",
     },
     {
-      title: t("quotations.title"),
+      title: t("quotations:title"),
       icon: <FileTextIcon className="h-5 w-5" />,
-      description: t("quotations.description"),
+      description: t("quotations:description"),
       href: "/quotations",
       color: "bg-orange-500",
     },
     {
-      title: t("invoices.title"),
+      title: t("invoices:title"),
       icon: <FileTextIcon className="h-5 w-5" />,
-      description: t("invoices.description"),
+      description: t("invoices:description"),
       href: "/invoices",
       color: "bg-red-500",
     },
     {
-      title: t("vendors.title"),
+      title: t("vendors:title"),
       icon: <TruckIcon className="h-5 w-5" />,
-      description: t("vendors.description"),
+      description: t("vendors:description"),
       href: "/vendors",
       color: "bg-teal-500",
     },
@@ -98,9 +99,9 @@ const Index = () => {
   // Only show admin card if user is an admin
   const adminCard = isAdmin() ? [
     {
-      title: t("admin.title"),
+      title: t("admin:title"),
       icon: <SettingsIcon className="h-5 w-5" />,
-      description: t("admin.description"),
+      description: t("admin:description"),
       href: "/admin",
       color: "bg-gray-700",
     }
@@ -132,7 +133,7 @@ const Index = () => {
   const user = getUserInfo();
 
   return (
-    <div className="container mx-auto p-6">
+    <div className="container mx-auto p-6" dir={isRTL ? "rtl" : "ltr"}>
       {/* KamySoft.com Introductory Section */}
       <div className="mb-8 p-6 bg-gradient-to-r from-blue-600 to-blue-800 text-white rounded-lg shadow-lg">
         <div className="flex flex-col md:flex-row items-center justify-between">
@@ -169,8 +170,8 @@ const Index = () => {
 
       <header className="mb-6 flex justify-between items-center">
         <div className="text-center flex-1">
-          <h1 className="text-3xl font-bold">Inventory Management System</h1>
-          <p className="text-gray-500">Manage your inventory, customers, and sales efficiently</p>
+          <h1 className="text-3xl font-bold">{t("app:title")}</h1>
+          <p className="text-gray-500">{t("app:subtitle")}</p>
         </div>
         <div>
           <LanguageSwitcher />
@@ -179,22 +180,22 @@ const Index = () => {
 
       {!user && !userLoggedIn ? (
         <div className="text-center mt-10">
-          <h2 className="text-2xl font-semibold mb-4">Welcome to the Inventory Management System</h2>
-          <p className="text-gray-600 mb-6">Please log in to continue</p>
+          <h2 className="text-2xl font-semibold mb-4">{t("app:welcome")}</h2>
+          <p className="text-gray-600 mb-6">{t("app:pleaseLogin")}</p>
           <Button asChild size="lg">
-            <Link to="/login">Login</Link>
+            <Link to="/login">{t("auth:login")}</Link>
           </Button>
         </div>
       ) : (
         <>
           <div className="flex justify-between items-center mb-6">
             <div>
-              <h2 className="text-xl font-semibold">Welcome, {user?.username}</h2>
-              <p className="text-sm text-gray-500">Role: {user?.role}</p>
+              <h2 className="text-xl font-semibold">{t("common:welcome")}, {user?.username}</h2>
+              <p className="text-sm text-gray-500">{t("common:role")}: {user?.role}</p>
             </div>
             <Button variant="outline" onClick={handleLogout}>
               <LogOutIcon className="h-4 w-4 mr-2" />
-              Logout
+              {t("auth:logout")}
             </Button>
           </div>
 
@@ -213,7 +214,7 @@ const Index = () => {
                 </CardHeader>
                 <CardFooter>
                   <Button asChild className="w-full">
-                    <Link to={item.href}>View {item.title}</Link>
+                    <Link to={item.href}>{t("common:view")} {item.title}</Link>
                   </Button>
                 </CardFooter>
               </Card>
@@ -223,11 +224,11 @@ const Index = () => {
       )}
 
       <footer className="mt-12 text-center text-sm text-gray-500">
-        <p>Inventory Management System &copy; {new Date().getFullYear()}</p>
+        <p>{t("app:footer.copyright")} &copy; {new Date().getFullYear()}</p>
         <p>
-          License Status:{" "}
+          {t("app:footer.licenseStatus")}:{" "}
           <span className={checkActivation() ? "text-green-500" : "text-red-500"}>
-            {checkActivation() ? "Active" : "Inactive"}
+            {checkActivation() ? t("app:footer.active") : t("app:footer.inactive")}
           </span>
         </p>
         <p className="mt-2">Developed by <a href="https://kamysoft.com" className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">KamySoft.com</a></p>

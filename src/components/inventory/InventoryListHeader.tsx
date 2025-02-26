@@ -17,7 +17,8 @@ export function InventoryListHeader({
   onExport,
   onImportClick
 }: InventoryListHeaderProps) {
-  const { t } = useTranslation(["inventory"]);
+  const { t, i18n } = useTranslation(["inventory"]);
+  const isRTL = i18n.language === 'ar';
 
   return (
     <div className="flex justify-between items-center mb-4">
