@@ -24,41 +24,62 @@ export function InvoicesManager() {
   }, []);
 
   const loadInvoices = () => {
-    setInvoices(storage.getInvoices());
+    try {
+      const loadedInvoices = storage.getInvoices();
+      setInvoices(loadedInvoices);
+    } catch (error) {
+      console.error("Error loading invoices:", error);
+      toast.error(t("invoices:loadError", "Error loading invoices"));
+    }
   };
 
   const handleSubmit = (data: Partial<Invoice>) => {
-    const invoiceData: Invoice = {
-      id: editingInvoice?.id || crypto.randomUUID(),
-      ...data,
-      status: editingInvoice?.status || 'draft',
-      paymentStatus: editingInvoice?.paymentStatus || 'unpaid',
-      createdAt: editingInvoice?.createdAt || new Date().toISOString(),
-      lastUpdated: new Date().toISOString(),
-    } as Invoice;
+    try {
+      const invoiceData: Invoice = {
+        id: editingInvoice?.id || crypto.randomUUID(),
+        ...data,
+        status: editingInvoice?.status || 'draft',
+        paymentStatus: editingInvoice?.paymentStatus || 'unpaid',
+        createdAt: editingInvoice?.createdAt || new Date().toISOString(),
+        lastUpdated: new Date().toISOString(),
+      } as Invoice;
 
-    if (editingInvoice) {
-      storage.updateInvoice(invoiceData);
-      toast.success(t("invoices:invoiceUpdated"));
-    } else {
-      storage.addInvoice(invoiceData);
-      toast.success(t("invoices:invoiceCreated"));
+      if (editingInvoice) {
+        storage.updateInvoice(invoiceData);
+        toast.success(t("invoices:invoiceUpdated"));
+      } else {
+        storage.addInvoice(invoiceData);
+        toast.success(t("invoices:invoiceCreated"));
+      }
+
+      loadInvoices();
+      setIsDialogOpen(false);
+      setEditingInvoice(null);
+    } catch (error) {
+      console.error("Error submitting invoice:", error);
+      toast.error(t("invoices:saveError", "Error saving invoice"));
     }
-
-    loadInvoices();
-    setIsDialogOpen(false);
-    setEditingInvoice(null);
   };
 
   const handleEdit = (invoice: Invoice) => {
-    setEditingInvoice(invoice);
-    setIsDialogOpen(true);
+    try {
+      setEditingInvoice(invoice);
+      setIsDialogOpen(true);
+    } catch (error) {
+      console.error("Error editing invoice:", error);
+      toast.error(t("invoices:editError", "Error editing invoice"));
+    }
   };
 
   const handleDelete = (id: string) => {
-    storage.deleteInvoice(id);
-    loadInvoices();
-    toast.success(t("invoices:invoiceDeleted"));
+    try {
+      storage.deleteInvoice(id);
+      loadInvoices();
+      toast.success(t("invoices:invoiceDeleted"));
+    } catch (error) {
+      console.error("Error deleting invoice:", error);
+      toast.error(t("invoices:deleteError", "Error deleting invoice"));
+    }
   };
 
   return (

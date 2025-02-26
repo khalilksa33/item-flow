@@ -12,7 +12,6 @@ interface InvoiceFooterProps {
 }
 
 export function InvoiceFooter({ 
-  companyName, 
   companyPhone, 
   notes,
   status,
@@ -37,7 +36,7 @@ export function InvoiceFooter({
       )}
 
       <View style={[styles.footer, isRTL && styles.rtlSection]}>
-        <Text>{companyName} • {companyPhone}</Text>
+        <Text>{companyPhone}</Text>
       </View>
     </>
   );

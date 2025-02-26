@@ -1,287 +1,133 @@
-
 import { useState, useEffect } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { storage } from "@/lib/storage";
-import { Sale, SaleItem, Customer, InventoryItem } from "@/types/inventory";
+import { Sale, Customer, InventoryItem } from "@/types/inventory";
 import { toast } from "sonner";
+import { SalesAnalytics } from "./SalesAnalytics";
+import { useTranslation } from "react-i18next";
+import { Plus } from "lucide-react";
 
 export function SalesManager() {
-  const [sales, setSales] = useState<Sale[]>([]);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingSale, setEditingSale] = useState<Sale | null>(null);
   const [customers] = useState<Customer[]>(storage.getCustomers());
   const [products] = useState<InventoryItem[]>(storage.getItems());
-  const [selectedCustomer, setSelectedCustomer] = useState<string>("");
-  const [saleItems, setSaleItems] = useState<SaleItem[]>([]);
-
+  const [sales, setSales] = useState<Sale[]>([]);
+  const { t, i18n } = useTranslation(["sales", "common"]);
+  const isRTL = i18n.language === 'ar';
+  
   useEffect(() => {
-    loadSales();
+    const loadedSales = storage.getSales();
+    setSales(loadedSales);
   }, []);
 
-  const loadSales = () => {
-    setSales(storage.getSales());
+  const refreshSales = () => {
+    const loadedSales = storage.getSales();
+    setSales(loadedSales);
   };
 
-  const calculateTotal = (items: SaleItem[]) => {
-    return items.reduce((sum, item) => sum + item.subtotal, 0);
-  };
-
-  const handleAddItem = () => {
-    const newItem: SaleItem = {
-      id: crypto.randomUUID(),
-      productId: "",
-      quantity: 1,
-      unitPrice: 0,
-      subtotal: 0
-    };
-    setSaleItems([...saleItems, newItem]);
-  };
-
-  const handleItemChange = (index: number, field: keyof SaleItem, value: any) => {
-    const updatedItems = [...saleItems];
-    const item = { ...updatedItems[index] };
-
-    if (field === 'productId') {
-      const product = products.find(p => p.id === value);
-      if (product) {
-        item.productId = value;
-        item.unitPrice = product.cost || 0;
-        item.subtotal = item.quantity * item.unitPrice;
-      }
-    } else if (field === 'quantity') {
-      item.quantity = Number(value);
-      item.subtotal = item.quantity * item.unitPrice;
-    }
-
-    updatedItems[index] = item;
-    setSaleItems(updatedItems);
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    const saleData: Sale = {
-      id: editingSale?.id || crypto.randomUUID(),
-      customerId: selectedCustomer,
-      items: saleItems,
-      total: calculateTotal(saleItems),
-      status: 'pending',
-      paymentStatus: 'unpaid',
-      date: new Date().toISOString(),
-      dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-    };
-
-    if (editingSale) {
-      storage.updateSale(saleData);
-      toast.success("Sale updated successfully");
-    } else {
-      storage.addSale(saleData);
-      toast.success("Sale created successfully");
-    }
-
-    loadSales();
-    setIsDialogOpen(false);
-    resetForm();
-  };
-
-  const resetForm = () => {
-    setSelectedCustomer("");
-    setSaleItems([]);
-    setEditingSale(null);
-  };
-
-  const handleEdit = (sale: Sale) => {
-    setEditingSale(sale);
-    setSelectedCustomer(sale.customerId);
-    setSaleItems(sale.items);
-    setIsDialogOpen(true);
-  };
-
-  const handleDelete = (id: string) => {
-    storage.deleteSale(id);
-    loadSales();
-    toast.success("Sale deleted successfully");
+  const formatCurrency = (amount: number) => {
+    const currency = localStorage.getItem('currency') || 'SAR';
+    return isRTL 
+      ? `${amount.toFixed(2)} ${currency}` 
+      : `${currency} ${amount.toFixed(2)}`;
   };
 
   const getCustomerName = (customerId: string) => {
-    return customers.find(c => c.id === customerId)?.name || 'Unknown Customer';
+    const customer = customers.find(c => c.id === customerId);
+    return customer ? customer.name : t("sales:unknownCustomer", "Unknown Customer");
   };
 
-  const getProductName = (productId: string) => {
-    return products.find(p => p.id === productId)?.name || 'Unknown Product';
+  const formatDate = (dateString: string) => {
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString(isRTL ? 'ar-SA' : 'en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+    } catch (error) {
+      console.error("Error formatting date:", error);
+      return dateString;
+    }
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-8" dir={isRTL ? "rtl" : "ltr"}>
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Sales</h2>
+        <h2 className="text-2xl font-bold">{t("sales:title")}</h2>
         <Button onClick={() => {
-          resetForm();
-          setIsDialogOpen(true);
+          /* Sale creation logic */
         }}>
-          New Sale
+          <Plus className={`h-4 w-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+          {t("sales:newSale")}
         </Button>
       </div>
-
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Date</TableHead>
-            <TableHead>Customer</TableHead>
-            <TableHead>Items</TableHead>
-            <TableHead>Total</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {sales.map((sale) => (
-            <TableRow key={sale.id}>
-              <TableCell>{new Date(sale.date).toLocaleDateString()}</TableCell>
-              <TableCell>{getCustomerName(sale.customerId)}</TableCell>
-              <TableCell>{sale.items.length} items</TableCell>
-              <TableCell>${sale.total.toFixed(2)}</TableCell>
-              <TableCell>
-                <span className={`px-2 py-1 rounded-full text-xs ${
-                  sale.status === 'completed' ? 'bg-green-100 text-green-800' : 
-                  sale.status === 'cancelled' ? 'bg-red-100 text-red-800' : 
-                  'bg-yellow-100 text-yellow-800'
-                }`}>
-                  {sale.status}
-                </span>
-              </TableCell>
-              <TableCell>
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleEdit(sale)}
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => handleDelete(sale.id)}
-                  >
-                    Delete
-                  </Button>
-                </div>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-3xl">
-          <DialogHeader>
-            <DialogTitle>
-              {editingSale ? "Edit Sale" : "New Sale"}
-            </DialogTitle>
-          </DialogHeader>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="customer">Customer</Label>
-                <select
-                  id="customer"
-                  className="w-full rounded-md border border-input bg-background px-3 py-2"
-                  value={selectedCustomer}
-                  onChange={(e) => setSelectedCustomer(e.target.value)}
-                  required
-                >
-                  <option value="">Select Customer</option>
-                  {customers.map(customer => (
-                    <option key={customer.id} value={customer.id}>
-                      {customer.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <div className="flex justify-between items-center mb-2">
-                  <Label>Items</Label>
-                  <Button type="button" onClick={handleAddItem} size="sm">
-                    Add Item
-                  </Button>
-                </div>
-                {saleItems.map((item, index) => (
-                  <div key={item.id} className="grid grid-cols-3 gap-2 mb-2">
-                    <select
-                      className="rounded-md border border-input bg-background px-3 py-2"
-                      value={item.productId}
-                      onChange={(e) => handleItemChange(index, 'productId', e.target.value)}
-                      required
-                    >
-                      <option value="">Select Product</option>
-                      {products.map(product => (
-                        <option key={product.id} value={product.id}>
-                          {product.name} - ${product.cost}
-                        </option>
-                      ))}
-                    </select>
-                    <Input
-                      type="number"
-                      min="1"
-                      value={item.quantity}
-                      onChange={(e) => handleItemChange(index, 'quantity', e.target.value)}
-                      placeholder="Quantity"
-                      required
-                    />
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm text-gray-600">
-                        Subtotal: ${item.subtotal.toFixed(2)}
-                      </span>
-                      <Button
-                        type="button"
-                        variant="destructive"
-                        size="sm"
-                        onClick={() => {
-                          const updatedItems = saleItems.filter((_, i) => i !== index);
-                          setSaleItems(updatedItems);
-                        }}
-                      >
-                        Remove
-                      </Button>
-                    </div>
+      
+      {/* Sales Analytics Component */}
+      <SalesAnalytics sales={sales} />
+      
+      {/* Sales Table */}
+      <div className="rounded-md border">
+        <table className="w-full">
+          <thead>
+            <tr className="border-b bg-gray-100">
+              <th className={`p-2 text-${isRTL ? 'right' : 'left'}`}>{t("sales:customerName")}</th>
+              <th className={`p-2 text-${isRTL ? 'right' : 'left'}`}>{t("sales:saleDate")}</th>
+              <th className={`p-2 text-${isRTL ? 'right' : 'left'}`}>{t("sales:total")}</th>
+              <th className={`p-2 text-${isRTL ? 'right' : 'left'}`}>{t("sales:status")}</th>
+              <th className={`p-2 text-${isRTL ? 'right' : 'left'}`}>{t("sales:paymentStatus")}</th>
+              <th className="p-2"></th>
+            </tr>
+          </thead>
+          <tbody>
+            {sales.map(sale => (
+              <tr key={sale.id} className="border-b">
+                <td className="p-2">{getCustomerName(sale.customerId)}</td>
+                <td className="p-2">{formatDate(sale.date)}</td>
+                <td className="p-2">{formatCurrency(sale.total)}</td>
+                <td className="p-2">
+                  <span className={`px-2 py-1 rounded-full text-xs ${
+                    sale.status === 'completed' ? 'bg-green-100 text-green-800' :
+                    sale.status === 'cancelled' ? 'bg-red-100 text-red-800' :
+                    'bg-yellow-100 text-yellow-800'
+                  }`}>
+                    {t(`sales:${sale.status}`)}
+                  </span>
+                </td>
+                <td className="p-2">
+                  <span className={`px-2 py-1 rounded-full text-xs ${
+                    sale.paymentStatus === 'paid' ? 'bg-green-100 text-green-800' :
+                    sale.paymentStatus === 'overdue' ? 'bg-red-100 text-red-800' :
+                    'bg-yellow-100 text-yellow-800'
+                  }`}>
+                    {t(`sales:${sale.paymentStatus}`)}
+                  </span>
+                </td>
+                <td className="p-2">
+                  <div className="flex justify-end space-x-2">
+                    <Button size="sm" variant="outline" onClick={() => {
+                      /* Sale edit logic */
+                    }}>
+                      {t("common:edit")}
+                    </Button>
+                    <Button size="sm" variant="destructive" onClick={() => {
+                      /* Sale delete logic */
+                    }}>
+                      {t("common:delete")}
+                    </Button>
                   </div>
-                ))}
-              </div>
-
-              <div className="text-right text-lg font-semibold">
-                Total: ${calculateTotal(saleItems).toFixed(2)}
-              </div>
-            </div>
-
-            <div className="flex justify-end gap-2">
-              <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
-                Cancel
-              </Button>
-              <Button type="submit">
-                {editingSale ? "Update" : "Create"} Sale
-              </Button>
-            </div>
-          </form>
-        </DialogContent>
-      </Dialog>
+                </td>
+              </tr>
+            ))}
+            {sales.length === 0 && (
+              <tr>
+                <td colSpan={6} className="p-4 text-center text-gray-500">
+                  {t("sales:noSales", "No sales records found")}
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
