@@ -15,3 +15,21 @@ export interface QuotationFormProps {
   onSubmit: (data: Partial<Quotation>) => void;
   onCancel: () => void;
 }
+
+export interface QuotationActionsProps {
+  quotation: Quotation;
+  customerName: string;
+  onEdit: (quotation: Quotation) => void;
+  onDelete: (id: string) => void;
+}
+
+export interface QuotationStatusBadgeProps {
+  status: 'draft' | 'sent' | 'accepted' | 'rejected' | 'expired';
+}
+
+export interface QuotationTableProps {
+  quotations: Quotation[];
+  customers: any[];
+  onEdit: (quotation: Quotation) => void;
+  onDelete: (id: string) => void;
+}
