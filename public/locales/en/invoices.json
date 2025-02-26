@@ -27,5 +27,17 @@
   "newInvoice": "New Invoice",
   "invoiceUpdated": "Invoice updated successfully",
   "invoiceCreated": "Invoice created successfully",
-  "invoiceDeleted": "Invoice deleted successfully"
+  "invoiceDeleted": "Invoice deleted successfully",
+  "status": "Status",
+  "status.paid": "Paid",
+  "status.draft": "Draft",
+  "status.overdue": "Overdue",
+  "status.cancelled": "Cancelled",
+  "status.pending": "Pending",
+  "unknownCustomer": "Unknown Customer",
+  "printInvoice": "Print Invoice",
+  "printReceipt": "Print Receipt",
+  "downloadInvoice": "Download Invoice",
+  "downloadReceipt": "Download Receipt",
+  "popupBlocked": "Pop-up blocked. Please allow pop-ups to print directly."
 }

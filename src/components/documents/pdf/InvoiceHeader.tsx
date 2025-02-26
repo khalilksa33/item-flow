@@ -28,12 +28,16 @@ export function InvoiceHeader({
 }: InvoiceHeaderProps) {
   const { t } = useTranslation();
   
-  // Create a placeholder logo URL if none is provided
-  const logoUrl = companyLogo || 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&h=200&q=80';
+  // Use the logo provided or a transparent placeholder (to maintain layout)
+  const logoUrl = companyLogo || 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
   
   return (
     <View style={[styles.header, isRTL && styles.rtlRow]}>
-      <View style={styles.headerLeft}>
+      {/* Left section (or right in RTL) */}
+      <View style={[
+        styles.headerLeft,
+        isRTL ? { alignItems: 'flex-end', textAlign: 'right' } : {}
+      ]}>
         <Text style={styles.companyName}>{companyName}</Text>
         {vatNumber && <Text style={styles.companyInfo}>{t("invoices.vatNumber")}: {vatNumber}</Text>}
         {crNumber && <Text style={styles.companyInfo}>{t("invoices.crNumber")}: {crNumber}</Text>}
@@ -42,10 +46,12 @@ export function InvoiceHeader({
         {companyEmail && <Text style={styles.companyInfo}>{t("invoices.email")}: {companyEmail}</Text>}
       </View>
       
+      {/* Center section - Logo */}
       <View style={styles.logoContainer}>
         <Image src={logoUrl} style={styles.logo} />
       </View>
       
+      {/* Right section (or left in RTL) - QR Code */}
       <View style={styles.headerRight}>
         <Image style={styles.qrCode} src={qrCodeUrl} />
       </View>

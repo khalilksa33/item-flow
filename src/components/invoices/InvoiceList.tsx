@@ -9,6 +9,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { InvoiceActions } from "./InvoiceActions";
+import { useTranslation } from "react-i18next";
 
 interface InvoiceListProps {
   invoices: Invoice[];
@@ -18,39 +19,59 @@ interface InvoiceListProps {
 }
 
 export function InvoiceList({ invoices, customers, onEdit, onDelete }: InvoiceListProps) {
+  const { t, i18n } = useTranslation("invoices");
+  const isRTL = i18n.language === 'ar';
+  
   const getCustomerName = (customerId: string) => {
-    return customers.find(c => c.id === customerId)?.name || 'Unknown Customer';
+    return customers.find(c => c.id === customerId)?.name || t("unknownCustomer", "Unknown Customer");
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat(i18n.language, { 
+      year: 'numeric', 
+      month: 'short', 
+      day: 'numeric' 
+    }).format(date);
   };
 
   return (
-    <Table>
+    <Table className={isRTL ? "text-right" : ""}>
       <TableHeader>
         <TableRow>
-          <TableHead>Date</TableHead>
-          <TableHead>Customer</TableHead>
-          <TableHead>Total</TableHead>
-          <TableHead>Status</TableHead>
-          <TableHead>Due Date</TableHead>
-          <TableHead>Actions</TableHead>
+          <TableHead className={isRTL ? "text-right" : ""}>{t("date")}</TableHead>
+          <TableHead className={isRTL ? "text-right" : ""}>{t("customers:title")}</TableHead>
+          <TableHead className={isRTL ? "text-right" : ""}>{t("total")}</TableHead>
+          <TableHead className={isRTL ? "text-right" : ""}>{t("status", "Status")}</TableHead>
+          <TableHead className={isRTL ? "text-right" : ""}>{t("dueDate")}</TableHead>
+          <TableHead className={isRTL ? "text-right" : ""}>{t("common:actions")}</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {invoices.map((invoice) => (
           <TableRow key={invoice.id}>
-            <TableCell>{new Date(invoice.createdAt).toLocaleDateString()}</TableCell>
-            <TableCell>{getCustomerName(invoice.customerId)}</TableCell>
-            <TableCell>${invoice.total.toFixed(2)}</TableCell>
-            <TableCell>
+            <TableCell className={isRTL ? "text-right" : ""}>
+              {formatDate(invoice.createdAt)}
+            </TableCell>
+            <TableCell className={isRTL ? "text-right" : ""}>
+              {getCustomerName(invoice.customerId)}
+            </TableCell>
+            <TableCell className={isRTL ? "text-right" : ""}>
+              ${invoice.total.toFixed(2)}
+            </TableCell>
+            <TableCell className={isRTL ? "text-right" : ""}>
               <span className={`px-2 py-1 rounded-full text-xs ${
                 invoice.status === 'paid' ? 'bg-green-100 text-green-800' :
                 invoice.status === 'overdue' ? 'bg-red-100 text-red-800' :
                 invoice.status === 'cancelled' ? 'bg-gray-100 text-gray-800' :
                 'bg-yellow-100 text-yellow-800'
               }`}>
-                {invoice.status}
+                {t(`status.${invoice.status}`, invoice.status)}
               </span>
             </TableCell>
-            <TableCell>{new Date(invoice.paymentDue).toLocaleDateString()}</TableCell>
+            <TableCell className={isRTL ? "text-right" : ""}>
+              {formatDate(invoice.paymentDue)}
+            </TableCell>
             <TableCell>
               <InvoiceActions 
                 invoice={invoice} 

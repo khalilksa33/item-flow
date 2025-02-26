@@ -6,6 +6,7 @@ import { Invoice, Customer } from "@/types/inventory";
 import { InvoicePDF } from "../documents/InvoicePDF";
 import { ReceiptPDF } from "../documents/ReceiptPDF";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 interface InvoiceActionsProps {
   invoice: Invoice;
@@ -15,7 +16,8 @@ interface InvoiceActionsProps {
 }
 
 export function InvoiceActions({ invoice, customers, onEdit, onDelete }: InvoiceActionsProps) {
-  const customerName = customers.find(c => c.id === invoice.customerId)?.name || 'Unknown Customer';
+  const { t } = useTranslation(["invoices", "common"]);
+  const customerName = customers.find(c => c.id === invoice.customerId)?.name || t("unknownCustomer", "Unknown Customer");
 
   const handlePrintDocument = (blob: Blob) => {
     // Create a URL for the blob
@@ -33,7 +35,7 @@ export function InvoiceActions({ invoice, customers, onEdit, onDelete }: Invoice
       };
     } else {
       // If popup is blocked, just download the file
-      toast.error("Pop-up blocked. Please allow pop-ups to print directly.");
+      toast.error(t("popupBlocked", "Pop-up blocked. Please allow pop-ups to print directly."));
       
       // Provide fallback download
       const link = document.createElement('a');
@@ -65,7 +67,7 @@ export function InvoiceActions({ invoice, customers, onEdit, onDelete }: Invoice
             ) : (
               <Receipt className="h-4 w-4 mr-2" />
             )}
-            {type === 'invoice' ? 'Print Invoice' : 'Print Receipt'}
+            {type === 'invoice' ? t("printInvoice", "Print Invoice") : t("printReceipt", "Print Receipt")}
           </Button>
         )}
       </BlobProvider>
@@ -89,7 +91,7 @@ export function InvoiceActions({ invoice, customers, onEdit, onDelete }: Invoice
             disabled={loading}
           >
             <Download className="h-4 w-4 mr-2" />
-            {type === 'invoice' ? 'Download Invoice' : 'Download Receipt'}
+            {type === 'invoice' ? t("downloadInvoice", "Download Invoice") : t("downloadReceipt", "Download Receipt")}
           </Button>
         )}
       </PDFDownloadLink>
@@ -107,14 +109,14 @@ export function InvoiceActions({ invoice, customers, onEdit, onDelete }: Invoice
         size="sm"
         onClick={() => onEdit(invoice)}
       >
-        Edit
+        {t("common:edit")}
       </Button>
       <Button
         variant="destructive"
         size="sm"
         onClick={() => onDelete(invoice.id)}
       >
-        Delete
+        {t("common:delete")}
       </Button>
     </div>
   );

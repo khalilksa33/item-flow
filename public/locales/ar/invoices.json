@@ -27,5 +27,17 @@
   "newInvoice": "فاتورة جديدة",
   "invoiceUpdated": "تم تحديث الفاتورة بنجاح",
   "invoiceCreated": "تم إنشاء الفاتورة بنجاح",
-  "invoiceDeleted": "تم حذف الفاتورة بنجاح"
+  "invoiceDeleted": "تم حذف الفاتورة بنجاح",
+  "status": "الحالة",
+  "status.paid": "مدفوع",
+  "status.draft": "مسودة",
+  "status.overdue": "متأخر",
+  "status.cancelled": "ملغى",
+  "status.pending": "قيد الانتظار",
+  "unknownCustomer": "عميل غير معروف",
+  "printInvoice": "طباعة الفاتورة",
+  "printReceipt": "طباعة الإيصال",
+  "downloadInvoice": "تنزيل الفاتورة",
+  "downloadReceipt": "تنزيل الإيصال",
+  "popupBlocked": "تم حظر النافذة المنبثقة. يرجى السماح بالنوافذ المنبثقة للطباعة المباشرة."
 }
