@@ -143,7 +143,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     
     // Check authorization based on role
     if (userToCheck.role === 'admin') return true;
-    if (userToCheck.role === 'manager' && requiredRole !== 'admin') return true;
+    if (userToCheck.role === 'manager' && (requiredRole === 'manager' || requiredRole === 'viewer')) return true;
     if (userToCheck.role === 'viewer' && requiredRole === 'viewer') return true;
     
     return false;
