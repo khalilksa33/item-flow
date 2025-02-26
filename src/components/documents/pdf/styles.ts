@@ -13,26 +13,26 @@ export const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 20,
+    alignItems: 'flex-start',
+    marginBottom: 30,
+    gap: 20,
   },
-  headerLeft: {
+  headerInfo: {
     flex: 2,
   },
-  logoContainer: {
+  headerCenter: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    height: 80,
   },
-  logo: {
-    maxWidth: '100%',
-    maxHeight: '100%',
-    objectFit: 'contain',
-  },
-  headerRight: {
+  headerQR: {
     flex: 1,
     alignItems: 'flex-end',
-    justifyContent: 'center',
+  },
+  logo: {
+    width: 120,
+    height: 80,
+    objectFit: 'contain',
   },
   qrCode: {
     width: 80,
@@ -41,94 +41,81 @@ export const styles = StyleSheet.create({
   companyName: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 5,
+    marginBottom: 8,
   },
   companyInfo: {
     fontSize: 10,
-    color: '#666',
-    marginBottom: 2,
+    marginBottom: 4,
   },
   
   // Invoice info styles
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
   invoiceInfo: {
     marginBottom: 20,
   },
-  sectionTitle: {
+  title: {
+    fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 5,
+    marginBottom: 15,
   },
-  invoiceDetail: {
+  infoRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 4,
+  },
+  infoLabel: {
     fontSize: 10,
-    marginBottom: 2,
+    fontWeight: 'bold',
+  },
+  infoValue: {
+    fontSize: 10,
   },
   
   // Table styles
-  section: {
-    marginBottom: 15,
-  },
   table: {
-    marginTop: 10,
-    marginBottom: 10,
+    marginVertical: 20,
   },
   tableHeader: {
-    backgroundColor: '#f0f0f0',
     flexDirection: 'row',
+    backgroundColor: '#f5f5f5',
+    padding: 8,
     borderBottomWidth: 1,
     borderBottomColor: '#000',
-    padding: 5,
   },
   tableHeaderRTL: {
-    backgroundColor: '#f0f0f0',
     flexDirection: 'row-reverse',
+    backgroundColor: '#f5f5f5',
+    padding: 8,
     borderBottomWidth: 1,
     borderBottomColor: '#000',
-    padding: 5,
   },
   tableRow: {
     flexDirection: 'row',
+    padding: 8,
     borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-    padding: 5,
+    borderBottomColor: '#eee',
   },
   tableRowRTL: {
     flexDirection: 'row-reverse',
+    padding: 8,
     borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-    padding: 5,
+    borderBottomColor: '#eee',
   },
   tableCell: {
     flex: 1,
     fontSize: 10,
-    padding: 3,
   },
-  tableCellHeader: {
+  tableCellRTL: {
     flex: 1,
     fontSize: 10,
-    fontWeight: 'bold',
-    padding: 3,
-  },
-  tableCellNarrow: {
-    flex: 0.5,
-    fontSize: 10,
-    padding: 3,
-  },
-  tableCellWide: {
-    flex: 2,
-    fontSize: 10,
-    padding: 3,
+    textAlign: 'right',
   },
   
   // Totals styles
   totals: {
-    marginTop: 30,
-    paddingTop: 10,
+    marginTop: 20,
     borderTopWidth: 1,
-    borderTopColor: '#ccc',
+    borderTopColor: '#000',
+    paddingTop: 10,
   },
   totalRow: {
     flexDirection: 'row',
@@ -141,70 +128,36 @@ export const styles = StyleSheet.create({
     marginBottom: 5,
   },
   totalLabel: {
-    flex: 1,
+    width: 100,
     textAlign: 'right',
     paddingRight: 10,
-    maxWidth: 150,
   },
   totalLabelRTL: {
-    flex: 1,
+    width: 100,
     textAlign: 'left',
     paddingLeft: 10,
-    paddingRight: 0,
-    maxWidth: 150,
   },
   totalValue: {
+    width: 100,
     textAlign: 'right',
-    minWidth: 100,
   },
   totalValueRTL: {
+    width: 100,
     textAlign: 'left',
-    minWidth: 100,
-  },
-  grandTotal: {
-    fontWeight: 'bold',
-    marginTop: 5,
-    paddingTop: 5,
-    borderTopWidth: 1,
-    borderTopColor: '#000',
   },
   
   // Footer styles
-  notes: {
-    marginTop: 30,
-    paddingTop: 10,
-    borderTopWidth: 1,
-    borderTopColor: '#ccc',
-    fontSize: 10,
-  },
-  thankYou: {
-    marginTop: 40,
-    textAlign: 'center',
-    fontSize: 14,
-    fontWeight: 'bold',
-  },
-  watermark: {
-    position: 'absolute',
-    fontSize: 100,
-    color: 'rgba(200, 200, 200, 0.3)',
-    transform: 'rotate(-45deg)',
-    left: 100,
-    top: 300,
-  },
   footer: {
     position: 'absolute',
     bottom: 30,
     left: 30,
     right: 30,
     textAlign: 'center',
-    fontSize: 9,
-    color: '#666',
   },
   
   // RTL styles
   rtl: {
     direction: 'rtl',
-    textAlign: 'right',
   },
   rtlRow: {
     flexDirection: 'row-reverse',
@@ -213,7 +166,7 @@ export const styles = StyleSheet.create({
     alignItems: 'flex-end',
     textAlign: 'right',
   },
-  rtlValue: {
-    textAlign: 'left',
-  },
+  rtlText: {
+    textAlign: 'right',
+  }
 });

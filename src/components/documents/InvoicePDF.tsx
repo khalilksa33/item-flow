@@ -37,9 +37,6 @@ export const InvoicePDF = ({ invoice, customerName }: InvoicePDFProps) => {
     return (value ?? 0).toFixed(2);
   };
 
-  // Ensure items array exists
-  const items = invoice.items || [];
-  
   // Format dates according to locale
   const dateFormatOptions = {
     year: 'numeric',
@@ -54,6 +51,11 @@ export const InvoicePDF = ({ invoice, customerName }: InvoicePDFProps) => {
   // Generate invoice reference number
   const invoiceRef = `INV-${invoice.id.slice(0, 8).toUpperCase()}`;
   
+  // Force Arabic language for PDF if current language is Arabic
+  if (isRTL) {
+    i18n.changeLanguage('ar');
+  }
+
   return (
     <Document>
       <Page size="A4" style={[styles.page, isRTL && styles.rtl]}>
@@ -80,7 +82,7 @@ export const InvoicePDF = ({ invoice, customerName }: InvoicePDFProps) => {
         />
 
         <InvoiceItemsTable
-          items={items}
+          items={invoice.items || []}
           currency={currency}
           formatNumber={formatNumber}
           isRTL={isRTL}

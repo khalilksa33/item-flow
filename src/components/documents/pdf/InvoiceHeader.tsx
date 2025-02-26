@@ -30,29 +30,29 @@ export function InvoiceHeader({
   
   return (
     <View style={[styles.header, isRTL && styles.rtlRow]}>
-      {/* Left section (or right in RTL) with company info */}
-      <View style={[
-        styles.headerLeft,
-        isRTL ? { alignItems: 'flex-end', textAlign: 'right' } : {}
-      ]}>
+      {/* Company Info */}
+      <View style={[styles.headerInfo, isRTL && styles.rtlSection]}>
         <Text style={styles.companyName}>{companyName}</Text>
-        {vatNumber && <Text style={styles.companyInfo}>{t("vatNumber")}: {vatNumber}</Text>}
-        {crNumber && <Text style={styles.companyInfo}>{t("crNumber")}: {crNumber}</Text>}
-        {companyAddress && <Text style={styles.companyInfo}>{t("address")}: {companyAddress}</Text>}
-        {companyPhone && <Text style={styles.companyInfo}>{t("phone")}: {companyPhone}</Text>}
-        {companyEmail && <Text style={styles.companyInfo}>{t("email")}: {companyEmail}</Text>}
+        <Text style={styles.companyInfo}>{t("vatNumber")}: {vatNumber}</Text>
+        <Text style={styles.companyInfo}>{t("crNumber")}: {crNumber}</Text>
+        <Text style={styles.companyInfo}>{t("address")}: {companyAddress}</Text>
+        <Text style={styles.companyInfo}>{t("phone")}: {companyPhone}</Text>
+        <Text style={styles.companyInfo}>{t("email")}: {companyEmail}</Text>
       </View>
-      
-      {/* Center section with logo */}
+
+      {/* Logo */}
       {companyLogo && (
-        <View style={styles.logoContainer}>
-          <Image src={companyLogo} style={styles.logo} />
+        <View style={styles.headerCenter}>
+          <Image 
+            src={companyLogo} 
+            style={styles.logo}
+          />
         </View>
       )}
-      
-      {/* Right section (or left in RTL) with QR code */}
-      <View style={styles.headerRight}>
-        <Image style={styles.qrCode} src={qrCodeUrl} />
+
+      {/* QR Code */}
+      <View style={styles.headerQR}>
+        <Image src={qrCodeUrl} style={styles.qrCode} />
       </View>
     </View>
   );
