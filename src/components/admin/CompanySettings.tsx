@@ -6,8 +6,10 @@ import { Label } from "@/components/ui/label";
 import { Building, Upload } from "lucide-react";
 import { useState, useRef } from "react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 export function CompanySettings() {
+  const { t } = useTranslation();
   const [companyName, setCompanyName] = useState(localStorage.getItem('companyName') || '');
   const [vatNumber, setVatNumber] = useState(localStorage.getItem('vatNumber') || '');
   const [crNumber, setCrNumber] = useState(localStorage.getItem('crNumber') || '');
@@ -25,14 +27,14 @@ export function CompanySettings() {
     localStorage.setItem('companyPhone', companyPhone);
     localStorage.setItem('companyEmail', companyEmail);
     localStorage.setItem('companyLogo', companyLogo);
-    toast.success("Company settings saved successfully");
+    toast.success(t("admin.settingsSaved"));
   };
 
   const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       if (file.size > 2 * 1024 * 1024) {
-        toast.error("Logo file size must be less than 2MB");
+        toast.error(t("admin.logoSizeError", "Logo file size must be less than 2MB"));
         return;
       }
 
@@ -50,7 +52,7 @@ export function CompanySettings() {
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
-    toast.success("Company logo removed");
+    toast.success(t("admin.logoRemoved", "Company logo removed"));
   };
 
   return (
@@ -58,22 +60,22 @@ export function CompanySettings() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Building className="h-5 w-5" />
-          Company Settings
+          {t("admin.company")}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="companyName">Company Name</Label>
+          <Label htmlFor="companyName">{t("admin.companyName", "Company Name")}</Label>
           <Input 
             id="companyName"
             value={companyName}
             onChange={(e) => setCompanyName(e.target.value)}
-            placeholder="Enter company name"
+            placeholder={t("admin.enterCompanyName", "Enter company name")}
           />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="companyLogo">Company Logo</Label>
+          <Label htmlFor="companyLogo">{t("admin.companyLogo", "Company Logo")}</Label>
           <div className="flex flex-col gap-2">
             <Input 
               ref={fileInputRef}
@@ -87,7 +89,7 @@ export function CompanySettings() {
                 <div className="border rounded p-4 flex justify-center">
                   <img 
                     src={companyLogo} 
-                    alt="Company Logo" 
+                    alt={t("admin.companyLogo", "Company Logo")} 
                     className="max-h-32 max-w-full object-contain" 
                   />
                 </div>
@@ -97,7 +99,7 @@ export function CompanySettings() {
                   onClick={handleRemoveLogo}
                   className="w-full"
                 >
-                  Remove Logo
+                  {t("admin.removeLogo", "Remove Logo")}
                 </Button>
               </div>
             )}
@@ -105,51 +107,51 @@ export function CompanySettings() {
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="vatNumber">VAT Number</Label>
+          <Label htmlFor="vatNumber">{t("invoices.vatNumber", "VAT Number")}</Label>
           <Input 
             id="vatNumber"
             value={vatNumber}
             onChange={(e) => setVatNumber(e.target.value)}
-            placeholder="Enter VAT number"
+            placeholder={t("admin.enterVatNumber", "Enter VAT number")}
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="crNumber">CR Number</Label>
+          <Label htmlFor="crNumber">{t("invoices.crNumber", "CR Number")}</Label>
           <Input 
             id="crNumber"
             value={crNumber}
             onChange={(e) => setCrNumber(e.target.value)}
-            placeholder="Enter CR number"
+            placeholder={t("admin.enterCrNumber", "Enter CR number")}
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="companyAddress">Company Address</Label>
+          <Label htmlFor="companyAddress">{t("invoices.address", "Company Address")}</Label>
           <Input 
             id="companyAddress"
             value={companyAddress}
             onChange={(e) => setCompanyAddress(e.target.value)}
-            placeholder="Enter company address"
+            placeholder={t("admin.enterAddress", "Enter company address")}
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="companyPhone">Phone Number</Label>
+          <Label htmlFor="companyPhone">{t("invoices.phone", "Phone Number")}</Label>
           <Input 
             id="companyPhone"
             value={companyPhone}
             onChange={(e) => setCompanyPhone(e.target.value)}
-            placeholder="Enter phone number"
+            placeholder={t("admin.enterPhone", "Enter phone number")}
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="companyEmail">Email Address</Label>
+          <Label htmlFor="companyEmail">{t("invoices.email", "Email Address")}</Label>
           <Input 
             id="companyEmail"
             value={companyEmail}
             onChange={(e) => setCompanyEmail(e.target.value)}
-            placeholder="Enter email address"
+            placeholder={t("admin.enterEmail", "Enter email address")}
           />
         </div>
-        <Button onClick={saveCompanySettings}>Save Company Settings</Button>
+        <Button onClick={saveCompanySettings}>{t("admin.saveCompanySettings", "Save Company Settings")}</Button>
       </CardContent>
     </Card>
   );

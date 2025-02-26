@@ -182,7 +182,19 @@
     "timestamp": "Timestamp",
     "action": "Action",
     "details": "Details",
-    "settingsSaved": "Regional settings saved successfully"
+    "settingsSaved": "Regional settings saved successfully",
+    "companyName": "Company Name",
+    "companyLogo": "Company Logo",
+    "removeLogo": "Remove Logo",
+    "logoSizeError": "Logo file size must be less than 2MB",
+    "logoRemoved": "Company logo removed",
+    "enterCompanyName": "Enter company name",
+    "enterVatNumber": "Enter VAT number",
+    "enterCrNumber": "Enter CR number",
+    "enterAddress": "Enter company address",
+    "enterPhone": "Enter phone number",
+    "enterEmail": "Enter email address",
+    "saveCompanySettings": "Save Company Settings"
   },
   "common": {
     "back": "Back to Home",

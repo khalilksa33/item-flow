@@ -1,3 +1,4 @@
+
 {
   "app": {
     "title": "نظام إدارة المخزون",
@@ -198,7 +199,19 @@
     "timestamp": "وقت",
     "action": "عمل",
     "details": "تفاصيل",
-    "settingsSaved": "تم حفظ الإعدادات الإقليمية بنجاح"
+    "settingsSaved": "تم حفظ الإعدادات بنجاح",
+    "companyName": "اسم الشركة",
+    "companyLogo": "شعار الشركة",
+    "removeLogo": "إزالة الشعار",
+    "logoSizeError": "يجب أن يكون حجم ملف الشعار أقل من 2 ميجابايت",
+    "logoRemoved": "تمت إزالة شعار الشركة",
+    "enterCompanyName": "أدخل اسم الشركة",
+    "enterVatNumber": "أدخل رقم ضريبة القيمة المضافة",
+    "enterCrNumber": "أدخل رقم السجل التجاري",
+    "enterAddress": "أدخل عنوان الشركة",
+    "enterPhone": "أدخل رقم الهاتف",
+    "enterEmail": "أدخل عنوان البريد الإلكتروني",
+    "saveCompanySettings": "حفظ إعدادات الشركة"
   },
   "common": {
     "back": "العودة إلى الرئيسية",
