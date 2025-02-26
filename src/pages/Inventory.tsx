@@ -10,12 +10,14 @@ import { toast } from "sonner";
 import { Home } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { LanguageSwitcher } from "@/components/common/LanguageSwitcher";
 
 const InventoryPage = () => {
   const [items, setItems] = useState<InventoryItem[]>(storage.getItems());
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<InventoryItem | null>(null);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation(["inventory", "common"]);
+  const isRTL = i18n.language === 'ar';
 
   const loadItems = () => {
     setItems(storage.getItems());
@@ -39,34 +41,39 @@ const InventoryPage = () => {
   };
 
   return (
-    <div className="container mx-auto p-6">
-      <div className="mb-6">
+    <div className="container mx-auto p-6" dir={isRTL ? "rtl" : "ltr"}>
+      <div className="flex justify-between mb-6">
         <Link to="/">
-          <Button variant="ghost" size="sm" className="mb-4">
-            <Home className="h-4 w-4 mr-2" />
-            {t("common.back")}
+          <Button variant="ghost" size="sm">
+            <Home className={`h-4 w-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+            {t("common:back")}
           </Button>
         </Link>
+        <LanguageSwitcher />
       </div>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">{t("inventory.title")}</h1>
+        <h1 className="text-3xl font-bold">{t("inventory:title")}</h1>
         <Button onClick={() => {
           setEditingItem(null);
           setIsDialogOpen(true);
         }}>
-          {t("inventory.addItem")}
+          {t("inventory:addItem")}
         </Button>
       </div>
 
       <div className="space-y-4">
-        <InventoryList />
+        <InventoryList
+          items={items}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+        />
       </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {editingItem ? t("inventory.edit") : t("inventory.addItem")}
+              {editingItem ? t("inventory:edit") : t("inventory:addItem")}
             </DialogTitle>
           </DialogHeader>
           <ItemForm
