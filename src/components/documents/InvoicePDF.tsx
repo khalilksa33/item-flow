@@ -7,7 +7,6 @@ import { InvoiceInfo } from './pdf/InvoiceInfo';
 import { InvoiceItemsTable } from './pdf/InvoiceItemsTable';
 import { InvoiceTotals } from './pdf/InvoiceTotals';
 import { InvoiceFooter } from './pdf/InvoiceFooter';
-import i18n from '@/i18n';
 
 interface InvoicePDFProps {
   invoice: Invoice;
@@ -61,35 +60,53 @@ export const InvoicePDF = ({ invoice, customerName }: InvoicePDFProps) => {
     ? `فاتورة-${invoice.id.slice(0, 8).toUpperCase()}`
     : `INV-${invoice.id.slice(0, 8).toUpperCase()}`;
   
-  // Get translations directly from i18n for the current language
-  const getTranslation = (key: string, defaultValue: string) => {
-    return i18n.t(`invoices:${key}`, { lng: currentLanguage, defaultValue });
-  };
-  
-  // Create labels object using direct translations
-  const labels = {
-    invoice: getTranslation('invoice', 'Invoice'),
-    reference: getTranslation('reference', 'Reference'),
-    date: getTranslation('date', 'Date'),
-    dueDate: getTranslation('dueDate', 'Due Date'),
-    paymentTerms: getTranslation('paymentTerms', 'Payment Terms'),
-    billTo: getTranslation('billTo', 'Bill To'),
-    items: getTranslation('items', 'Invoice Items'),
-    item: getTranslation('item', 'Item'),
-    quantity: getTranslation('quantity', 'Quantity'),
-    unitPrice: getTranslation('unitPrice', 'Unit Price'),
-    subtotal: getTranslation('subtotal', 'Subtotal'),
-    vat: getTranslation('vat', 'VAT'),
-    total: getTranslation('total', 'Total'),
-    notes: getTranslation('notes', 'Notes'),
-    thankYou: getTranslation('thankYou', 'Thank you for your business!'),
-    generatedOn: getTranslation('generatedOn', 'Generated on'),
-    paid: getTranslation('paid', 'PAID'),
-    vatNumber: getTranslation('vatNumber', 'VAT Number'),
-    crNumber: getTranslation('crNumber', 'CR Number'),
-    address: getTranslation('address', 'Address'),
-    phone: getTranslation('phone', 'Phone'),
-    email: getTranslation('email', 'Email')
+  // Get the translated labels based on current language
+  const labels = isRTL ? {
+    invoice: "فاتورة",
+    reference: "المرجع",
+    date: "التاريخ",
+    dueDate: "تاريخ الاستحقاق",
+    paymentTerms: "شروط الدفع",
+    billTo: "فاتورة إلى",
+    items: "عناصر الفاتورة",
+    item: "العنصر",
+    quantity: "الكمية",
+    unitPrice: "سعر الوحدة",
+    subtotal: "المجموع الفرعي",
+    vat: "ضريبة القيمة المضافة",
+    total: "المجموع",
+    notes: "ملاحظات",
+    thankYou: "شكرًا لعملك معنا!",
+    generatedOn: "تم إنشاؤها في",
+    paid: "مدفوع",
+    vatNumber: "رقم ضريبة القيمة المضافة",
+    crNumber: "رقم السجل التجاري",
+    address: "العنوان",
+    phone: "الهاتف",
+    email: "البريد الإلكتروني"
+  } : {
+    invoice: "Invoice",
+    reference: "Reference",
+    date: "Date",
+    dueDate: "Due Date",
+    paymentTerms: "Payment Terms",
+    billTo: "Bill To",
+    items: "Invoice Items",
+    item: "Item",
+    quantity: "Quantity",
+    unitPrice: "Unit Price",
+    subtotal: "Subtotal",
+    vat: "VAT",
+    total: "Total",
+    notes: "Notes",
+    thankYou: "Thank you for your business!",
+    generatedOn: "Generated on",
+    paid: "PAID",
+    vatNumber: "VAT Number",
+    crNumber: "CR Number",
+    address: "Address",
+    phone: "Phone",
+    email: "Email"
   };
 
   return (

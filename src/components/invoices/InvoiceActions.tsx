@@ -127,21 +127,25 @@ export function InvoiceActions({ invoice, customers, onEdit, onDelete }: Invoice
     setIsViewOpen(true);
   };
 
-  // Prevent click events from bubbling up
-  const stopPropagation = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-  };
-
   return (
     <>
       <DropdownMenu>
-        <DropdownMenuTrigger asChild onClick={stopPropagation}>
-          <Button variant="ghost" className="h-8 w-8 p-0">
+        <DropdownMenuTrigger asChild>
+          <Button 
+            variant="ghost" 
+            className="h-8 w-8 p-0"
+            onClick={(e) => {
+              // Just stop propagation to prevent row click
+              e.stopPropagation();
+            }}
+          >
             <MoreHorizontal className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align={isRTL ? "start" : "end"} onClick={stopPropagation}>
+        <DropdownMenuContent 
+          align={isRTL ? "start" : "end"}
+          onClick={(e) => e.stopPropagation()}
+        >
           <DropdownMenuItem onClick={handleEdit}>
             <FilePenLine className="mr-2 h-4 w-4" />
             {t("common:edit")}
@@ -172,28 +176,32 @@ export function InvoiceActions({ invoice, customers, onEdit, onDelete }: Invoice
           )}
           
           <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-            <PDFDownloadLink
-              document={<InvoicePDF invoice={invoice} customerName={customerName} />}
-              fileName={`invoice-${invoice.id.slice(0, 8)}.pdf`}
-              onClick={stopPropagation}
-              className="flex items-center w-full"
-            >
-              <FileDown className="mr-2 h-4 w-4" />
-              {t("invoices:downloadInvoice")}
-            </PDFDownloadLink>
+            <div className="flex items-center w-full">
+              <PDFDownloadLink
+                document={<InvoicePDF invoice={invoice} customerName={customerName} />}
+                fileName={`invoice-${invoice.id.slice(0, 8)}.pdf`}
+                onClick={(e) => e.stopPropagation()}
+                className="flex items-center w-full"
+              >
+                <FileDown className="mr-2 h-4 w-4" />
+                {t("invoices:downloadInvoice")}
+              </PDFDownloadLink>
+            </div>
           </DropdownMenuItem>
           
           {invoice.status === 'paid' && (
             <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-              <PDFDownloadLink
-                document={<ReceiptPDF invoice={invoice} customerName={customerName} />}
-                fileName={`receipt-${invoice.id.slice(0, 8)}.pdf`}
-                onClick={stopPropagation}
-                className="flex items-center w-full"
-              >
-                <FileDown className="mr-2 h-4 w-4" />
-                {t("invoices:downloadReceipt")}
-              </PDFDownloadLink>
+              <div className="flex items-center w-full">
+                <PDFDownloadLink
+                  document={<ReceiptPDF invoice={invoice} customerName={customerName} />}
+                  fileName={`receipt-${invoice.id.slice(0, 8)}.pdf`}
+                  onClick={(e) => e.stopPropagation()}
+                  className="flex items-center w-full"
+                >
+                  <FileDown className="mr-2 h-4 w-4" />
+                  {t("invoices:downloadReceipt")}
+                </PDFDownloadLink>
+              </div>
             </DropdownMenuItem>
           )}
           
@@ -204,24 +212,14 @@ export function InvoiceActions({ invoice, customers, onEdit, onDelete }: Invoice
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <Dialog 
-        open={isViewOpen} 
-        onOpenChange={(open) => {
-          if (!open) {
-            // Small delay to ensure any click event is processed before closing
-            setTimeout(() => setIsViewOpen(false), 50);
-          } else {
-            setIsViewOpen(true);
-          }
-        }}
-      >
-        <DialogContent className="max-w-6xl h-5/6 flex flex-col" onClick={stopPropagation}>
+      <Dialog open={isViewOpen} onOpenChange={setIsViewOpen}>
+        <DialogContent className="max-w-6xl h-5/6 flex flex-col">
           <DialogHeader>
             <DialogTitle>
               {previewType === "invoice" ? t("invoices:viewInvoice") : t("invoices:viewReceipt")}
             </DialogTitle>
             <DialogDescription>
-              {t("invoices:customerName", "Customer")}: {customerName}
+              {t("invoices:customerName")}: {customerName}
             </DialogDescription>
           </DialogHeader>
           <div className="flex-1 overflow-hidden">
