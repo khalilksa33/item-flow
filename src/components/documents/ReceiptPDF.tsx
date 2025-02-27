@@ -1,6 +1,7 @@
 
 import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
 import { Invoice } from '@/types/inventory';
+import i18n from '@/i18n';
 
 const styles = StyleSheet.create({
   page: { padding: 20, fontSize: 12 },
@@ -48,33 +49,25 @@ export const ReceiptPDF = ({ invoice, customerName, paymentMethod }: ReceiptPDFP
       : `${currency} ${amount.toFixed(2)}`;
   };
 
-  // Get translated labels
-  const labels = isRTL ? {
-    receipt: "إيصال نقدي",
-    receiptNo: "رقم الإيصال",
-    date: "التاريخ",
-    receivedFrom: "استلمنا من",
-    paymentMethod: "طريقة الدفع",
-    invoiceReference: "مرجع الفاتورة",
-    amountReceived: "المبلغ المستلم",
-    amountInWords: "المبلغ بالكلمات",
-    receivedBy: "استلم بواسطة",
-    customerSignature: "توقيع العميل",
-    cash: "نقدي",
-    paid: "مدفوع"
-  } : {
-    receipt: "Cash Receipt",
-    receiptNo: "Receipt No",
-    date: "Date",
-    receivedFrom: "Received from",
-    paymentMethod: "Payment Method",
-    invoiceReference: "Invoice Reference",
-    amountReceived: "Amount Received",
-    amountInWords: "Amount in Words",
-    receivedBy: "Received By",
-    customerSignature: "Customer Signature",
-    cash: "Cash",
-    paid: "PAID"
+  // Get translations directly from i18n for the current language
+  const getTranslation = (key: string, defaultValue: string) => {
+    return i18n.t(`invoices:${key}`, { lng: currentLanguage, defaultValue });
+  };
+
+  // Create labels using direct translations
+  const labels = {
+    receipt: getTranslation('receipt', 'Cash Receipt'),
+    receiptNo: getTranslation('receiptNo', 'Receipt No'),
+    date: getTranslation('date', 'Date'),
+    receivedFrom: getTranslation('receivedFrom', 'Received from'),
+    paymentMethod: getTranslation('paymentMethod', 'Payment Method'),
+    invoiceReference: getTranslation('invoiceReference', 'Invoice Reference'),
+    amountReceived: getTranslation('amountReceived', 'Amount Received'),
+    amountInWords: getTranslation('amountInWords', 'Amount in Words'),
+    receivedBy: getTranslation('receivedBy', 'Received By'),
+    customerSignature: getTranslation('customerSignature', 'Customer Signature'),
+    cash: getTranslation('cash', 'Cash'),
+    paid: getTranslation('paid', 'PAID')
   };
 
   // Receipt number
@@ -131,4 +124,4 @@ export const ReceiptPDF = ({ invoice, customerName, paymentMethod }: ReceiptPDFP
       </Page>
     </Document>
   );
-};
+}
