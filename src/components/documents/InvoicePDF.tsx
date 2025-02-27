@@ -56,7 +56,9 @@ export const InvoicePDF = ({ invoice, customerName }: InvoicePDFProps) => {
   };
 
   // Invoice reference number
-  const invoiceRef = `INV-${invoice.id.slice(0, 8).toUpperCase()}`;
+  const invoiceRef = isRTL 
+    ? `فاتورة-${invoice.id.slice(0, 8).toUpperCase()}`
+    : `INV-${invoice.id.slice(0, 8).toUpperCase()}`;
   
   // Get the translated labels based on current language
   const labels = isRTL ? {
