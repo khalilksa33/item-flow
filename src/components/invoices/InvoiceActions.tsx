@@ -37,7 +37,10 @@ export function InvoiceActions({ invoice, customers, onEdit, onDelete }: Invoice
 
   const customerName = customers.find(c => c.id === invoice.customerId)?.name || t("invoices:unknownCustomer");
 
-  const handlePrint = (type: "invoice" | "receipt") => {
+  const handlePrint = (e: React.MouseEvent, type: "invoice" | "receipt") => {
+    e.preventDefault();
+    e.stopPropagation();
+    
     try {
       // Open a new window for printing
       const printWindow = window.open('', '_blank');
@@ -82,7 +85,7 @@ export function InvoiceActions({ invoice, customers, onEdit, onDelete }: Invoice
           const blobUrl = URL.createObjectURL(blob);
           
           // Replace the content with an iframe that loads the PDF
-          printWindow.document.getElementById('pdf-container').innerHTML = `
+          printWindow.document.getElementById('pdf-container')!.innerHTML = `
             <iframe src="${blobUrl}" onload="setTimeout(function() { window.print(); }, 1000);"></iframe>
           `;
         }
@@ -98,99 +101,98 @@ export function InvoiceActions({ invoice, customers, onEdit, onDelete }: Invoice
   const handleDelete = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    
     if (window.confirm(t("common:confirmDelete"))) {
       onDelete(invoice.id);
     }
   };
 
+  const handleEdit = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onEdit(invoice);
+  };
+
+  const handleViewInvoice = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setPreviewType("invoice");
+    setIsViewOpen(true);
+  };
+
+  const handleViewReceipt = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setPreviewType("receipt");
+    setIsViewOpen(true);
+  };
+
+  // Prevent click events from bubbling up
+  const stopPropagation = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
   return (
     <>
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
+        <DropdownMenuTrigger asChild onClick={stopPropagation}>
           <Button variant="ghost" className="h-8 w-8 p-0">
             <MoreHorizontal className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align={isRTL ? "start" : "end"}>
-          <DropdownMenuItem onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            onEdit(invoice);
-          }}>
+        <DropdownMenuContent align={isRTL ? "start" : "end"} onClick={stopPropagation}>
+          <DropdownMenuItem onClick={handleEdit}>
             <FilePenLine className="mr-2 h-4 w-4" />
             {t("common:edit")}
           </DropdownMenuItem>
           
-          <DropdownMenuItem onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            setPreviewType("invoice");
-            setIsViewOpen(true);
-          }}>
+          <DropdownMenuItem onClick={handleViewInvoice}>
             <Eye className="mr-2 h-4 w-4" />
             {t("invoices:viewInvoice")}
           </DropdownMenuItem>
           
           {invoice.status === 'paid' && (
-            <DropdownMenuItem onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              setPreviewType("receipt");
-              setIsViewOpen(true);
-            }}>
+            <DropdownMenuItem onClick={handleViewReceipt}>
               <Eye className="mr-2 h-4 w-4" />
               {t("invoices:viewReceipt")}
             </DropdownMenuItem>
           )}
           
-          <DropdownMenuItem onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            handlePrint("invoice");
-          }}>
+          <DropdownMenuItem onClick={(e) => handlePrint(e, "invoice")}>
             <Printer className="mr-2 h-4 w-4" />
             {t("invoices:printInvoice")}
           </DropdownMenuItem>
           
           {invoice.status === 'paid' && (
-            <DropdownMenuItem onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              handlePrint("receipt");
-            }}>
+            <DropdownMenuItem onClick={(e) => handlePrint(e, "receipt")}>
               <Printer className="mr-2 h-4 w-4" />
               {t("invoices:printReceipt")}
             </DropdownMenuItem>
           )}
           
-          <DropdownMenuItem asChild>
+          <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
             <PDFDownloadLink
               document={<InvoicePDF invoice={invoice} customerName={customerName} />}
               fileName={`invoice-${invoice.id.slice(0, 8)}.pdf`}
-              onClick={(e) => {
-                e.stopPropagation();
-              }}
+              onClick={stopPropagation}
+              className="flex items-center w-full"
             >
-              <div className="flex items-center">
-                <FileDown className="mr-2 h-4 w-4" />
-                {t("invoices:downloadInvoice")}
-              </div>
+              <FileDown className="mr-2 h-4 w-4" />
+              {t("invoices:downloadInvoice")}
             </PDFDownloadLink>
           </DropdownMenuItem>
           
           {invoice.status === 'paid' && (
-            <DropdownMenuItem asChild>
+            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
               <PDFDownloadLink
                 document={<ReceiptPDF invoice={invoice} customerName={customerName} />}
                 fileName={`receipt-${invoice.id.slice(0, 8)}.pdf`}
-                onClick={(e) => {
-                  e.stopPropagation();
-                }}
+                onClick={stopPropagation}
+                className="flex items-center w-full"
               >
-                <div className="flex items-center">
-                  <FileDown className="mr-2 h-4 w-4" />
-                  {t("invoices:downloadReceipt")}
-                </div>
+                <FileDown className="mr-2 h-4 w-4" />
+                {t("invoices:downloadReceipt")}
               </PDFDownloadLink>
             </DropdownMenuItem>
           )}
@@ -202,14 +204,24 @@ export function InvoiceActions({ invoice, customers, onEdit, onDelete }: Invoice
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <Dialog open={isViewOpen} onOpenChange={setIsViewOpen}>
-        <DialogContent className="max-w-6xl h-5/6 flex flex-col">
+      <Dialog 
+        open={isViewOpen} 
+        onOpenChange={(open) => {
+          if (!open) {
+            // Small delay to ensure any click event is processed before closing
+            setTimeout(() => setIsViewOpen(false), 50);
+          } else {
+            setIsViewOpen(true);
+          }
+        }}
+      >
+        <DialogContent className="max-w-6xl h-5/6 flex flex-col" onClick={stopPropagation}>
           <DialogHeader>
             <DialogTitle>
               {previewType === "invoice" ? t("invoices:viewInvoice") : t("invoices:viewReceipt")}
             </DialogTitle>
             <DialogDescription>
-              {t("invoices:customerName")}: {customerName}
+              {t("invoices:customerName", "Customer")}: {customerName}
             </DialogDescription>
           </DialogHeader>
           <div className="flex-1 overflow-hidden">

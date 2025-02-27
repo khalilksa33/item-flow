@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { storage } from "@/lib/storage";
 import { Invoice } from "@/types/inventory";
@@ -13,25 +13,34 @@ export function InvoicesManager() {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingInvoice, setEditingInvoice] = useState<Invoice | null>(null);
-  const [customers] = useState(storage.getCustomers());
-  const [products] = useState(storage.getItems());
-  const [quotations] = useState(storage.getQuotations());
+  const [customers, setCustomers] = useState(storage.getCustomers());
+  const [products, setProducts] = useState(storage.getItems());
+  const [quotations, setQuotations] = useState(storage.getQuotations());
   const { t, i18n } = useTranslation(["invoices", "common"]);
   const isRTL = i18n.language === 'ar';
 
-  useEffect(() => {
-    loadInvoices();
-  }, []);
-
-  const loadInvoices = () => {
+  const loadInvoices = useCallback(() => {
     try {
       const loadedInvoices = storage.getInvoices();
       setInvoices(loadedInvoices);
     } catch (error) {
       console.error("Error loading invoices:", error);
-      toast.error(t("invoices:loadError", "Error loading invoices"));
+      toast.error(t("invoices:loadError"));
     }
-  };
+  }, [t]);
+
+  const refreshData = useCallback(() => {
+    // Refresh all data that might have changed
+    setCustomers(storage.getCustomers());
+    setProducts(storage.getItems());
+    setQuotations(storage.getQuotations());
+    loadInvoices();
+  }, [loadInvoices]);
+
+  // Load data on component mount
+  useEffect(() => {
+    refreshData();
+  }, [refreshData]);
 
   const handleSubmit = (data: Partial<Invoice>) => {
     try {
@@ -52,12 +61,15 @@ export function InvoicesManager() {
         toast.success(t("invoices:invoiceCreated"));
       }
 
-      loadInvoices();
+      // Update local state after successful operation
+      refreshData();
+      
+      // Close dialog and reset editing state
       setIsDialogOpen(false);
       setEditingInvoice(null);
     } catch (error) {
       console.error("Error submitting invoice:", error);
-      toast.error(t("invoices:saveError", "Error saving invoice"));
+      toast.error(t("invoices:saveError"));
     }
   };
 
@@ -67,18 +79,19 @@ export function InvoicesManager() {
       setIsDialogOpen(true);
     } catch (error) {
       console.error("Error editing invoice:", error);
-      toast.error(t("invoices:editError", "Error editing invoice"));
+      toast.error(t("invoices:editError"));
     }
   };
 
   const handleDelete = (id: string) => {
     try {
       storage.deleteInvoice(id);
-      loadInvoices();
       toast.success(t("invoices:invoiceDeleted"));
+      // Update the local state after deletion
+      refreshData();
     } catch (error) {
       console.error("Error deleting invoice:", error);
-      toast.error(t("invoices:deleteError", "Error deleting invoice"));
+      toast.error(t("invoices:deleteError"));
     }
   };
 
@@ -104,13 +117,27 @@ export function InvoicesManager() {
 
       <InvoiceDialog
         isOpen={isDialogOpen}
-        onOpenChange={setIsDialogOpen}
+        onOpenChange={(open) => {
+          if (!open) {
+            // Add a small delay to ensure any click events are processed 
+            // before state changes which could cause navigation issues
+            setTimeout(() => {
+              setIsDialogOpen(false);
+              setEditingInvoice(null);
+            }, 50);
+          } else {
+            setIsDialogOpen(true);
+          }
+        }}
         editingInvoice={editingInvoice}
         customers={customers}
         products={products}
         quotations={quotations}
         onSubmit={handleSubmit}
-        onCancel={() => setIsDialogOpen(false)}
+        onCancel={() => {
+          setIsDialogOpen(false);
+          setEditingInvoice(null);
+        }}
       />
     </div>
   );

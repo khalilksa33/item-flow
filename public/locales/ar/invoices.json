@@ -35,6 +35,7 @@
   "status.cancelled": "ملغى",
   "status.pending": "قيد الانتظار",
   "unknownCustomer": "عميل غير معروف",
+  "customerName": "العميل",
   "printInvoice": "طباعة الفاتورة",
   "printReceipt": "طباعة الإيصال",
   "downloadInvoice": "تنزيل الفاتورة",

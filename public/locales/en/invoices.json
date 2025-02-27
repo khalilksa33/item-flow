@@ -35,6 +35,7 @@
   "status.cancelled": "Cancelled",
   "status.pending": "Pending",
   "unknownCustomer": "Unknown Customer",
+  "customerName": "Customer",
   "printInvoice": "Print Invoice",
   "printReceipt": "Print Receipt",
   "downloadInvoice": "Download Invoice",
