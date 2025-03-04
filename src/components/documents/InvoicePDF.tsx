@@ -60,7 +60,7 @@ export const InvoicePDF = ({ invoice, customerName }: InvoicePDFProps) => {
     ? `فاتورة-${invoice.id.slice(0, 8).toUpperCase()}`
     : `INV-${invoice.id.slice(0, 8).toUpperCase()}`;
   
-  // Get the translated labels based on current language
+  // Hardcoded labels to ensure proper translation in PDF
   const labels = isRTL ? {
     invoice: "فاتورة",
     reference: "المرجع",

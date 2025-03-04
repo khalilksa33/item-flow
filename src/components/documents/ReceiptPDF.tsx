@@ -36,7 +36,7 @@ interface ReceiptPDFProps {
 }
 
 export const ReceiptPDF = ({ invoice, customerName, paymentMethod }: ReceiptPDFProps) => {
-  // Get language settings
+  // Get language settings directly from localStorage (not relying on React context)
   const currentLanguage = localStorage.getItem('preferredLanguage') || 'en';
   const isRTL = currentLanguage === 'ar';
   const currency = localStorage.getItem('currency') || 'SAR';
@@ -48,7 +48,7 @@ export const ReceiptPDF = ({ invoice, customerName, paymentMethod }: ReceiptPDFP
       : `${currency} ${amount.toFixed(2)}`;
   };
 
-  // Get translated labels
+  // Hardcoded labels to avoid i18n issues in PDF
   const labels = isRTL ? {
     receipt: "إيصال نقدي",
     receiptNo: "رقم الإيصال",
@@ -82,6 +82,28 @@ export const ReceiptPDF = ({ invoice, customerName, paymentMethod }: ReceiptPDFP
     ? `إيصال-${invoice.id.slice(0, 8)}`
     : `REC-${invoice.id.slice(0, 8)}`;
 
+  // Convert number to words function for Arabic and English
+  const convertToWords = (amount: number): string => {
+    if (isRTL) {
+      // Simple Arabic implementation (can be enhanced)
+      if (amount === 0) return "صفر";
+      // This is a placeholder - for a production app you'd want a proper Arabic number-to-words converter
+      return `${amount.toFixed(2)} (بالأرقام فقط)`;
+    } else {
+      // Simple English implementation
+      const units = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
+      const teens = ['Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+      const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+      
+      // Basic implementation - for a production app you'd want a more comprehensive solution
+      if (amount < 10) return units[Math.floor(amount)] + " only";
+      if (amount < 20) return teens[Math.floor(amount) - 10] + " only";
+      if (amount < 100) return tens[Math.floor(amount / 10)] + (amount % 10 ? ' ' + units[Math.floor(amount % 10)] : '') + " only";
+      
+      return amount.toFixed(2) + " (in figures only)";
+    }
+  };
+
   return (
     <Document>
       <Page size="A6" style={isRTL ? styles.rtlPage : styles.page}>
@@ -110,7 +132,7 @@ export const ReceiptPDF = ({ invoice, customerName, paymentMethod }: ReceiptPDFP
             {labels.amountReceived}: {formatCurrency(invoice.total)}
           </Text>
           <Text style={isRTL ? styles.rtlText : {}}>
-            {labels.amountInWords}: [Amount in words]
+            {labels.amountInWords}: {convertToWords(invoice.total)}
           </Text>
         </View>
 
