@@ -14,10 +14,29 @@ export function LanguageSwitcher() {
   const { i18n, t } = useTranslation();
   const [mounted, setMounted] = useState(false);
 
-  // Wait for component to mount before showing languages
+  // Initialize language from localStorage on component mount
   useEffect(() => {
+    const savedLanguage = localStorage.getItem('preferredLanguage');
+    if (savedLanguage && savedLanguage !== i18n.language) {
+      console.log('Initializing language from localStorage:', savedLanguage);
+      i18n.changeLanguage(savedLanguage);
+      
+      // Update document direction based on saved language
+      document.documentElement.dir = savedLanguage === 'ar' ? 'rtl' : 'ltr';
+      document.documentElement.lang = savedLanguage;
+      
+      if (savedLanguage === 'ar') {
+        document.body.classList.add('rtl');
+      } else {
+        document.body.classList.remove('rtl');
+      }
+    } else if (!savedLanguage) {
+      // If no saved language, save the current one
+      localStorage.setItem('preferredLanguage', i18n.language);
+    }
+    
     setMounted(true);
-  }, []);
+  }, [i18n]);
 
   const changeLanguage = (language: string) => {
     console.log('Changing language to:', language);
@@ -47,11 +66,11 @@ export function LanguageSwitcher() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="outline">
-          <Languages className="h-4 w-4 mr-2" />
+          <Languages className={`h-4 w-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
           {isRTL ? 'العربية' : 'English'}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
+      <DropdownMenuContent align={isRTL ? "start" : "end"}>
         <DropdownMenuItem onClick={() => changeLanguage('en')}>
           English {currentLanguage === 'en' && '✓'}
         </DropdownMenuItem>

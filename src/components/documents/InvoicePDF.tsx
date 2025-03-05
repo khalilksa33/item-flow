@@ -19,11 +19,7 @@ export const InvoicePDF = ({ invoice, customerName }: InvoicePDFProps) => {
   const currentLanguage = localStorage.getItem('preferredLanguage') || 'en';
   const isRTL = currentLanguage === 'ar';
   
-  // Override the font for Arabic to ensure proper RTL support
-  if (isRTL) {
-    // This forces RTL text rendering
-    console.log("Using RTL mode for invoice");
-  }
+  console.log(`InvoicePDF rendering with language: ${currentLanguage}, isRTL: ${isRTL}`);
   
   // Get company info from local storage
   const companyName = localStorage.getItem('companyName') || '';

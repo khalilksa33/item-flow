@@ -17,6 +17,7 @@ export const InvoicePrintActions = ({ invoice, customerName }: InvoicePrintActio
 
   // Sync language to localStorage whenever it changes
   useEffect(() => {
+    console.log(`Setting language in localStorage: ${isRTL ? 'ar' : 'en'}`);
     localStorage.setItem('preferredLanguage', isRTL ? 'ar' : 'en');
   }, [i18n.language, isRTL]);
 

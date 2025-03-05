@@ -34,8 +34,8 @@ export const InvoicePreviewDialog = ({
   // When dialog opens, ensure language is set correctly in localStorage
   useEffect(() => {
     if (isOpen) {
-      localStorage.setItem('preferredLanguage', isRTL ? 'ar' : 'en');
       console.log(`InvoicePreviewDialog: Setting language to ${isRTL ? 'ar' : 'en'}`);
+      localStorage.setItem('preferredLanguage', isRTL ? 'ar' : 'en');
     }
   }, [isOpen, isRTL]);
 

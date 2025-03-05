@@ -46,10 +46,7 @@ export const ReceiptPDF = ({ invoice, customerName, paymentMethod }: ReceiptPDFP
   const currentLanguage = localStorage.getItem('preferredLanguage') || 'en';
   const isRTL = currentLanguage === 'ar';
   
-  // Force log to help debug
-  if (isRTL) {
-    console.log("Using RTL mode for receipt");
-  }
+  console.log(`ReceiptPDF rendering with language: ${currentLanguage}, isRTL: ${isRTL}`);
   
   const currency = localStorage.getItem('currency') || 'SAR';
 
