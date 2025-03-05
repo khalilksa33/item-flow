@@ -42,6 +42,9 @@ export function InvoiceActions({ invoice, customers, onEdit, onDelete }: Invoice
     e.stopPropagation();
     
     try {
+      // Force set language in localStorage before printing to ensure proper rendering
+      localStorage.setItem('preferredLanguage', i18n.language);
+      
       // Open a new window for printing
       const printWindow = window.open('', '_blank');
       
@@ -52,7 +55,7 @@ export function InvoiceActions({ invoice, customers, onEdit, onDelete }: Invoice
       
       // Write the necessary HTML to the new window
       printWindow.document.write(`
-        <html>
+        <html ${isRTL ? 'dir="rtl" lang="ar"' : 'dir="ltr" lang="en"'}>
           <head>
             <title>${type === "invoice" ? t("invoices:printInvoice") : t("invoices:printReceipt")}</title>
             <style>
@@ -86,7 +89,7 @@ export function InvoiceActions({ invoice, customers, onEdit, onDelete }: Invoice
           
           // Replace the content with an iframe that loads the PDF
           printWindow.document.getElementById('pdf-container')!.innerHTML = `
-            <iframe src="${blobUrl}" onload="setTimeout(function() { window.print(); }, 1000);"></iframe>
+            <iframe src="${blobUrl}" onload="setTimeout(function() { window.print(); }, 1500);"></iframe>
           `;
         }
       };
@@ -116,6 +119,8 @@ export function InvoiceActions({ invoice, customers, onEdit, onDelete }: Invoice
   const handleViewInvoice = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    // Force set language in localStorage before viewing
+    localStorage.setItem('preferredLanguage', i18n.language);
     setPreviewType("invoice");
     setIsViewOpen(true);
   };
@@ -123,6 +128,8 @@ export function InvoiceActions({ invoice, customers, onEdit, onDelete }: Invoice
   const handleViewReceipt = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    // Force set language in localStorage before viewing
+    localStorage.setItem('preferredLanguage', i18n.language);
     setPreviewType("receipt");
     setIsViewOpen(true);
   };
@@ -135,8 +142,8 @@ export function InvoiceActions({ invoice, customers, onEdit, onDelete }: Invoice
             variant="ghost" 
             className="h-8 w-8 p-0"
             onClick={(e) => {
-              // Just stop propagation to prevent row click
               e.stopPropagation();
+              e.preventDefault();
             }}
           >
             <MoreHorizontal className="h-4 w-4" />
@@ -144,7 +151,10 @@ export function InvoiceActions({ invoice, customers, onEdit, onDelete }: Invoice
         </DropdownMenuTrigger>
         <DropdownMenuContent 
           align={isRTL ? "start" : "end"}
-          onClick={(e) => e.stopPropagation()}
+          onClick={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+          }}
         >
           <DropdownMenuItem onClick={handleEdit}>
             <FilePenLine className="mr-2 h-4 w-4" />
@@ -175,7 +185,7 @@ export function InvoiceActions({ invoice, customers, onEdit, onDelete }: Invoice
             </DropdownMenuItem>
           )}
           
-          <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+          <DropdownMenuItem asChild onSelect={(e) => e.preventDefault()}>
             <div className="flex items-center w-full">
               <PDFDownloadLink
                 document={<InvoicePDF invoice={invoice} customerName={customerName} />}
@@ -190,7 +200,7 @@ export function InvoiceActions({ invoice, customers, onEdit, onDelete }: Invoice
           </DropdownMenuItem>
           
           {invoice.status === 'paid' && (
-            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+            <DropdownMenuItem asChild onSelect={(e) => e.preventDefault()}>
               <div className="flex items-center w-full">
                 <PDFDownloadLink
                   document={<ReceiptPDF invoice={invoice} customerName={customerName} />}

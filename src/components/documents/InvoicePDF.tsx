@@ -14,7 +14,7 @@ interface InvoicePDFProps {
 }
 
 export const InvoicePDF = ({ invoice, customerName }: InvoicePDFProps) => {
-  // Force the language based on localStorage settings for consistent rendering
+  // Always check localStorage directly for language settings to ensure consistency
   const currentLanguage = localStorage.getItem('preferredLanguage') || 'en';
   const isRTL = currentLanguage === 'ar';
   
@@ -60,7 +60,7 @@ export const InvoicePDF = ({ invoice, customerName }: InvoicePDFProps) => {
     ? `فاتورة-${invoice.id.slice(0, 8).toUpperCase()}`
     : `INV-${invoice.id.slice(0, 8).toUpperCase()}`;
   
-  // Hardcoded labels to ensure proper translation in PDF
+  // Hardcoded labels for Arabic and English to ensure proper rendering in PDF
   const labels = isRTL ? {
     invoice: "فاتورة",
     reference: "المرجع",
