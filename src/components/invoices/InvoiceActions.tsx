@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Invoice, Customer } from "@/types/inventory";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,6 +27,12 @@ export function InvoiceActions({ invoice, customers, onEdit, onDelete }: Invoice
   const { t, i18n } = useTranslation(["invoices", "common"]);
   const isRTL = i18n.language === 'ar';
 
+  // Sync language preferences to localStorage on component mount and language change
+  useEffect(() => {
+    localStorage.setItem('preferredLanguage', isRTL ? 'ar' : 'en');
+    console.log(`InvoiceActions: Setting language to ${isRTL ? 'ar' : 'en'}`);
+  }, [isRTL, i18n.language]);
+
   const customerName = customers.find(c => c.id === invoice.customerId)?.name || t("invoices:unknownCustomer");
 
   const handleDelete = (e: React.MouseEvent) => {
@@ -48,7 +54,7 @@ export function InvoiceActions({ invoice, customers, onEdit, onDelete }: Invoice
     e.preventDefault();
     e.stopPropagation();
     // Force set language in localStorage before viewing
-    localStorage.setItem('preferredLanguage', i18n.language);
+    localStorage.setItem('preferredLanguage', isRTL ? 'ar' : 'en');
     setPreviewType("invoice");
     setIsViewOpen(true);
   };
@@ -57,7 +63,7 @@ export function InvoiceActions({ invoice, customers, onEdit, onDelete }: Invoice
     e.preventDefault();
     e.stopPropagation();
     // Force set language in localStorage before viewing
-    localStorage.setItem('preferredLanguage', i18n.language);
+    localStorage.setItem('preferredLanguage', isRTL ? 'ar' : 'en');
     setPreviewType("receipt");
     setIsViewOpen(true);
   };
@@ -85,18 +91,18 @@ export function InvoiceActions({ invoice, customers, onEdit, onDelete }: Invoice
           }}
         >
           <DropdownMenuItem onClick={handleEdit}>
-            <FilePenLine className="mr-2 h-4 w-4" />
+            <FilePenLine className={`${isRTL ? 'ml-2' : 'mr-2'} h-4 w-4`} />
             {t("common:edit")}
           </DropdownMenuItem>
           
           <DropdownMenuItem onClick={handleViewInvoice}>
-            <Eye className="mr-2 h-4 w-4" />
+            <Eye className={`${isRTL ? 'ml-2' : 'mr-2'} h-4 w-4`} />
             {t("invoices:viewInvoice")}
           </DropdownMenuItem>
           
           {invoice.status === 'paid' && (
             <DropdownMenuItem onClick={handleViewReceipt}>
-              <Eye className="mr-2 h-4 w-4" />
+              <Eye className={`${isRTL ? 'ml-2' : 'mr-2'} h-4 w-4`} />
               {t("invoices:viewReceipt")}
             </DropdownMenuItem>
           )}
@@ -112,7 +118,7 @@ export function InvoiceActions({ invoice, customers, onEdit, onDelete }: Invoice
           />
           
           <DropdownMenuItem onClick={handleDelete} className="text-red-600">
-            <Trash className="mr-2 h-4 w-4" />
+            <Trash className={`${isRTL ? 'ml-2' : 'mr-2'} h-4 w-4`} />
             {t("common:delete")}
           </DropdownMenuItem>
         </DropdownMenuContent>

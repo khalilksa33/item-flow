@@ -11,6 +11,7 @@ import { InvoicePDF } from "@/components/documents/InvoicePDF";
 import { ReceiptPDF } from "@/components/documents/ReceiptPDF";
 import { Invoice } from "@/types/inventory";
 import { useTranslation } from "react-i18next";
+import { useEffect } from "react";
 
 interface InvoicePreviewDialogProps {
   isOpen: boolean;
@@ -27,11 +28,20 @@ export const InvoicePreviewDialog = ({
   customerName,
   previewType,
 }: InvoicePreviewDialogProps) => {
-  const { t } = useTranslation(["invoices"]);
+  const { t, i18n } = useTranslation(["invoices"]);
+  const isRTL = i18n.language === 'ar';
+
+  // When dialog opens, ensure language is set correctly in localStorage
+  useEffect(() => {
+    if (isOpen) {
+      localStorage.setItem('preferredLanguage', isRTL ? 'ar' : 'en');
+      console.log(`InvoicePreviewDialog: Setting language to ${isRTL ? 'ar' : 'en'}`);
+    }
+  }, [isOpen, isRTL]);
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-6xl h-5/6 flex flex-col">
+      <DialogContent className="max-w-6xl h-5/6 flex flex-col" dir={isRTL ? "rtl" : "ltr"}>
         <DialogHeader>
           <DialogTitle>
             {previewType === "invoice" ? t("invoices:viewInvoice") : t("invoices:viewReceipt")}

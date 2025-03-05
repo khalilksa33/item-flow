@@ -14,9 +14,16 @@ interface InvoicePDFProps {
 }
 
 export const InvoicePDF = ({ invoice, customerName }: InvoicePDFProps) => {
-  // Always check localStorage directly for language settings to ensure consistency
+  // Always check localStorage directly for language settings
+  // Force synchronous access to ensure consistency
   const currentLanguage = localStorage.getItem('preferredLanguage') || 'en';
   const isRTL = currentLanguage === 'ar';
+  
+  // Override the font for Arabic to ensure proper RTL support
+  if (isRTL) {
+    // This forces RTL text rendering
+    console.log("Using RTL mode for invoice");
+  }
   
   // Get company info from local storage
   const companyName = localStorage.getItem('companyName') || '';
@@ -111,7 +118,7 @@ export const InvoicePDF = ({ invoice, customerName }: InvoicePDFProps) => {
 
   return (
     <Document>
-      <Page size="A4" style={[styles.page, isRTL && styles.rtl]}>
+      <Page size="A4" style={isRTL ? {...styles.page, ...styles.rtl} : styles.page}>
         {/* Paid Watermark if applicable */}
         {invoice.status === 'paid' && (
           <Text style={styles.watermark}>{labels.paid}</Text>

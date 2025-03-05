@@ -3,8 +3,14 @@ import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
 import { Invoice } from '@/types/inventory';
 
 const styles = StyleSheet.create({
-  page: { padding: 20, fontSize: 12 },
-  rtlPage: { padding: 20, fontSize: 12, direction: 'rtl', fontFamily: 'Helvetica' },
+  page: { padding: 20, fontSize: 12, fontFamily: 'Helvetica' },
+  rtlPage: { 
+    padding: 20, 
+    fontSize: 12, 
+    direction: 'rtl', 
+    fontFamily: 'Helvetica', 
+    textAlign: 'right' 
+  },
   header: { marginBottom: 10, alignItems: 'center' },
   title: { fontSize: 16, marginBottom: 5 },
   info: { marginBottom: 10 },
@@ -39,6 +45,12 @@ export const ReceiptPDF = ({ invoice, customerName, paymentMethod }: ReceiptPDFP
   // Get language settings directly from localStorage (not relying on React context)
   const currentLanguage = localStorage.getItem('preferredLanguage') || 'en';
   const isRTL = currentLanguage === 'ar';
+  
+  // Force log to help debug
+  if (isRTL) {
+    console.log("Using RTL mode for receipt");
+  }
+  
   const currency = localStorage.getItem('currency') || 'SAR';
 
   // Format currency based on language
