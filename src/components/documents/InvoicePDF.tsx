@@ -7,6 +7,7 @@ import { InvoiceInfo } from './pdf/InvoiceInfo';
 import { InvoiceItemsTable } from './pdf/InvoiceItemsTable';
 import { InvoiceTotals } from './pdf/InvoiceTotals';
 import { InvoiceFooter } from './pdf/InvoiceFooter';
+import { useEffect, useState } from 'react';
 
 interface InvoicePDFProps {
   invoice: Invoice;
@@ -14,14 +15,21 @@ interface InvoicePDFProps {
 }
 
 export const InvoicePDF = ({ invoice, customerName }: InvoicePDFProps) => {
-  // Always check localStorage directly for language settings
-  // Force synchronous access to ensure consistency
-  const currentLanguage = localStorage.getItem('preferredLanguage') || 'en';
+  // Use state to force re-render when language changes
+  const [currentLanguage, setCurrentLanguage] = useState(localStorage.getItem('preferredLanguage') || 'en');
   const isRTL = currentLanguage === 'ar';
   
   console.log(`InvoicePDF rendering with language: ${currentLanguage}, isRTL: ${isRTL}`);
   
-  // Get company info from local storage
+  // Effect to ensure state updates if localStorage changes
+  useEffect(() => {
+    const storedLang = localStorage.getItem('preferredLanguage') || 'en';
+    if (storedLang !== currentLanguage) {
+      setCurrentLanguage(storedLang);
+    }
+  }, [currentLanguage]);
+  
+  // Company info from local storage
   const companyName = localStorage.getItem('companyName') || '';
   const vatNumber = localStorage.getItem('vatNumber') || '';
   const crNumber = localStorage.getItem('crNumber') || '';
@@ -31,9 +39,9 @@ export const InvoicePDF = ({ invoice, customerName }: InvoicePDFProps) => {
   const companyLogo = localStorage.getItem('companyLogo') || '';
   const currency = localStorage.getItem('currency') || 'SAR';
 
-  // Generate QR code URL with proper encoding
-  const qrCodeData = `INV:${invoice.id}|VAT:${vatNumber}|DATE:${invoice.createdAt}|TOTAL:${invoice.total}|TAX:${invoice.vatAmount}`;
-  const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrCodeData)}`;
+  // Generate simple text-based QR code URL instead of complex data
+  const qrCodeData = `INV:${invoice.id}`;
+  const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(qrCodeData)}`;
 
   // Format numbers for display
   const formatNumber = (value: number | undefined) => {

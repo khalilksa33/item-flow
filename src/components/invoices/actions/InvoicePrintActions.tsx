@@ -4,7 +4,7 @@ import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Printer } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { printDocument } from "../utils/invoicePrinting";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 interface InvoicePrintActionsProps {
   invoice: Invoice;
@@ -13,23 +13,39 @@ interface InvoicePrintActionsProps {
 
 export const InvoicePrintActions = ({ invoice, customerName }: InvoicePrintActionsProps) => {
   const { t, i18n } = useTranslation(["invoices", "common"]);
-  const isRTL = i18n.language === 'ar';
+  const [isRTL, setIsRTL] = useState(i18n.language === 'ar');
 
-  // Sync language to localStorage whenever it changes
+  // Update RTL state when language changes
   useEffect(() => {
-    console.log(`Setting language in localStorage: ${isRTL ? 'ar' : 'en'}`);
-    localStorage.setItem('preferredLanguage', isRTL ? 'ar' : 'en');
-  }, [i18n.language, isRTL]);
+    const handleLanguageChange = () => {
+      const currentLang = i18n.language;
+      const isArabic = currentLang === 'ar';
+      setIsRTL(isArabic);
+      
+      console.log(`Setting language in localStorage: ${isArabic ? 'ar' : 'en'}`);
+      localStorage.setItem('preferredLanguage', isArabic ? 'ar' : 'en');
+    };
+    
+    handleLanguageChange();
+    
+    // Listen for language changes
+    i18n.on('languageChanged', handleLanguageChange);
+    return () => {
+      i18n.off('languageChanged', handleLanguageChange);
+    };
+  }, [i18n]);
 
   const handlePrint = (e: React.MouseEvent, type: "invoice" | "receipt") => {
     e.preventDefault();
     e.stopPropagation();
     
     // Make sure language is set correctly before printing
-    localStorage.setItem('preferredLanguage', isRTL ? 'ar' : 'en');
-    console.log(`Print ${type} in language: ${isRTL ? 'Arabic' : 'English'}`);
+    const currentLang = i18n.language;
+    const isArabic = currentLang === 'ar';
+    localStorage.setItem('preferredLanguage', isArabic ? 'ar' : 'en');
+    console.log(`Print ${type} in language: ${isArabic ? 'Arabic' : 'English'}`);
     
-    printDocument(invoice, customerName, type, isRTL, t);
+    printDocument(invoice, customerName, type, isArabic, t);
   };
 
   return (

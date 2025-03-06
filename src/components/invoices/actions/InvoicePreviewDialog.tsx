@@ -11,7 +11,7 @@ import { InvoicePDF } from "@/components/documents/InvoicePDF";
 import { ReceiptPDF } from "@/components/documents/ReceiptPDF";
 import { Invoice } from "@/types/inventory";
 import { useTranslation } from "react-i18next";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 interface InvoicePreviewDialogProps {
   isOpen: boolean;
@@ -29,15 +29,41 @@ export const InvoicePreviewDialog = ({
   previewType,
 }: InvoicePreviewDialogProps) => {
   const { t, i18n } = useTranslation(["invoices"]);
-  const isRTL = i18n.language === 'ar';
+  const [isRTL, setIsRTL] = useState(i18n.language === 'ar');
 
-  // When dialog opens, ensure language is set correctly in localStorage
+  // When dialog opens or language changes, update language settings
+  useEffect(() => {
+    const handleLanguageChange = () => {
+      const currentLang = i18n.language;
+      const isArabic = currentLang === 'ar';
+      setIsRTL(isArabic);
+      
+      // Update localStorage to ensure PDF components pick it up
+      localStorage.setItem('preferredLanguage', isArabic ? 'ar' : 'en');
+      console.log(`InvoicePreviewDialog: Setting language to ${isArabic ? 'ar' : 'en'}`);
+      
+      // Force document direction
+      document.documentElement.dir = isArabic ? 'rtl' : 'ltr';
+      document.documentElement.lang = currentLang;
+    };
+
+    if (isOpen) {
+      handleLanguageChange();
+    }
+    
+    // Listen for language changes
+    i18n.on('languageChanged', handleLanguageChange);
+    return () => {
+      i18n.off('languageChanged', handleLanguageChange);
+    };
+  }, [isOpen, i18n]);
+
+  // Force language reload when preview type changes
   useEffect(() => {
     if (isOpen) {
-      console.log(`InvoicePreviewDialog: Setting language to ${isRTL ? 'ar' : 'en'}`);
       localStorage.setItem('preferredLanguage', isRTL ? 'ar' : 'en');
     }
-  }, [isOpen, isRTL]);
+  }, [previewType, isRTL, isOpen]);
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
