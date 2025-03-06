@@ -13,8 +13,6 @@ interface InvoiceFooterProps {
 }
 
 export function InvoiceFooter({ 
-  companyName,
-  companyPhone,
   companyAddress,
   notes,
   status,
@@ -39,9 +37,7 @@ export function InvoiceFooter({
       )}
 
       <View style={[styles.footer, isRTL && styles.rtlSection]}>
-        {companyName && <Text style={styles.footerCompanyName}>{companyName}</Text>}
-        {companyAddress && <Text style={styles.footerText}>{labels.address}: {companyAddress}</Text>}
-        {companyPhone && <Text style={styles.footerText}>{labels.phone}: {companyPhone}</Text>}
+        {companyAddress && <Text style={styles.footerText}>{companyAddress}</Text>}
       </View>
     </>
   );

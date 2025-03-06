@@ -41,20 +41,18 @@ export const InvoicePreviewDialog = ({
     const handleLanguageChange = () => {
       const currentLang = i18n.language;
       const isArabic = currentLang === 'ar';
-      if (isRTL !== isArabic) {
-        setIsRTL(isArabic);
-        
-        // Update localStorage to ensure PDF components pick it up
-        localStorage.setItem('preferredLanguage', isArabic ? 'ar' : 'en');
-        console.log(`InvoicePreviewDialog: Setting language to ${isArabic ? 'ar' : 'en'}`);
-        
-        // Force document direction
-        document.documentElement.dir = isArabic ? 'rtl' : 'ltr';
-        document.documentElement.lang = currentLang;
-        
-        // Force re-render of PDF
-        setForceRender(Date.now());
-      }
+      setIsRTL(isArabic);
+      
+      // Update localStorage to ensure PDF components pick it up
+      localStorage.setItem('preferredLanguage', isArabic ? 'ar' : 'en');
+      console.log(`InvoicePreviewDialog: Setting language to ${isArabic ? 'ar' : 'en'}`);
+      
+      // Force document direction
+      document.documentElement.dir = isArabic ? 'rtl' : 'ltr';
+      document.documentElement.lang = currentLang;
+      
+      // Force re-render of PDF
+      setForceRender(Date.now());
     };
 
     // Check if dialog just opened or preview type changed

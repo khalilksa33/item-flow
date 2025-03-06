@@ -17,7 +17,8 @@ interface InvoicePDFProps {
 export const InvoicePDF = ({ invoice, customerName }: InvoicePDFProps) => {
   // Force re-render when language changes
   const [forceRender, setForceRender] = useState(Date.now());
-  const currentLanguage = localStorage.getItem('preferredLanguage') || 'en';
+  const storedLanguage = localStorage.getItem('preferredLanguage');
+  const currentLanguage = storedLanguage || 'en';
   const isRTL = currentLanguage === 'ar';
   
   console.log(`InvoicePDF rendering with language: ${currentLanguage}, isRTL: ${isRTL}, timestamp: ${forceRender}`);

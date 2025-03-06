@@ -221,8 +221,7 @@ export const printDocument = (
         </div>
         <div class="footer">
           <p>${isRTL ? 'شكرًا لعملك معنا!' : 'Thank you for your business!'}</p>
-          ${companyName ? `<p class="footer-company">${companyName}</p>` : ''}
-          ${companyAddress ? `<p class="footer-address">${isRTL ? 'العنوان' : 'Address'}: ${companyAddress}</p>` : ''}
+          ${companyAddress ? `<p class="footer-address">${companyAddress}</p>` : ''}
         </div>
       </div>
       <div class="no-print" style="text-align: center; margin-top: 20px;">
