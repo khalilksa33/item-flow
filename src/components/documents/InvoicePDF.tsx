@@ -192,8 +192,6 @@ export const InvoicePDF = ({ invoice, customerName }: InvoicePDFProps) => {
         />
 
         <InvoiceFooter
-          companyName={companyName}
-          companyPhone={companyPhone}
           companyAddress={companyAddress}
           notes={invoice.notes}
           status={invoice.status}

@@ -3,8 +3,6 @@ import { Text, View } from '@react-pdf/renderer';
 import { styles } from './styles';
 
 interface InvoiceFooterProps {
-  companyName: string;
-  companyPhone: string;
   companyAddress?: string;
   notes?: string;
   status?: string;
