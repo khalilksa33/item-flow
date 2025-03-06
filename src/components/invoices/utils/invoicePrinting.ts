@@ -31,6 +31,7 @@ export const printDocument = (
     const companyName = localStorage.getItem('companyName') || '';
     const companyLogo = localStorage.getItem('companyLogo') || '';
     const vatNumber = localStorage.getItem('vatNumber') || '';
+    const companyAddress = localStorage.getItem('companyAddress') || '';
     const currency = localStorage.getItem('currency') || 'SAR';
     
     // Format currency based on language
@@ -40,7 +41,7 @@ export const printDocument = (
         : `${currency} ${amount.toFixed(2)}`;
     };
 
-    // Set the print page content with appropriate RTL/LTR settings
+    // Set the print page content with appropriate RTL/LTR settings and fonts for Arabic
     printWindow.document.write(`
       <!DOCTYPE html>
       <html lang="${isRTL ? 'ar' : 'en'}" dir="${isRTL ? 'rtl' : 'ltr'}">
@@ -48,13 +49,10 @@ export const printDocument = (
         <meta charset="UTF-8">
         <title>${type === 'invoice' ? t('invoices:invoice') : t('invoices:receipt')} - ${invoice.id.slice(0, 8)}</title>
         <style>
-          @font-face {
-            font-family: 'Arabic';
-            src: url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
-          }
+          @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
           
           body {
-            font-family: ${isRTL ? "'Cairo', 'Arial'" : "'Arial'"}, sans-serif;
+            font-family: ${isRTL ? "'Cairo'" : "'Arial'"}, sans-serif;
             margin: 0;
             padding: 20px;
             direction: ${isRTL ? 'rtl' : 'ltr'};
@@ -71,6 +69,10 @@ export const printDocument = (
             justify-content: space-between;
             margin-bottom: 20px;
             flex-direction: ${isRTL ? 'row-reverse' : 'row'};
+          }
+          .company-info h2 {
+            margin-top: 0;
+            margin-bottom: 10px;
           }
           .logo {
             max-height: 100px;
@@ -126,6 +128,13 @@ export const printDocument = (
             margin-top: 40px;
             text-align: center;
           }
+          .footer-company {
+            font-weight: bold;
+            margin-bottom: 5px;
+          }
+          .footer-address {
+            margin-bottom: 5px;
+          }
           .watermark {
             position: absolute;
             top: 50%;
@@ -155,7 +164,7 @@ export const printDocument = (
       <div class="invoice-container">
         ${invoice.status === 'paid' ? `<div class="watermark">${isRTL ? 'مدفوع' : 'PAID'}</div>` : ''}
         <div class="header">
-          <div>
+          <div class="company-info">
             ${companyName ? `<h2>${companyName}</h2>` : ''}
             ${vatNumber ? `<p>${isRTL ? 'رقم ضريبة القيمة المضافة' : 'VAT Number'}: ${vatNumber}</p>` : ''}
           </div>
@@ -212,10 +221,12 @@ export const printDocument = (
         </div>
         <div class="footer">
           <p>${isRTL ? 'شكرًا لعملك معنا!' : 'Thank you for your business!'}</p>
+          ${companyName ? `<p class="footer-company">${companyName}</p>` : ''}
+          ${companyAddress ? `<p class="footer-address">${isRTL ? 'العنوان' : 'Address'}: ${companyAddress}</p>` : ''}
         </div>
       </div>
       <div class="no-print" style="text-align: center; margin-top: 20px;">
-        <button onclick="window.print(); window.setTimeout(function() { window.close(); }, 500);">
+        <button onclick="window.print(); setTimeout(() => window.close(), 1000);">
           ${isRTL ? 'طباعة' : 'Print'}
         </button>
       </div>
@@ -228,9 +239,10 @@ export const printDocument = (
     // Trigger print after content is loaded
     printWindow.onload = () => {
       printWindow.focus();
+      // Use a slightly longer delay to ensure fonts are loaded
       setTimeout(() => {
         printWindow.print();
-      }, 1000);
+      }, 1500);
     };
   } catch (error) {
     console.error('Error printing document:', error);

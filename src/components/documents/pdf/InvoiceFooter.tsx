@@ -5,6 +5,7 @@ import { styles } from './styles';
 interface InvoiceFooterProps {
   companyName: string;
   companyPhone: string;
+  companyAddress?: string;
   notes?: string;
   status?: string;
   isRTL?: boolean;
@@ -12,7 +13,9 @@ interface InvoiceFooterProps {
 }
 
 export function InvoiceFooter({ 
-  companyPhone, 
+  companyName,
+  companyPhone,
+  companyAddress,
   notes,
   status,
   isRTL = false,
@@ -36,7 +39,9 @@ export function InvoiceFooter({
       )}
 
       <View style={[styles.footer, isRTL && styles.rtlSection]}>
-        <Text>{companyPhone}</Text>
+        {companyName && <Text style={styles.footerCompanyName}>{companyName}</Text>}
+        {companyAddress && <Text style={styles.footerText}>{labels.address}: {companyAddress}</Text>}
+        {companyPhone && <Text style={styles.footerText}>{labels.phone}: {companyPhone}</Text>}
       </View>
     </>
   );

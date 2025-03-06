@@ -47,6 +47,11 @@ export const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'flex-end'
   },
+  companyName: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    marginBottom: 5
+  },
   companyInfo: {
     fontSize: 8,
     marginBottom: 2,
@@ -203,6 +208,15 @@ export const styles = StyleSheet.create({
     fontSize: 8,
     color: '#666',
     textAlign: 'center'
+  },
+  footerCompanyName: {
+    fontSize: 10,
+    fontWeight: 'bold',
+    marginBottom: 3
+  },
+  footerText: {
+    fontSize: 8,
+    marginBottom: 2
   },
   watermark: {
     position: 'absolute',

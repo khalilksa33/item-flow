@@ -15,19 +15,38 @@ interface InvoicePDFProps {
 }
 
 export const InvoicePDF = ({ invoice, customerName }: InvoicePDFProps) => {
-  // Use state to force re-render when language changes
-  const [currentLanguage, setCurrentLanguage] = useState(localStorage.getItem('preferredLanguage') || 'en');
+  // Force re-render when language changes
+  const [forceRender, setForceRender] = useState(Date.now());
+  const currentLanguage = localStorage.getItem('preferredLanguage') || 'en';
   const isRTL = currentLanguage === 'ar';
   
-  console.log(`InvoicePDF rendering with language: ${currentLanguage}, isRTL: ${isRTL}`);
+  console.log(`InvoicePDF rendering with language: ${currentLanguage}, isRTL: ${isRTL}, timestamp: ${forceRender}`);
   
-  // Effect to ensure state updates if localStorage changes
+  // Effect to monitor localStorage changes
   useEffect(() => {
-    const storedLang = localStorage.getItem('preferredLanguage') || 'en';
-    if (storedLang !== currentLanguage) {
-      setCurrentLanguage(storedLang);
-    }
-  }, [currentLanguage]);
+    const checkLanguage = () => {
+      const storedLang = localStorage.getItem('preferredLanguage') || 'en';
+      if (storedLang !== currentLanguage) {
+        setForceRender(Date.now());
+      }
+    };
+    
+    // Check language on mount
+    checkLanguage();
+    
+    // Create event listener for storage changes
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key === 'preferredLanguage') {
+        console.log('Language changed in storage, forcing PDF re-render');
+        setForceRender(Date.now());
+      }
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, [currentLanguage, forceRender]);
   
   // Company info from local storage
   const companyName = localStorage.getItem('companyName') || '';
@@ -121,7 +140,7 @@ export const InvoicePDF = ({ invoice, customerName }: InvoicePDFProps) => {
   };
 
   return (
-    <Document>
+    <Document key={`invoice-${invoice.id}-${forceRender}-${isRTL ? 'rtl' : 'ltr'}`}>
       <Page size="A4" style={isRTL ? {...styles.page, ...styles.rtl} : styles.page}>
         {/* Paid Watermark if applicable */}
         {invoice.status === 'paid' && (
@@ -174,6 +193,7 @@ export const InvoicePDF = ({ invoice, customerName }: InvoicePDFProps) => {
         <InvoiceFooter
           companyName={companyName}
           companyPhone={companyPhone}
+          companyAddress={companyAddress}
           notes={invoice.notes}
           status={invoice.status}
           isRTL={isRTL}
