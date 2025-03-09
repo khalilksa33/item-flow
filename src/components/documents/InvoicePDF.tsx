@@ -76,9 +76,9 @@ export const InvoicePDF = ({ invoice, customerName }: InvoicePDFProps) => {
     try {
       const date = new Date(dateString);
       return date.toLocaleDateString(isRTL ? 'ar-SA' : 'en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
       });
     } catch (error) {
       console.error("Error formatting date:", error);

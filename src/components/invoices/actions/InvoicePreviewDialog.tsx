@@ -36,8 +36,6 @@ export const InvoicePreviewDialog = ({
 
   // When dialog opens or language changes, update language settings
   useEffect(() => {
-    if (!isOpen) return;
-    
     const handleLanguageChange = () => {
       const currentLang = i18n.language;
       const isArabic = currentLang === 'ar';
@@ -55,24 +53,30 @@ export const InvoicePreviewDialog = ({
       setForceRender(Date.now());
     };
 
-    // Check if dialog just opened or preview type changed
-    if (isOpen && (!prevOpenRef.current || prevTypeRef.current !== previewType)) {
+    if (isOpen) {
+      // Always enforce language settings when dialog opens
       handleLanguageChange();
-      prevOpenRef.current = true;
-      prevTypeRef.current = previewType;
-      setForceRender(Date.now());
+      
+      // Check if dialog just opened or preview type changed
+      if (!prevOpenRef.current || prevTypeRef.current !== previewType) {
+        prevOpenRef.current = true;
+        prevTypeRef.current = previewType;
+        setForceRender(Date.now());
+      }
     }
     
     // Listen for language changes
     const languageChangeHandler = () => {
-      handleLanguageChange();
+      if (isOpen) {
+        handleLanguageChange();
+      }
     };
     
     i18n.on('languageChanged', languageChangeHandler);
     return () => {
       i18n.off('languageChanged', languageChangeHandler);
     };
-  }, [isOpen, i18n, isRTL, previewType]);
+  }, [isOpen, i18n, previewType]);
 
   // Update refs when props change
   useEffect(() => {

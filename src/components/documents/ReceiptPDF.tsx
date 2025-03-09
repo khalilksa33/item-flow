@@ -44,18 +44,38 @@ interface ReceiptPDFProps {
 
 export const ReceiptPDF = ({ invoice, customerName, paymentMethod }: ReceiptPDFProps) => {
   // Use state to force re-render when language changes
-  const [currentLanguage, setCurrentLanguage] = useState(localStorage.getItem('preferredLanguage') || 'en');
+  const [forceRender, setForceRender] = useState(Date.now());
+  const storedLanguage = localStorage.getItem('preferredLanguage');
+  const currentLanguage = storedLanguage || 'en';
   const isRTL = currentLanguage === 'ar';
   
-  console.log(`ReceiptPDF rendering with language: ${currentLanguage}, isRTL: ${isRTL}`);
+  console.log(`ReceiptPDF rendering with language: ${currentLanguage}, isRTL: ${isRTL}, forceRender: ${forceRender}`);
   
-  // Effect to ensure state updates if localStorage changes
+  // Effect to monitor localStorage changes
   useEffect(() => {
-    const storedLang = localStorage.getItem('preferredLanguage') || 'en';
-    if (storedLang !== currentLanguage) {
-      setCurrentLanguage(storedLang);
-    }
-  }, [currentLanguage]);
+    const checkLanguage = () => {
+      const storedLang = localStorage.getItem('preferredLanguage') || 'en';
+      if (storedLang !== currentLanguage) {
+        setForceRender(Date.now());
+      }
+    };
+    
+    // Check language on mount
+    checkLanguage();
+    
+    // Create event listener for storage changes
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key === 'preferredLanguage') {
+        console.log('Language changed in storage, forcing PDF re-render');
+        setForceRender(Date.now());
+      }
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, [currentLanguage, forceRender]);
   
   const currency = localStorage.getItem('currency') || 'SAR';
 
@@ -121,7 +141,7 @@ export const ReceiptPDF = ({ invoice, customerName, paymentMethod }: ReceiptPDFP
   };
 
   return (
-    <Document>
+    <Document key={`receipt-${invoice.id}-${forceRender}-${isRTL ? 'rtl' : 'ltr'}`}>
       <Page size="A6" style={isRTL ? styles.rtlPage : styles.page}>
         <View style={styles.header}>
           <Text style={styles.title}>{labels.receipt}</Text>
