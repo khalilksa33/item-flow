@@ -13,7 +13,6 @@ import {
   Truck as TruckIcon,
   Settings as SettingsIcon,
   LogOut as LogOutIcon,
-  ExternalLink,
 } from "lucide-react";
 import { storage } from "@/lib/storage";
 import { useUser } from "@/contexts/UserContext";
@@ -134,40 +133,6 @@ const Index = () => {
 
   return (
     <div className="container mx-auto p-6" dir={isRTL ? "rtl" : "ltr"}>
-      {/* KamySoft.com Introductory Section */}
-      <div className="mb-8 p-6 bg-gradient-to-r from-blue-600 to-blue-800 text-white rounded-lg shadow-lg">
-        <div className="flex flex-col md:flex-row items-center justify-between">
-          <div className="mb-4 md:mb-0 md:mr-6">
-            <h2 className="text-2xl font-bold mb-2">Powered by KamySoft</h2>
-            <p className="text-blue-100 mb-4">
-              Professional Inventory Management Solutions for Businesses of All Sizes
-            </p>
-            <div className="flex items-center">
-              <Button 
-                variant="secondary" 
-                size="sm" 
-                className="mr-3"
-                onClick={() => window.open('https://kamysoft.com', '_blank')}
-              >
-                <ExternalLink className="h-4 w-4 mr-2" />
-                Visit kamysoft.com
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="bg-transparent border-white hover:bg-white hover:text-blue-800"
-                onClick={() => window.open('https://kamysoft.com/contact', '_blank')}
-              >
-                Contact Us
-              </Button>
-            </div>
-          </div>
-          <div className="flex items-center justify-center p-4 bg-white rounded-lg">
-            <div className="text-blue-800 font-bold text-xl">KamySoft</div>
-          </div>
-        </div>
-      </div>
-
       <header className="mb-6 flex justify-between items-center">
         <div className="text-center flex-1">
           <h1 className="text-3xl font-bold">{t("app:title")}</h1>

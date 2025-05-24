@@ -49,16 +49,30 @@ export const generateInvoiceHTML = (
         .header {
           display: flex;
           justify-content: space-between;
+          align-items: flex-start;
           margin-bottom: 20px;
           flex-direction: ${isRTL ? 'row-reverse' : 'row'};
+        }
+        .company-info {
+          flex: 1;
         }
         .company-info h2 {
           margin-top: 0;
           margin-bottom: 10px;
         }
+        .logo-container {
+          flex: 1;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
         .logo {
           max-height: 100px;
           max-width: 200px;
+          object-fit: contain;
+        }
+        .header-right {
+          flex: 1;
         }
         .title {
           font-size: 24px;
@@ -145,8 +159,15 @@ export const generateInvoiceHTML = (
           <div class="company-info">
             ${companyInfo.companyName ? `<h2>${companyInfo.companyName}</h2>` : ''}
             ${companyInfo.vatNumber ? `<p>${labels.vatNumber}: ${companyInfo.vatNumber}</p>` : ''}
+            ${companyInfo.crNumber ? `<p>${labels.crNumber}: ${companyInfo.crNumber}</p>` : ''}
+            ${companyInfo.companyPhone ? `<p>${labels.phone}: ${companyInfo.companyPhone}</p>` : ''}
+            ${companyInfo.companyEmail ? `<p>${labels.email}: ${companyInfo.companyEmail}</p>` : ''}
           </div>
-          ${companyInfo.companyLogo ? `<img src="${companyInfo.companyLogo}" class="logo" />` : ''}
+          ${companyInfo.companyLogo ? `
+          <div class="logo-container">
+            <img src="${companyInfo.companyLogo}" class="logo" />
+          </div>` : ''}
+          <div class="header-right"></div>
         </div>
         <div class="title">
           ${labels.invoice}
