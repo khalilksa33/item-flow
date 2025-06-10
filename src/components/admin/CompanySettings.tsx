@@ -20,14 +20,23 @@ export function CompanySettings() {
   const isRTL = i18n.language === 'ar';
 
   useEffect(() => {
-    // Load stored values
+    // Load stored values or set default logo
     setCompanyName(localStorage.getItem("companyName") || "");
     setVatNumber(localStorage.getItem("vatNumber") || "");
     setCrNumber(localStorage.getItem("crNumber") || "");
     setCompanyAddress(localStorage.getItem("companyAddress") || "");
     setCompanyPhone(localStorage.getItem("companyPhone") || "");
     setCompanyEmail(localStorage.getItem("companyEmail") || "");
-    setCompanyLogo(localStorage.getItem("companyLogo") || "");
+    
+    // Set default logo if none exists
+    const storedLogo = localStorage.getItem("companyLogo");
+    if (!storedLogo) {
+      const defaultLogo = "/lovable-uploads/e4256b8e-7ddc-4472-924e-c213f46c6ea2.png";
+      setCompanyLogo(defaultLogo);
+      localStorage.setItem("companyLogo", defaultLogo);
+    } else {
+      setCompanyLogo(storedLogo);
+    }
   }, []);
 
   const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -40,6 +49,12 @@ export function CompanySettings() {
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const useDefaultLogo = () => {
+    const defaultLogo = "/lovable-uploads/e4256b8e-7ddc-4472-924e-c213f46c6ea2.png";
+    setCompanyLogo(defaultLogo);
+    toast.success("Default logo applied");
   };
 
   const saveSettings = () => {
@@ -142,13 +157,18 @@ export function CompanySettings() {
           <Label htmlFor="companyLogo" className={isRTL ? "text-right block" : "block"}>
             {t("admin:companyLogo")}
           </Label>
-          <Input
-            id="companyLogo"
-            type="file"
-            accept="image/*"
-            onChange={handleLogoChange}
-            className={isRTL ? "text-right" : ""}
-          />
+          <div className="flex gap-2">
+            <Input
+              id="companyLogo"
+              type="file"
+              accept="image/*"
+              onChange={handleLogoChange}
+              className={`flex-1 ${isRTL ? "text-right" : ""}`}
+            />
+            <Button type="button" variant="outline" onClick={useDefaultLogo}>
+              Use Default
+            </Button>
+          </div>
           {companyLogo && (
             <div className="mt-2">
               <p className={isRTL ? "text-right" : ""}>{t("admin:currentLogo")}:</p>

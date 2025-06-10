@@ -196,7 +196,7 @@ const Index = () => {
             {checkActivation() ? t("app:footer.active") : t("app:footer.inactive")}
           </span>
         </p>
-        <p className="mt-2">Developed by <a href="https://kamysoft.com" className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">KamySoft.com</a></p>
+        <p className="mt-2">Developed by <a href="https://dynapulsar.com" className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">DynaPulsar.com</a></p>
       </footer>
     </div>
   );

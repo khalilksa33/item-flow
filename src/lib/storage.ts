@@ -1,710 +1,386 @@
+import { InventoryItem, Customer, Vendor, Sale, Quotation, Invoice } from "@/types/inventory";
 
-import { InventoryItem, Category, Supplier, User, AuditLog, Customer, Vendor, Sale, Quotation, Invoice } from "@/types/inventory";
+const STORAGE_KEYS = {
+  INVENTORY: 'inventory_items',
+  CUSTOMERS: 'inventory_customers',
+  VENDORS: 'inventory_vendors',
+  SALES: 'inventory_sales',
+  QUOTATIONS: 'inventory_quotations',
+  INVOICES: 'inventory_invoices',
+  USERS: 'inventory_users',
+};
 
-const ITEMS_KEY = 'inventory_items';
-const CATEGORIES_KEY = 'inventory_categories';
-const SUPPLIERS_KEY = 'inventory_suppliers';
-const USERS_KEY = 'inventory_users';
-const AUDIT_LOGS_KEY = 'inventory_audit_logs';
-const CURRENT_USER_KEY = 'inventory_current_user';
-const CUSTOMERS_KEY = 'inventory_customers';
-const VENDORS_KEY = 'inventory_vendors';
-const SALES_KEY = 'inventory_sales';
-const QUOTATIONS_KEY = 'inventory_quotations';
-const INVOICES_KEY = 'inventory_invoices';
+/**
+ * Local Storage Utility
+ */
+class LocalStorageService {
+  constructor() {
+    if (typeof localStorage === 'undefined') {
+      console.warn('localStorage is not available in this environment');
+    }
+  }
+
+  /**
+   * Get all inventory items
+   */
+  getInventoryItems(): InventoryItem[] {
+    try {
+      const items = localStorage.getItem(STORAGE_KEYS.INVENTORY);
+      return items ? JSON.parse(items) : [];
+    } catch (error) {
+      console.error("Error getting inventory items:", error);
+      return [];
+    }
+  }
+
+  /**
+   * Add a new inventory item
+   * @param item 
+   */
+  addInventoryItem(item: InventoryItem): void {
+    const items = this.getInventoryItems();
+    localStorage.setItem(STORAGE_KEYS.INVENTORY, JSON.stringify([...items, item]));
+  }
+
+  /**
+   * Update an existing inventory item
+   * @param item 
+   */
+  updateInventoryItem(item: InventoryItem): void {
+    const items = this.getInventoryItems().map(i => i.id === item.id ? item : i);
+    localStorage.setItem(STORAGE_KEYS.INVENTORY, JSON.stringify(items));
+  }
+
+  /**
+   * Delete an inventory item
+   * @param id 
+   */
+  deleteInventoryItem(id: string): void {
+    const items = this.getInventoryItems().filter(i => i.id !== id);
+    localStorage.setItem(STORAGE_KEYS.INVENTORY, JSON.stringify(items));
+  }
+
+  /**
+   * Get all customers
+   */
+  getCustomers(): Customer[] {
+    try {
+      const customers = localStorage.getItem(STORAGE_KEYS.CUSTOMERS);
+      return customers ? JSON.parse(customers) : [];
+    } catch (error) {
+      console.error("Error getting customers:", error);
+      return [];
+    }
+  }
+
+  /**
+   * Add a new customer
+   * @param customer 
+   */
+  addCustomer(customer: Customer): void {
+    const customers = this.getCustomers();
+    localStorage.setItem(STORAGE_KEYS.CUSTOMERS, JSON.stringify([...customers, customer]));
+  }
+
+  /**
+   * Update an existing customer
+   * @param customer 
+   */
+  updateCustomer(customer: Customer): void {
+    const customers = this.getCustomers().map(c => c.id === customer.id ? customer : c);
+    localStorage.setItem(STORAGE_KEYS.CUSTOMERS, JSON.stringify(customers));
+  }
+
+  /**
+   * Delete a customer
+   * @param id 
+   */
+  deleteCustomer(id: string): void {
+    const customers = this.getCustomers().filter(c => c.id !== id);
+    localStorage.setItem(STORAGE_KEYS.CUSTOMERS, JSON.stringify(customers));
+  }
+
+    /**
+   * Get all vendors
+   */
+  getVendors(): Vendor[] {
+    try {
+      const vendors = localStorage.getItem(STORAGE_KEYS.VENDORS);
+      return vendors ? JSON.parse(vendors) : [];
+    } catch (error) {
+      console.error("Error getting vendors:", error);
+      return [];
+    }
+  }
+
+  /**
+   * Add a new vendor
+   * @param vendor 
+   */
+  addVendor(vendor: Vendor): void {
+    const vendors = this.getVendors();
+    localStorage.setItem(STORAGE_KEYS.VENDORS, JSON.stringify([...vendors, vendor]));
+  }
+
+  /**
+   * Update an existing vendor
+   * @param vendor 
+   */
+  updateVendor(vendor: Vendor): void {
+    const vendors = this.getVendors().map(v => v.id === vendor.id ? vendor : v);
+    localStorage.setItem(STORAGE_KEYS.VENDORS, JSON.stringify(vendors));
+  }
+
+  /**
+   * Delete a vendor
+   * @param id 
+   */
+  deleteVendor(id: string): void {
+    const vendors = this.getVendors().filter(v => v.id !== id);
+    localStorage.setItem(STORAGE_KEYS.VENDORS, JSON.stringify(vendors));
+  }
+
+  /**
+   * Get all sales
+   */
+  getSales(): Sale[] {
+    try {
+      const sales = localStorage.getItem(STORAGE_KEYS.SALES);
+      return sales ? JSON.parse(sales) : [];
+    } catch (error) {
+      console.error("Error getting sales:", error);
+      return [];
+    }
+  }
+
+  /**
+   * Add a new sale
+   * @param sale 
+   */
+  addSale(sale: Sale): void {
+    const sales = this.getSales();
+    localStorage.setItem(STORAGE_KEYS.SALES, JSON.stringify([...sales, sale]));
+  }
+
+   /**
+   * Update an existing sale
+   * @param sale 
+   */
+  updateSale(sale: Sale): void {
+    const sales = this.getSales().map(s => s.id === sale.id ? sale : s);
+    localStorage.setItem(STORAGE_KEYS.SALES, JSON.stringify(sales));
+  }
+
+  /**
+   * Delete a sale
+   * @param id 
+   */
+  deleteSale(id: string): void {
+    const sales = this.getSales().filter(s => s.id !== id);
+    localStorage.setItem(STORAGE_KEYS.SALES, JSON.stringify(sales));
+  }
+
+  /**
+   * Get all quotations
+   */
+  getQuotations(): Quotation[] {
+    try {
+      const quotations = localStorage.getItem(STORAGE_KEYS.QUOTATIONS);
+      return quotations ? JSON.parse(quotations) : [];
+    } catch (error) {
+      console.error("Error getting quotations:", error);
+      return [];
+    }
+  }
+
+  /**
+   * Add a new quotation
+   * @param quotation 
+   */
+  addQuotation(quotation: Quotation): void {
+    const quotations = this.getQuotations();
+    localStorage.setItem(STORAGE_KEYS.QUOTATIONS, JSON.stringify([...quotations, quotation]));
+  }
+
+   /**
+   * Update an existing quotation
+   * @param quotation 
+   */
+  updateQuotation(quotation: Quotation): void {
+    const quotations = this.getQuotations().map(q => q.id === quotation.id ? quotation : q);
+    localStorage.setItem(STORAGE_KEYS.QUOTATIONS, JSON.stringify(quotations));
+  }
+
+  /**
+   * Delete a quotation
+   * @param id 
+   */
+  deleteQuotation(id: string): void {
+    const quotations = this.getQuotations().filter(q => q.id !== id);
+    localStorage.setItem(STORAGE_KEYS.QUOTATIONS, JSON.stringify(quotations));
+  }
+
+  /**
+   * Get all invoices
+   */
+  getInvoices(): Invoice[] {
+    try {
+      const invoices = localStorage.getItem(STORAGE_KEYS.INVOICES);
+      return invoices ? JSON.parse(invoices) : [];
+    } catch (error) {
+      console.error("Error getting invoices:", error);
+      return [];
+    }
+  }
+
+  /**
+   * Add a new invoice
+   * @param invoice 
+   */
+  addInvoice(invoice: Invoice): void {
+    const invoices = this.getInvoices();
+    localStorage.setItem(STORAGE_KEYS.INVOICES, JSON.stringify([...invoices, invoice]));
+  }
+
+   /**
+   * Update an existing invoice
+   * @param invoice 
+   */
+  updateInvoice(invoice: Invoice): void {
+    const invoices = this.getInvoices().map(i => i.id === invoice.id ? invoice : i);
+    localStorage.setItem(STORAGE_KEYS.INVOICES, JSON.stringify(invoices));
+  }
+
+  /**
+   * Delete a invoice
+   * @param id 
+   */
+  deleteInvoice(id: string): void {
+    const invoices = this.getInvoices().filter(i => i.id !== id);
+    localStorage.setItem(STORAGE_KEYS.INVOICES, JSON.stringify(invoices));
+  }
+}
+
+import { seedSampleData } from "@/utils/sampleDataSeeder";
 
 export const storage = {
-  // Items operations
-  getItems: (): InventoryItem[] => {
-    const items = localStorage.getItem(ITEMS_KEY);
+  getInventoryItems: () => {
+    const items = localStorage.getItem(STORAGE_KEYS.INVENTORY);
     return items ? JSON.parse(items) : [];
   },
-
-  setItems: (items: InventoryItem[]) => {
-    localStorage.setItem(ITEMS_KEY, JSON.stringify(items));
+  addInventoryItem: (item: InventoryItem) => {
+    const items = storage.getInventoryItems();
+    localStorage.setItem(STORAGE_KEYS.INVENTORY, JSON.stringify([...items, item]));
   },
-
-  addItem: (item: InventoryItem) => {
-    const items = storage.getItems();
-    items.push(item);
-    storage.setItems(items);
-
-    const currentUser = storage.getCurrentUser();
-    if (currentUser) {
-      storage.addAuditLog({
-        id: crypto.randomUUID(),
-        date: new Date().toISOString(),
-        action: 'create',
-        itemId: item.id,
-        userId: currentUser.id,
-        details: `Created item: ${item.name}`
-      });
-    }
+  updateInventoryItem: (item: InventoryItem) => {
+    const items = storage.getInventoryItems().map(i => i.id === item.id ? item : i);
+    localStorage.setItem(STORAGE_KEYS.INVENTORY, JSON.stringify(items));
   },
-
-  updateItem: (updatedItem: InventoryItem) => {
-    const items = storage.getItems();
-    const index = items.findIndex(item => item.id === updatedItem.id);
-    if (index !== -1) {
-      items[index] = { ...updatedItem, lastUpdated: new Date().toISOString() };
-      storage.setItems(items);
-
-      const currentUser = storage.getCurrentUser();
-      if (currentUser) {
-        storage.addAuditLog({
-          id: crypto.randomUUID(),
-          date: new Date().toISOString(),
-          action: 'update',
-          itemId: updatedItem.id,
-          userId: currentUser.id,
-          details: `Updated item: ${updatedItem.name}`
-        });
-      }
-    }
+  deleteInventoryItem: (id: string) => {
+    const items = storage.getInventoryItems().filter(i => i.id !== id);
+    localStorage.setItem(STORAGE_KEYS.INVENTORY, JSON.stringify(items));
   },
-
-  deleteItem: (id: string) => {
-    const items = storage.getItems();
-    const item = items.find(i => i.id === id);
-    const filteredItems = items.filter(item => item.id !== id);
-    storage.setItems(filteredItems);
-
-    if (item) {
-      const currentUser = storage.getCurrentUser();
-      if (currentUser) {
-        storage.addAuditLog({
-          id: crypto.randomUUID(),
-          date: new Date().toISOString(),
-          action: 'delete',
-          itemId: id,
-          userId: currentUser.id,
-          details: `Deleted item: ${item.name}`
-        });
-      }
-    }
-  },
-
-  // Categories operations
-  getCategories: (): Category[] => {
-    const categories = localStorage.getItem(CATEGORIES_KEY);
-    return categories ? JSON.parse(categories) : [
-      { id: '1', name: 'Electronics' },
-      { id: '2', name: 'Office Supplies' },
-      { id: '3', name: 'Furniture' }
-    ];
-  },
-
-  setCategories: (categories: Category[]) => {
-    localStorage.setItem(CATEGORIES_KEY, JSON.stringify(categories));
-  },
-
-  addCategory: (category: Category) => {
-    const categories = storage.getCategories();
-    categories.push(category);
-    storage.setCategories(categories);
-  },
-
-  deleteCategory: (id: string) => {
-    const categories = storage.getCategories();
-    const filteredCategories = categories.filter(category => category.id !== id);
-    storage.setCategories(filteredCategories);
-  },
-
-  // Suppliers operations
-  getSuppliers: (): Supplier[] => {
-    const suppliers = localStorage.getItem(SUPPLIERS_KEY);
-    return suppliers ? JSON.parse(suppliers) : [];
-  },
-
-  setSuppliers: (suppliers: Supplier[]) => {
-    localStorage.setItem(SUPPLIERS_KEY, JSON.stringify(suppliers));
-  },
-
-  addSupplier: (supplier: Supplier) => {
-    const suppliers = storage.getSuppliers();
-    suppliers.push(supplier);
-    storage.setSuppliers(suppliers);
-  },
-
-  updateSupplier: (updatedSupplier: Supplier) => {
-    const suppliers = storage.getSuppliers();
-    const index = suppliers.findIndex(supplier => supplier.id === updatedSupplier.id);
-    if (index !== -1) {
-      suppliers[index] = updatedSupplier;
-      storage.setSuppliers(suppliers);
-    }
-  },
-
-  deleteSupplier: (id: string) => {
-    const suppliers = storage.getSuppliers();
-    const filteredSuppliers = suppliers.filter(supplier => supplier.id !== id);
-    storage.setSuppliers(filteredSuppliers);
-  },
-
-  getSupplierById: (id: string): Supplier | undefined => {
-    const suppliers = storage.getSuppliers();
-    return suppliers.find(supplier => supplier.id === id);
-  },
-
-  // User operations
-  getUsers: (): User[] => {
-    const users = localStorage.getItem(USERS_KEY);
-    return users ? JSON.parse(users) : [];
-  },
-
-  setUsers: (users: User[]) => {
-    localStorage.setItem(USERS_KEY, JSON.stringify(users));
-  },
-
-  addUser: (user: User) => {
-    const users = storage.getUsers();
-    users.push(user);
-    storage.setUsers(users);
-  },
-
-  updateUser: (updatedUser: User) => {
-    const users = storage.getUsers();
-    const index = users.findIndex(user => user.id === updatedUser.id);
-    if (index !== -1) {
-      users[index] = updatedUser;
-      storage.setUsers(users);
-    }
-  },
-
-  deleteUser: (id: string) => {
-    const users = storage.getUsers();
-    const filteredUsers = users.filter(user => user.id !== id);
-    storage.setUsers(filteredUsers);
-  },
-
-  getCurrentUser: (): User | null => {
-    const userFromLocal = localStorage.getItem(CURRENT_USER_KEY);
-    if (userFromLocal) {
-      try {
-        return JSON.parse(userFromLocal);
-      } catch (e) {
-        console.error("Error parsing user from localStorage:", e);
-      }
-    }
-    return null;
-  },
-
-  setCurrentUser: (user: User | null) => {
-    if (user) {
-      localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(user));
-    } else {
-      localStorage.removeItem(CURRENT_USER_KEY);
-    }
-  },
-
-  // Audit logging operations
-  getAuditLogs: (): AuditLog[] => {
-    const logs = localStorage.getItem(AUDIT_LOGS_KEY);
-    return logs ? JSON.parse(logs) : [];
-  },
-
-  addAuditLog: (log: AuditLog) => {
-    const logs = storage.getAuditLogs();
-    logs.push(log);
-    localStorage.setItem(AUDIT_LOGS_KEY, JSON.stringify(logs));
-  },
-
-  // Customer operations
-  getCustomers: (): Customer[] => {
-    const customers = localStorage.getItem(CUSTOMERS_KEY);
+  getCustomers: () => {
+    const customers = localStorage.getItem(STORAGE_KEYS.CUSTOMERS);
     return customers ? JSON.parse(customers) : [];
   },
-
-  setCustomers: (customers: Customer[]) => {
-    localStorage.setItem(CUSTOMERS_KEY, JSON.stringify(customers));
-  },
-
   addCustomer: (customer: Customer) => {
     const customers = storage.getCustomers();
-    customers.push(customer);
-    storage.setCustomers(customers);
+    localStorage.setItem(STORAGE_KEYS.CUSTOMERS, JSON.stringify([...customers, customer]));
   },
-
-  updateCustomer: (updatedCustomer: Customer) => {
-    const customers = storage.getCustomers();
-    const index = customers.findIndex(customer => customer.id === updatedCustomer.id);
-    if (index !== -1) {
-      customers[index] = updatedCustomer;
-      storage.setCustomers(customers);
-    }
+  updateCustomer: (customer: Customer) => {
+    const customers = storage.getCustomers().map(c => c.id === customer.id ? customer : c);
+    localStorage.setItem(STORAGE_KEYS.CUSTOMERS, JSON.stringify(customers));
   },
-
   deleteCustomer: (id: string) => {
-    const customers = storage.getCustomers();
-    const filteredCustomers = customers.filter(customer => customer.id !== id);
-    storage.setCustomers(filteredCustomers);
+    const customers = storage.getCustomers().filter(c => c.id !== id);
+    localStorage.setItem(STORAGE_KEYS.CUSTOMERS, JSON.stringify(customers));
   },
-
-  // Vendor operations
-  getVendors: (): Vendor[] => {
-    const vendors = localStorage.getItem(VENDORS_KEY);
+  getVendors: () => {
+    const vendors = localStorage.getItem(STORAGE_KEYS.VENDORS);
     return vendors ? JSON.parse(vendors) : [];
   },
-
-  setVendors: (vendors: Vendor[]) => {
-    localStorage.setItem(VENDORS_KEY, JSON.stringify(vendors));
-  },
-
   addVendor: (vendor: Vendor) => {
     const vendors = storage.getVendors();
-    vendors.push(vendor);
-    storage.setVendors(vendors);
+    localStorage.setItem(STORAGE_KEYS.VENDORS, JSON.stringify([...vendors, vendor]));
   },
-
-  updateVendor: (updatedVendor: Vendor) => {
-    const vendors = storage.getVendors();
-    const index = vendors.findIndex(vendor => vendor.id === updatedVendor.id);
-    if (index !== -1) {
-      vendors[index] = updatedVendor;
-      storage.setVendors(vendors);
-    }
+  updateVendor: (vendor: Vendor) => {
+    const vendors = storage.getVendors().map(v => v.id === vendor.id ? vendor : v);
+    localStorage.setItem(STORAGE_KEYS.VENDORS, JSON.stringify(vendors));
   },
-
   deleteVendor: (id: string) => {
-    const vendors = storage.getVendors();
-    const filteredVendors = vendors.filter(vendor => vendor.id !== id);
-    storage.setVendors(filteredVendors);
+    const vendors = storage.getVendors().filter(v => v.id !== id);
+    localStorage.setItem(STORAGE_KEYS.VENDORS, JSON.stringify(vendors));
   },
-
-  // Sales operations
-  getSales: (): Sale[] => {
-    const sales = localStorage.getItem(SALES_KEY);
+  getSales: () => {
+    const sales = localStorage.getItem(STORAGE_KEYS.SALES);
     return sales ? JSON.parse(sales) : [];
   },
-
-  setSales: (sales: Sale[]) => {
-    localStorage.setItem(SALES_KEY, JSON.stringify(sales));
-  },
-
   addSale: (sale: Sale) => {
     const sales = storage.getSales();
-    sales.push(sale);
-    storage.setSales(sales);
+    localStorage.setItem(STORAGE_KEYS.SALES, JSON.stringify([...sales, sale]));
   },
-
-  updateSale: (updatedSale: Sale) => {
-    const sales = storage.getSales();
-    const index = sales.findIndex(sale => sale.id === updatedSale.id);
-    if (index !== -1) {
-      sales[index] = updatedSale;
-      storage.setSales(sales);
-    }
+  updateSale: (sale: Sale) => {
+    const sales = storage.getSales().map(s => s.id === sale.id ? sale : s);
+    localStorage.setItem(STORAGE_KEYS.SALES, JSON.stringify(sales));
   },
-
   deleteSale: (id: string) => {
-    const sales = storage.getSales();
-    const filteredSales = sales.filter(sale => sale.id !== id);
-    storage.setSales(filteredSales);
+    const sales = storage.getSales().filter(s => s.id !== id);
+    localStorage.setItem(STORAGE_KEYS.SALES, JSON.stringify(sales));
   },
-
-  // Quotations operations
-  getQuotations: (): Quotation[] => {
-    const quotations = localStorage.getItem(QUOTATIONS_KEY);
+  getQuotations: () => {
+    const quotations = localStorage.getItem(STORAGE_KEYS.QUOTATIONS);
     return quotations ? JSON.parse(quotations) : [];
   },
-
-  setQuotations: (quotations: Quotation[]) => {
-    localStorage.setItem(QUOTATIONS_KEY, JSON.stringify(quotations));
-  },
-
   addQuotation: (quotation: Quotation) => {
     const quotations = storage.getQuotations();
-    quotations.push(quotation);
-    storage.setQuotations(quotations);
+    localStorage.setItem(STORAGE_KEYS.QUOTATIONS, JSON.stringify([...quotations, quotation]));
   },
-
-  updateQuotation: (updatedQuotation: Quotation) => {
-    const quotations = storage.getQuotations();
-    const index = quotations.findIndex(q => q.id === updatedQuotation.id);
-    if (index !== -1) {
-      quotations[index] = updatedQuotation;
-      storage.setQuotations(quotations);
-    }
+  updateQuotation: (quotation: Quotation) => {
+    const quotations = storage.getQuotations().map(q => q.id === quotation.id ? quotation : q);
+    localStorage.setItem(STORAGE_KEYS.QUOTATIONS, JSON.stringify(quotations));
   },
-
   deleteQuotation: (id: string) => {
-    const quotations = storage.getQuotations();
-    const filteredQuotations = quotations.filter(q => q.id !== id);
-    storage.setQuotations(filteredQuotations);
+    const quotations = storage.getQuotations().filter(q => q.id !== id);
+    localStorage.setItem(STORAGE_KEYS.QUOTATIONS, JSON.stringify(quotations));
   },
-
-  // Invoices operations
-  getInvoices: (): Invoice[] => {
-    const invoices = localStorage.getItem(INVOICES_KEY);
+   getInvoices: () => {
+    const invoices = localStorage.getItem(STORAGE_KEYS.INVOICES);
     return invoices ? JSON.parse(invoices) : [];
   },
-
-  setInvoices: (invoices: Invoice[]) => {
-    localStorage.setItem(INVOICES_KEY, JSON.stringify(invoices));
-  },
-
   addInvoice: (invoice: Invoice) => {
     const invoices = storage.getInvoices();
-    invoices.push(invoice);
-    storage.setInvoices(invoices);
+    localStorage.setItem(STORAGE_KEYS.INVOICES, JSON.stringify([...invoices, invoice]));
   },
-
-  updateInvoice: (updatedInvoice: Invoice) => {
-    const invoices = storage.getInvoices();
-    const index = invoices.findIndex(i => i.id === updatedInvoice.id);
-    if (index !== -1) {
-      invoices[index] = updatedInvoice;
-      storage.setInvoices(invoices);
-    }
+  updateInvoice: (invoice: Invoice) => {
+    const invoices = storage.getInvoices().map(i => i.id === invoice.id ? invoice : i);
+    localStorage.setItem(STORAGE_KEYS.INVOICES, JSON.stringify(invoices));
   },
-
   deleteInvoice: (id: string) => {
-    const invoices = storage.getInvoices();
-    const filteredInvoices = invoices.filter(i => i.id !== id);
-    storage.setInvoices(filteredInvoices);
+    const invoices = storage.getInvoices().filter(i => i.id !== id);
+    localStorage.setItem(STORAGE_KEYS.INVOICES, JSON.stringify(invoices));
   },
-
-  // Data management functions
-  // Export all data from localStorage
-  exportData: () => {
-    const data = {
-      items: storage.getItems(),
-      categories: storage.getCategories(),
-      suppliers: storage.getSuppliers(),
-      users: storage.getUsers(),
-      auditLogs: storage.getAuditLogs(),
-      customers: storage.getCustomers(),
-      vendors: storage.getVendors(),
-      sales: storage.getSales(),
-      quotations: storage.getQuotations(),
-      invoices: storage.getInvoices()
-    };
-    return data;
-  },
-
-  // Import data into localStorage
-  importData: (data: any) => {
-    try {
-      if (data.items) storage.setItems(data.items);
-      if (data.categories) storage.setCategories(data.categories);
-      if (data.suppliers) storage.setSuppliers(data.suppliers);
-      if (data.users) storage.setUsers(data.users);
-      if (data.auditLogs) localStorage.setItem(AUDIT_LOGS_KEY, JSON.stringify(data.auditLogs));
-      if (data.customers) storage.setCustomers(data.customers);
-      if (data.vendors) storage.setVendors(data.vendors);
-      if (data.sales) storage.setSales(data.sales);
-      if (data.quotations) storage.setQuotations(data.quotations);
-      if (data.invoices) storage.setInvoices(data.invoices);
-      return true;
-    } catch (error) {
-      console.error("Import error:", error);
-      return false;
-    }
-  },
-
-  // Clear all data from localStorage
-  clearData: () => {
-    localStorage.removeItem(ITEMS_KEY);
-    localStorage.removeItem(CATEGORIES_KEY);
-    localStorage.removeItem(SUPPLIERS_KEY);
-    localStorage.removeItem(USERS_KEY);
-    localStorage.removeItem(AUDIT_LOGS_KEY);
-    localStorage.removeItem(CUSTOMERS_KEY);
-    localStorage.removeItem(VENDORS_KEY);
-    localStorage.removeItem(SALES_KEY);
-    localStorage.removeItem(QUOTATIONS_KEY);
-    localStorage.removeItem(INVOICES_KEY);
-    // Don't remove current user or activation status
-  },
-
   initializeData: () => {
-    if (!localStorage.getItem(ITEMS_KEY)) {
-      const defaultItems: InventoryItem[] = [
-        {
-          id: '1',
-          name: 'Laptop',
-          description: 'Business laptop with 16GB RAM',
-          quantity: 5,
-          category: 'Electronics',
-          minQuantity: 2,
-          lastUpdated: new Date().toISOString(),
-          cost: 999.99,
-          stockMovements: [],
-          imageUrl: '',
-          barcode: '123456789',
-          qrCode: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=123456789',
-          supplierId: '1'
-        },
-        {
-          id: '2',
-          name: 'Office Chair',
-          description: 'Ergonomic office chair',
-          quantity: 10,
-          category: 'Furniture',
-          minQuantity: 3,
-          lastUpdated: new Date().toISOString(),
-          cost: 199.99,
-          stockMovements: [],
-          imageUrl: '',
-          barcode: '987654321',
-          qrCode: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=987654321',
-          supplierId: '2'
-        }
-      ];
-      storage.setItems(defaultItems);
-    }
-
-    if (!localStorage.getItem(SUPPLIERS_KEY)) {
-      const defaultSuppliers: Supplier[] = [
-        {
-          id: '1',
-          name: 'TechCorp Supplies',
-          email: 'sales@techcorp.com',
-          phone: '555-0123',
-          address: '123 Tech Street',
-          notes: 'Primary electronics supplier'
-        },
-        {
-          id: '2',
-          name: 'Office Furniture Co',
-          email: 'contact@officefurniture.com',
-          phone: '555-0456',
-          address: '456 Office Road',
-          notes: 'Furniture supplier'
-        }
-      ];
-      storage.setSuppliers(defaultSuppliers);
-    }
-
-    if (!localStorage.getItem(CATEGORIES_KEY)) {
-      storage.setCategories([
-        { id: '1', name: 'Electronics' },
-        { id: '2', name: 'Office Supplies' },
-        { id: '3', name: 'Furniture' }
-      ]);
-    }
-
-    if (!localStorage.getItem(USERS_KEY)) {
-      const defaultUsers: User[] = [
-        {
-          id: '1',
-          username: 'admin',
-          password: 'admin123',
-          role: 'admin'
-        },
-        {
-          id: '2',
-          username: 'manager',
-          password: 'manager123',
-          role: 'manager'
-        },
-        {
-          id: '3',
-          username: 'viewer',
-          password: 'viewer123',
-          role: 'viewer'
-        }
-      ];
-      storage.setUsers(defaultUsers);
-    }
-
-    if (!localStorage.getItem(CUSTOMERS_KEY)) {
-      const defaultCustomers: Customer[] = [
-        {
-          id: '1',
-          name: 'John Doe',
-          email: 'john@example.com',
-          phone: '555-0123',
-          address: '123 Main St',
-          type: 'individual',
-          createdAt: new Date().toISOString(),
-          lastUpdated: new Date().toISOString()
-        },
-        {
-          id: '2',
-          name: 'Acme Corp',
-          email: 'contact@acme.com',
-          phone: '555-0456',
-          address: '456 Business Ave',
-          type: 'business',
-          taxId: '12-3456789',
-          creditLimit: 10000,
-          paymentTerms: 'Net 30',
-          createdAt: new Date().toISOString(),
-          lastUpdated: new Date().toISOString()
-        }
-      ];
-      storage.setCustomers(defaultCustomers);
-    }
-
-    if (!localStorage.getItem(VENDORS_KEY)) {
-      const defaultVendors: Vendor[] = [
-        {
-          id: '1',
-          name: 'TechCorp Supplies',
-          email: 'sales@techcorp.com',
-          phone: '555-0123',
-          address: '123 Tech Street',
-          notes: 'Primary electronics supplier',
-          type: 'manufacturer',
-          products: ['Electronics', 'Components'],
-          paymentTerms: 'Net 45',
-          taxId: '98-7654321',
-          rating: 4.5,
-          activeContract: true
-        },
-        {
-          id: '2',
-          name: 'Office Furniture Co',
-          email: 'contact@officefurniture.com',
-          phone: '555-0456',
-          address: '456 Office Road',
-          notes: 'Furniture supplier',
-          type: 'wholesaler',
-          products: ['Furniture', 'Office Supplies'],
-          paymentTerms: 'Net 30',
-          taxId: '45-6789123',
-          rating: 4.0,
-          activeContract: true
-        }
-      ];
-      storage.setVendors(defaultVendors);
-    }
-
-    if (!localStorage.getItem(SALES_KEY)) {
-      const sampleSales: Sale[] = [
-        {
-          id: '1',
-          customerId: '1',
-          items: [
-            {
-              id: crypto.randomUUID(),
-              productId: '1',
-              quantity: 2,
-              unitPrice: 999.99,
-              subtotal: 1999.98
-            }
-          ],
-          total: 1999.98,
-          status: 'completed',
-          paymentStatus: 'paid',
-          paymentMethod: 'credit_card',
-          date: new Date().toISOString(),
-          dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
-        }
-      ];
-      storage.setSales(sampleSales);
-    }
-  },
-
-  // Activation management
-  getActivationStatus: () => {
-    const activation = localStorage.getItem('activation_status');
-    if (!activation) {
-      const initialActivation = {
-        active: true,
-        expiryDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-        activatedOn: new Date().toISOString(),
-        isPerpetual: false
+    // Initialize default admin user if no users exist
+    const users = JSON.parse(localStorage.getItem(STORAGE_KEYS.USERS) || '[]');
+    if (users.length === 0) {
+      const defaultAdmin = {
+        id: crypto.randomUUID(),
+        username: 'admin',
+        password: 'admin123', // In production, this should be hashed
+        role: 'admin' as const,
+        isActive: true,
+        createdAt: new Date().toISOString(),
+        lastLogin: null
       };
-      localStorage.setItem('activation_status', JSON.stringify(initialActivation));
-      return initialActivation;
+      localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify([defaultAdmin]));
     }
-    return JSON.parse(activation);
-  },
 
-  setActivationStatus: (status: { active: boolean; expiryDate: string; activatedOn: string; isPerpetual: boolean }) => {
-    localStorage.setItem('activation_status', JSON.stringify(status));
+    // Seed sample data if none exists
+    seedSampleData();
   },
-
-  setPerpetualActivation: () => {
-    const status = storage.getActivationStatus();
-    storage.setActivationStatus({
-      ...status,
-      active: true,
-      isPerpetual: true,
-      expiryDate: new Date('2099-12-31').toISOString()
-    });
-  },
-
   checkActivation: () => {
-    const status = storage.getActivationStatus();
-    if (status.isPerpetual) return true;
-    const now = new Date();
-    const expiryDate = new Date(status.expiryDate);
-    return status.active && now < expiryDate;
-  },
-
-  extendActivation: (days: number = 30) => {
-    const status = storage.getActivationStatus();
-    const currentExpiry = new Date(status.expiryDate);
-    const newExpiry = new Date(currentExpiry.getTime() + days * 24 * 60 * 60 * 1000);
-    storage.setActivationStatus({
-      ...status,
-      expiryDate: newExpiry.toISOString()
-    });
-  },
-
-  // CSV export
-  exportToCSV: () => {
-    const items = storage.getItems();
-    const headers = [
-      'id',
-      'name',
-      'description',
-      'quantity',
-      'category',
-      'minQuantity',
-      'cost',
-      'lastUpdated',
-      'supplierId'
-    ];
-
-    const csvRows = [
-      headers.join(','),
-      ...items.map(item => 
-        headers.map(header => {
-          const value = item[header as keyof typeof item];
-          if (typeof value === 'string' && value.includes(',')) {
-            return `"${value}"`;
-          }
-          return value;
-        }).join(',')
-      )
-    ];
-
-    return csvRows.join('\n');
-  },
-
-  // CSV import
-  importFromCSV: (csvContent: string) => {
-    try {
-      const rows = csvContent.split('\n');
-      const headers = rows[0].split(',');
-      
-      const items = rows.slice(1).map(row => {
-        const values = row.split(',');
-        const item: any = {};
-        
-        headers.forEach((header, index) => {
-          if (['quantity', 'minQuantity', 'cost'].includes(header)) {
-            item[header] = parseFloat(values[index]) || 0;
-          } else {
-            item[header] = values[index]?.replace(/^"(.*)"$/, '$1') || '';
-          }
-        });
-
-        item.stockMovements = item.stockMovements || [];
-        item.lastUpdated = item.lastUpdated || new Date().toISOString();
-        
-        return item;
-      });
-
-      storage.setItems(items);
-      return true;
-    } catch (error) {
-      console.error('Error importing CSV:', error);
-      return false;
-    }
+    const status = localStorage.getItem('licenseStatus');
+    return status === 'active' || status === 'trial';
   }
 };
