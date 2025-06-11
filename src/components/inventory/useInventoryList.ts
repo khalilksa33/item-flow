@@ -15,43 +15,31 @@ export function useInventoryList(items: InventoryItem[]) {
       item =>
         item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.description.toLowerCase().includes(searchTerm.toLowerCase())
+        (item.description && item.description.toLowerCase().includes(searchTerm.toLowerCase()))
     );
     setFilteredItems(filtered);
   }, [searchTerm, items]);
 
   const handleExport = () => {
-    const csv = storage.exportToCSV();
-    const blob = new Blob([csv], { type: "text/csv" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "inventory-export.csv";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    storage.exportToCSV(items);
     toast.success(t("inventory:exportSuccess"));
   };
 
   const handleImport = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        try {
-          const csvContent = e.target?.result as string;
-          const success = storage.importFromCSV(csvContent);
-          if (success) {
+      storage.importFromCSV(file)
+        .then((importedItems: any) => {
+          if (importedItems && Array.isArray(importedItems)) {
+            importedItems.forEach(item => storage.addInventoryItem(item));
             toast.success(t("inventory:importSuccess"));
           } else {
             toast.error(t("inventory:importError"));
           }
-        } catch (error) {
+        })
+        .catch(() => {
           toast.error(t("inventory:importFormatError"));
-        }
-      };
-      reader.readAsText(file);
+        });
     }
   };
 

@@ -12,6 +12,7 @@ const STORAGE_KEYS = {
   CATEGORIES: 'inventory_categories',
   SUPPLIERS: 'inventory_suppliers',
   AUDIT_LOGS: 'inventory_audit_logs',
+  CURRENT_USER: 'inventory_current_user',
 };
 
 import { seedSampleData } from "@/utils/sampleDataSeeder";
@@ -30,13 +31,25 @@ export const storage = {
     const items = storage.getInventoryItems();
     localStorage.setItem(STORAGE_KEYS.INVENTORY, JSON.stringify([...items, item]));
   },
+  addItem: (item: InventoryItem) => {
+    // Alias for addInventoryItem
+    return storage.addInventoryItem(item);
+  },
   updateInventoryItem: (item: InventoryItem) => {
     const items = storage.getInventoryItems().map(i => i.id === item.id ? item : i);
     localStorage.setItem(STORAGE_KEYS.INVENTORY, JSON.stringify(items));
   },
+  updateItem: (item: InventoryItem) => {
+    // Alias for updateInventoryItem
+    return storage.updateInventoryItem(item);
+  },
   deleteInventoryItem: (id: string) => {
     const items = storage.getInventoryItems().filter(i => i.id !== id);
     localStorage.setItem(STORAGE_KEYS.INVENTORY, JSON.stringify(items));
+  },
+  deleteItem: (id: string) => {
+    // Alias for deleteInventoryItem
+    return storage.deleteInventoryItem(id);
   },
 
   // Customers
@@ -146,6 +159,17 @@ export const storage = {
     const users = storage.getUsers().filter(u => u.id !== id);
     localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
   },
+  getCurrentUser: () => {
+    const user = localStorage.getItem(STORAGE_KEYS.CURRENT_USER);
+    return user ? JSON.parse(user) : null;
+  },
+  setCurrentUser: (user: User | null) => {
+    if (user) {
+      localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(user));
+    } else {
+      localStorage.removeItem(STORAGE_KEYS.CURRENT_USER);
+    }
+  },
 
   // Categories
   getCategories: () => {
@@ -222,17 +246,15 @@ export const storage = {
 
   // CSV Export/Import
   exportToCSV: (items: InventoryItem[]) => {
-    const headers = ['Name', 'SKU', 'Category', 'Quantity', 'Cost', 'Price', 'Supplier'];
+    const headers = ['Name', 'Category', 'Quantity', 'Cost', 'Description'];
     const csvContent = [
       headers.join(','),
       ...items.map(item => [
         item.name,
-        item.sku,
         item.category,
         item.quantity,
         item.cost || 0,
-        item.price || 0,
-        item.supplier || ''
+        item.description || ''
       ].join(','))
     ].join('\n');
 
@@ -258,16 +280,12 @@ export const storage = {
             return {
               id: crypto.randomUUID(),
               name: values[0] || '',
-              sku: values[1] || '',
-              category: values[2] || '',
-              quantity: parseInt(values[3]) || 0,
-              cost: parseFloat(values[4]) || 0,
-              price: parseFloat(values[5]) || 0,
-              supplier: values[6] || '',
+              category: values[1] || '',
+              quantity: parseInt(values[2]) || 0,
+              cost: parseFloat(values[3]) || 0,
+              description: values[4] || '',
               minQuantity: 5,
-              description: '',
-              barcode: '',
-              location: '',
+              stockMovements: [],
               lastUpdated: new Date().toISOString()
             };
           }).filter(item => item.name); // Filter out empty rows
