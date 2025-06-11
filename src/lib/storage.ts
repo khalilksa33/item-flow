@@ -1,4 +1,5 @@
-import { InventoryItem, Customer, Vendor, Sale, Quotation, Invoice } from "@/types/inventory";
+
+import { InventoryItem, Customer, Vendor, Sale, Quotation, Invoice, User, Category, Supplier, AuditLog } from "@/types/inventory";
 
 const STORAGE_KEYS = {
   INVENTORY: 'inventory_items',
@@ -8,265 +9,22 @@ const STORAGE_KEYS = {
   QUOTATIONS: 'inventory_quotations',
   INVOICES: 'inventory_invoices',
   USERS: 'inventory_users',
+  CATEGORIES: 'inventory_categories',
+  SUPPLIERS: 'inventory_suppliers',
+  AUDIT_LOGS: 'inventory_audit_logs',
 };
-
-/**
- * Local Storage Utility
- */
-class LocalStorageService {
-  constructor() {
-    if (typeof localStorage === 'undefined') {
-      console.warn('localStorage is not available in this environment');
-    }
-  }
-
-  /**
-   * Get all inventory items
-   */
-  getInventoryItems(): InventoryItem[] {
-    try {
-      const items = localStorage.getItem(STORAGE_KEYS.INVENTORY);
-      return items ? JSON.parse(items) : [];
-    } catch (error) {
-      console.error("Error getting inventory items:", error);
-      return [];
-    }
-  }
-
-  /**
-   * Add a new inventory item
-   * @param item 
-   */
-  addInventoryItem(item: InventoryItem): void {
-    const items = this.getInventoryItems();
-    localStorage.setItem(STORAGE_KEYS.INVENTORY, JSON.stringify([...items, item]));
-  }
-
-  /**
-   * Update an existing inventory item
-   * @param item 
-   */
-  updateInventoryItem(item: InventoryItem): void {
-    const items = this.getInventoryItems().map(i => i.id === item.id ? item : i);
-    localStorage.setItem(STORAGE_KEYS.INVENTORY, JSON.stringify(items));
-  }
-
-  /**
-   * Delete an inventory item
-   * @param id 
-   */
-  deleteInventoryItem(id: string): void {
-    const items = this.getInventoryItems().filter(i => i.id !== id);
-    localStorage.setItem(STORAGE_KEYS.INVENTORY, JSON.stringify(items));
-  }
-
-  /**
-   * Get all customers
-   */
-  getCustomers(): Customer[] {
-    try {
-      const customers = localStorage.getItem(STORAGE_KEYS.CUSTOMERS);
-      return customers ? JSON.parse(customers) : [];
-    } catch (error) {
-      console.error("Error getting customers:", error);
-      return [];
-    }
-  }
-
-  /**
-   * Add a new customer
-   * @param customer 
-   */
-  addCustomer(customer: Customer): void {
-    const customers = this.getCustomers();
-    localStorage.setItem(STORAGE_KEYS.CUSTOMERS, JSON.stringify([...customers, customer]));
-  }
-
-  /**
-   * Update an existing customer
-   * @param customer 
-   */
-  updateCustomer(customer: Customer): void {
-    const customers = this.getCustomers().map(c => c.id === customer.id ? customer : c);
-    localStorage.setItem(STORAGE_KEYS.CUSTOMERS, JSON.stringify(customers));
-  }
-
-  /**
-   * Delete a customer
-   * @param id 
-   */
-  deleteCustomer(id: string): void {
-    const customers = this.getCustomers().filter(c => c.id !== id);
-    localStorage.setItem(STORAGE_KEYS.CUSTOMERS, JSON.stringify(customers));
-  }
-
-    /**
-   * Get all vendors
-   */
-  getVendors(): Vendor[] {
-    try {
-      const vendors = localStorage.getItem(STORAGE_KEYS.VENDORS);
-      return vendors ? JSON.parse(vendors) : [];
-    } catch (error) {
-      console.error("Error getting vendors:", error);
-      return [];
-    }
-  }
-
-  /**
-   * Add a new vendor
-   * @param vendor 
-   */
-  addVendor(vendor: Vendor): void {
-    const vendors = this.getVendors();
-    localStorage.setItem(STORAGE_KEYS.VENDORS, JSON.stringify([...vendors, vendor]));
-  }
-
-  /**
-   * Update an existing vendor
-   * @param vendor 
-   */
-  updateVendor(vendor: Vendor): void {
-    const vendors = this.getVendors().map(v => v.id === vendor.id ? vendor : v);
-    localStorage.setItem(STORAGE_KEYS.VENDORS, JSON.stringify(vendors));
-  }
-
-  /**
-   * Delete a vendor
-   * @param id 
-   */
-  deleteVendor(id: string): void {
-    const vendors = this.getVendors().filter(v => v.id !== id);
-    localStorage.setItem(STORAGE_KEYS.VENDORS, JSON.stringify(vendors));
-  }
-
-  /**
-   * Get all sales
-   */
-  getSales(): Sale[] {
-    try {
-      const sales = localStorage.getItem(STORAGE_KEYS.SALES);
-      return sales ? JSON.parse(sales) : [];
-    } catch (error) {
-      console.error("Error getting sales:", error);
-      return [];
-    }
-  }
-
-  /**
-   * Add a new sale
-   * @param sale 
-   */
-  addSale(sale: Sale): void {
-    const sales = this.getSales();
-    localStorage.setItem(STORAGE_KEYS.SALES, JSON.stringify([...sales, sale]));
-  }
-
-   /**
-   * Update an existing sale
-   * @param sale 
-   */
-  updateSale(sale: Sale): void {
-    const sales = this.getSales().map(s => s.id === sale.id ? sale : s);
-    localStorage.setItem(STORAGE_KEYS.SALES, JSON.stringify(sales));
-  }
-
-  /**
-   * Delete a sale
-   * @param id 
-   */
-  deleteSale(id: string): void {
-    const sales = this.getSales().filter(s => s.id !== id);
-    localStorage.setItem(STORAGE_KEYS.SALES, JSON.stringify(sales));
-  }
-
-  /**
-   * Get all quotations
-   */
-  getQuotations(): Quotation[] {
-    try {
-      const quotations = localStorage.getItem(STORAGE_KEYS.QUOTATIONS);
-      return quotations ? JSON.parse(quotations) : [];
-    } catch (error) {
-      console.error("Error getting quotations:", error);
-      return [];
-    }
-  }
-
-  /**
-   * Add a new quotation
-   * @param quotation 
-   */
-  addQuotation(quotation: Quotation): void {
-    const quotations = this.getQuotations();
-    localStorage.setItem(STORAGE_KEYS.QUOTATIONS, JSON.stringify([...quotations, quotation]));
-  }
-
-   /**
-   * Update an existing quotation
-   * @param quotation 
-   */
-  updateQuotation(quotation: Quotation): void {
-    const quotations = this.getQuotations().map(q => q.id === quotation.id ? quotation : q);
-    localStorage.setItem(STORAGE_KEYS.QUOTATIONS, JSON.stringify(quotations));
-  }
-
-  /**
-   * Delete a quotation
-   * @param id 
-   */
-  deleteQuotation(id: string): void {
-    const quotations = this.getQuotations().filter(q => q.id !== id);
-    localStorage.setItem(STORAGE_KEYS.QUOTATIONS, JSON.stringify(quotations));
-  }
-
-  /**
-   * Get all invoices
-   */
-  getInvoices(): Invoice[] {
-    try {
-      const invoices = localStorage.getItem(STORAGE_KEYS.INVOICES);
-      return invoices ? JSON.parse(invoices) : [];
-    } catch (error) {
-      console.error("Error getting invoices:", error);
-      return [];
-    }
-  }
-
-  /**
-   * Add a new invoice
-   * @param invoice 
-   */
-  addInvoice(invoice: Invoice): void {
-    const invoices = this.getInvoices();
-    localStorage.setItem(STORAGE_KEYS.INVOICES, JSON.stringify([...invoices, invoice]));
-  }
-
-   /**
-   * Update an existing invoice
-   * @param invoice 
-   */
-  updateInvoice(invoice: Invoice): void {
-    const invoices = this.getInvoices().map(i => i.id === invoice.id ? invoice : i);
-    localStorage.setItem(STORAGE_KEYS.INVOICES, JSON.stringify(invoices));
-  }
-
-  /**
-   * Delete a invoice
-   * @param id 
-   */
-  deleteInvoice(id: string): void {
-    const invoices = this.getInvoices().filter(i => i.id !== id);
-    localStorage.setItem(STORAGE_KEYS.INVOICES, JSON.stringify(invoices));
-  }
-}
 
 import { seedSampleData } from "@/utils/sampleDataSeeder";
 
 export const storage = {
+  // Inventory Items
   getInventoryItems: () => {
     const items = localStorage.getItem(STORAGE_KEYS.INVENTORY);
     return items ? JSON.parse(items) : [];
+  },
+  getItems: () => {
+    // Alias for getInventoryItems
+    return storage.getInventoryItems();
   },
   addInventoryItem: (item: InventoryItem) => {
     const items = storage.getInventoryItems();
@@ -280,6 +38,8 @@ export const storage = {
     const items = storage.getInventoryItems().filter(i => i.id !== id);
     localStorage.setItem(STORAGE_KEYS.INVENTORY, JSON.stringify(items));
   },
+
+  // Customers
   getCustomers: () => {
     const customers = localStorage.getItem(STORAGE_KEYS.CUSTOMERS);
     return customers ? JSON.parse(customers) : [];
@@ -296,6 +56,8 @@ export const storage = {
     const customers = storage.getCustomers().filter(c => c.id !== id);
     localStorage.setItem(STORAGE_KEYS.CUSTOMERS, JSON.stringify(customers));
   },
+
+  // Vendors
   getVendors: () => {
     const vendors = localStorage.getItem(STORAGE_KEYS.VENDORS);
     return vendors ? JSON.parse(vendors) : [];
@@ -312,6 +74,8 @@ export const storage = {
     const vendors = storage.getVendors().filter(v => v.id !== id);
     localStorage.setItem(STORAGE_KEYS.VENDORS, JSON.stringify(vendors));
   },
+
+  // Sales
   getSales: () => {
     const sales = localStorage.getItem(STORAGE_KEYS.SALES);
     return sales ? JSON.parse(sales) : [];
@@ -328,6 +92,8 @@ export const storage = {
     const sales = storage.getSales().filter(s => s.id !== id);
     localStorage.setItem(STORAGE_KEYS.SALES, JSON.stringify(sales));
   },
+
+  // Quotations
   getQuotations: () => {
     const quotations = localStorage.getItem(STORAGE_KEYS.QUOTATIONS);
     return quotations ? JSON.parse(quotations) : [];
@@ -344,7 +110,9 @@ export const storage = {
     const quotations = storage.getQuotations().filter(q => q.id !== id);
     localStorage.setItem(STORAGE_KEYS.QUOTATIONS, JSON.stringify(quotations));
   },
-   getInvoices: () => {
+
+  // Invoices
+  getInvoices: () => {
     const invoices = localStorage.getItem(STORAGE_KEYS.INVOICES);
     return invoices ? JSON.parse(invoices) : [];
   },
@@ -360,6 +128,161 @@ export const storage = {
     const invoices = storage.getInvoices().filter(i => i.id !== id);
     localStorage.setItem(STORAGE_KEYS.INVOICES, JSON.stringify(invoices));
   },
+
+  // Users
+  getUsers: () => {
+    const users = localStorage.getItem(STORAGE_KEYS.USERS);
+    return users ? JSON.parse(users) : [];
+  },
+  addUser: (user: User) => {
+    const users = storage.getUsers();
+    localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify([...users, user]));
+  },
+  updateUser: (user: User) => {
+    const users = storage.getUsers().map(u => u.id === user.id ? user : u);
+    localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
+  },
+  deleteUser: (id: string) => {
+    const users = storage.getUsers().filter(u => u.id !== id);
+    localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
+  },
+
+  // Categories
+  getCategories: () => {
+    const categories = localStorage.getItem(STORAGE_KEYS.CATEGORIES);
+    return categories ? JSON.parse(categories) : [];
+  },
+  addCategory: (category: Category) => {
+    const categories = storage.getCategories();
+    localStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify([...categories, category]));
+  },
+  deleteCategory: (id: string) => {
+    const categories = storage.getCategories().filter(c => c.id !== id);
+    localStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify(categories));
+  },
+
+  // Suppliers
+  getSuppliers: () => {
+    const suppliers = localStorage.getItem(STORAGE_KEYS.SUPPLIERS);
+    return suppliers ? JSON.parse(suppliers) : [];
+  },
+  addSupplier: (supplier: Supplier) => {
+    const suppliers = storage.getSuppliers();
+    localStorage.setItem(STORAGE_KEYS.SUPPLIERS, JSON.stringify([...suppliers, supplier]));
+  },
+  updateSupplier: (supplier: Supplier) => {
+    const suppliers = storage.getSuppliers().map(s => s.id === supplier.id ? supplier : s);
+    localStorage.setItem(STORAGE_KEYS.SUPPLIERS, JSON.stringify(suppliers));
+  },
+  deleteSupplier: (id: string) => {
+    const suppliers = storage.getSuppliers().filter(s => s.id !== id);
+    localStorage.setItem(STORAGE_KEYS.SUPPLIERS, JSON.stringify(suppliers));
+  },
+
+  // Audit Logs
+  getAuditLogs: () => {
+    const auditLogs = localStorage.getItem(STORAGE_KEYS.AUDIT_LOGS);
+    return auditLogs ? JSON.parse(auditLogs) : [];
+  },
+  addAuditLog: (log: AuditLog) => {
+    const logs = storage.getAuditLogs();
+    localStorage.setItem(STORAGE_KEYS.AUDIT_LOGS, JSON.stringify([...logs, log]));
+  },
+
+  // Data Management
+  exportData: () => {
+    return {
+      inventory: storage.getInventoryItems(),
+      customers: storage.getCustomers(),
+      vendors: storage.getVendors(),
+      sales: storage.getSales(),
+      quotations: storage.getQuotations(),
+      invoices: storage.getInvoices(),
+      users: storage.getUsers(),
+      categories: storage.getCategories(),
+      suppliers: storage.getSuppliers(),
+      auditLogs: storage.getAuditLogs(),
+    };
+  },
+  importData: (data: any) => {
+    if (data.inventory) localStorage.setItem(STORAGE_KEYS.INVENTORY, JSON.stringify(data.inventory));
+    if (data.customers) localStorage.setItem(STORAGE_KEYS.CUSTOMERS, JSON.stringify(data.customers));
+    if (data.vendors) localStorage.setItem(STORAGE_KEYS.VENDORS, JSON.stringify(data.vendors));
+    if (data.sales) localStorage.setItem(STORAGE_KEYS.SALES, JSON.stringify(data.sales));
+    if (data.quotations) localStorage.setItem(STORAGE_KEYS.QUOTATIONS, JSON.stringify(data.quotations));
+    if (data.invoices) localStorage.setItem(STORAGE_KEYS.INVOICES, JSON.stringify(data.invoices));
+    if (data.users) localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(data.users));
+    if (data.categories) localStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify(data.categories));
+    if (data.suppliers) localStorage.setItem(STORAGE_KEYS.SUPPLIERS, JSON.stringify(data.suppliers));
+    if (data.auditLogs) localStorage.setItem(STORAGE_KEYS.AUDIT_LOGS, JSON.stringify(data.auditLogs));
+  },
+  clearData: () => {
+    Object.values(STORAGE_KEYS).forEach(key => localStorage.removeItem(key));
+  },
+
+  // CSV Export/Import
+  exportToCSV: (items: InventoryItem[]) => {
+    const headers = ['Name', 'SKU', 'Category', 'Quantity', 'Cost', 'Price', 'Supplier'];
+    const csvContent = [
+      headers.join(','),
+      ...items.map(item => [
+        item.name,
+        item.sku,
+        item.category,
+        item.quantity,
+        item.cost || 0,
+        item.price || 0,
+        item.supplier || ''
+      ].join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'inventory.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+  },
+  importFromCSV: (file: File) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const csv = e.target?.result as string;
+          const lines = csv.split('\n');
+          const headers = lines[0].split(',');
+          
+          const items: InventoryItem[] = lines.slice(1).map((line, index) => {
+            const values = line.split(',');
+            return {
+              id: crypto.randomUUID(),
+              name: values[0] || '',
+              sku: values[1] || '',
+              category: values[2] || '',
+              quantity: parseInt(values[3]) || 0,
+              cost: parseFloat(values[4]) || 0,
+              price: parseFloat(values[5]) || 0,
+              supplier: values[6] || '',
+              minQuantity: 5,
+              description: '',
+              barcode: '',
+              location: '',
+              lastUpdated: new Date().toISOString()
+            };
+          }).filter(item => item.name); // Filter out empty rows
+
+          resolve(items);
+        } catch (error) {
+          reject(error);
+        }
+      };
+      reader.onerror = reject;
+      reader.readAsText(file);
+    });
+  },
+
+  // Initialization and Activation
   initializeData: () => {
     // Initialize default admin user if no users exist
     const users = JSON.parse(localStorage.getItem(STORAGE_KEYS.USERS) || '[]');
@@ -367,7 +290,7 @@ export const storage = {
       const defaultAdmin = {
         id: crypto.randomUUID(),
         username: 'admin',
-        password: 'admin123', // In production, this should be hashed
+        password: 'admin123',
         role: 'admin' as const,
         isActive: true,
         createdAt: new Date().toISOString(),
