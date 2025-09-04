@@ -5,8 +5,6 @@ import { Select } from "@/components/ui/select";
 import { InvoiceItem, InventoryItem } from "@/types/inventory";
 import { Trash } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { BarcodeScanner } from "./BarcodeScanner";
-import { toast } from "sonner";
 
 interface InvoiceItemRowProps {
   item: InvoiceItem;
@@ -26,33 +24,12 @@ export function InvoiceItemRow({
   
   const currency = localStorage.getItem('currency') || 'SAR';
 
-  const handleBarcodeScanned = (barcode: string) => {
-    const product = products.find(p => p.barcode === barcode);
-    if (product) {
-      onItemChange("productId", product.id);
-      toast.success(
-        isRTL 
-          ? `تم العثور على المنتج: ${product.name}` 
-          : `Product found: ${product.name}`
-      );
-    } else {
-      toast.error(
-        isRTL 
-          ? 'لم يتم العثور على منتج بهذا الباركود' 
-          : 'No product found with this barcode'
-      );
-    }
-  };
-
   const VAT_RATE = 0.15;
-  const priceBeforeVat = item.unitPrice;
-  const priceAfterVat = item.unitPrice * (1 + VAT_RATE);
+  const vatPerUnit = item.unitPrice * VAT_RATE;
+  const totalVatValue = vatPerUnit * item.quantity;
 
   return (
-    <div className={`grid grid-cols-16 gap-2 mb-2 items-center ${isRTL ? "dir-rtl" : ""}`}>
-      <div className="col-span-1">
-        <BarcodeScanner onScan={handleBarcodeScanned} />
-      </div>
+    <div className={`grid grid-cols-14 gap-2 mb-2 items-center ${isRTL ? "dir-rtl" : ""}`}>
       <div className="col-span-3">
         <select
           value={item.productId}
@@ -101,18 +78,18 @@ export function InvoiceItemRow({
       <div className="col-span-2 text-center">
         <span className="text-sm">
           {isRTL 
-            ? `${priceBeforeVat.toFixed(2)} ${currency}` 
-            : `${currency} ${priceBeforeVat.toFixed(2)}`}
+            ? `${vatPerUnit.toFixed(2)} ${currency}` 
+            : `${currency} ${vatPerUnit.toFixed(2)}`}
         </span>
       </div>
       <div className="col-span-2 text-center">
         <span className="text-sm">
           {isRTL 
-            ? `${priceAfterVat.toFixed(2)} ${currency}` 
-            : `${currency} ${priceAfterVat.toFixed(2)}`}
+            ? `${totalVatValue.toFixed(2)} ${currency}` 
+            : `${currency} ${totalVatValue.toFixed(2)}`}
         </span>
       </div>
-      <div className="col-span-2 text-right">
+      <div className="col-span-1 text-center">
         <span>
           {isRTL 
             ? `${item.subtotal.toFixed(2)} ${currency}` 

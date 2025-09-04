@@ -29,17 +29,6 @@ export function InvoiceHeader({
 }: InvoiceHeaderProps) {
   return (
     <View style={[styles.header, isRTL && styles.rtlRow]}>
-      {/* Company Info */}
-      <View style={[styles.headerInfo, isRTL && styles.rtlSection]}>
-        {companyName && (
-          <Text style={styles.companyName}>{companyName}</Text>
-        )}
-        <Text style={styles.companyInfo}>{labels.vatNumber}: {vatNumber}</Text>
-        <Text style={styles.companyInfo}>{labels.crNumber}: {crNumber}</Text>
-        <Text style={styles.companyInfo}>{labels.phone}: {companyPhone}</Text>
-        <Text style={styles.companyInfo}>{labels.email}: {companyEmail}</Text>
-      </View>
-
       {/* Logo */}
       <View style={styles.headerLogo}>
         {companyLogo && (
@@ -51,13 +40,15 @@ export function InvoiceHeader({
         )}
       </View>
 
-      {/* Address */}
-      <View style={styles.headerCenter}>
-        {companyAddress && (
-          <View style={styles.addressContainer}>
-            <Text style={styles.addressText}>{companyAddress}</Text>
-          </View>
+      {/* Company Info */}
+      <View style={[styles.headerInfo, isRTL && styles.rtlSection]}>
+        {companyName && (
+          <Text style={styles.companyName}>{companyName}</Text>
         )}
+        <Text style={styles.companyInfo}>{labels.vatNumber}: {vatNumber}</Text>
+        <Text style={styles.companyInfo}>{labels.crNumber}: {crNumber}</Text>
+        <Text style={styles.companyInfo}>{labels.phone}: {companyPhone}</Text>
+        <Text style={styles.companyInfo}>{labels.email}: {companyEmail}</Text>
       </View>
 
       {/* QR Code */}

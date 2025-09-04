@@ -38,15 +38,15 @@ export function InvoiceItemsTable({
           <Text style={styles.tableCellWide}>{labels.item}</Text>
           <Text style={styles.tableCell}>{labels.quantity}</Text>
           <Text style={styles.tableCell}>{labels.unitPrice}</Text>
-          <Text style={styles.tableCell}>{labels.priceBeforeVat}</Text>
-          <Text style={styles.tableCell}>{labels.priceAfterVat}</Text>
+          <Text style={styles.tableCell}>{isRTL ? 'قيمة ضريبة القيمة المضافة للوحدة (15%)' : '15% VAT per Unit'}</Text>
+          <Text style={styles.tableCell}>{isRTL ? 'إجمالي قيمة الضريبة' : 'Total VAT Value'}</Text>
           <Text style={styles.tableCell}>{labels.subtotal}</Text>
         </View>
         {items.map((item, index) => {
           const product = inventoryItems.find(p => p.id === item.productId);
           const VAT_RATE = 0.15;
-          const priceBeforeVat = item.unitPrice;
-          const priceAfterVat = item.unitPrice * (1 + VAT_RATE);
+          const vatPerUnit = item.unitPrice * VAT_RATE;
+          const totalVatValue = vatPerUnit * item.quantity;
           
           return (
             <View key={index} style={isRTL ? styles.tableRowRTL : styles.tableRow}>
@@ -58,10 +58,10 @@ export function InvoiceItemsTable({
                 {isRTL ? `${formatNumber(item.unitPrice)} ${currency}` : `${currency} ${formatNumber(item.unitPrice)}`}
               </Text>
               <Text style={styles.tableCell}>
-                {isRTL ? `${formatNumber(priceBeforeVat)} ${currency}` : `${currency} ${formatNumber(priceBeforeVat)}`}
+                {isRTL ? `${formatNumber(vatPerUnit)} ${currency}` : `${currency} ${formatNumber(vatPerUnit)}`}
               </Text>
               <Text style={styles.tableCell}>
-                {isRTL ? `${formatNumber(priceAfterVat)} ${currency}` : `${currency} ${formatNumber(priceAfterVat)}`}
+                {isRTL ? `${formatNumber(totalVatValue)} ${currency}` : `${currency} ${formatNumber(totalVatValue)}`}
               </Text>
               <Text style={styles.tableCell}>
                 {isRTL ? `${formatNumber(item.subtotal)} ${currency}` : `${currency} ${formatNumber(item.subtotal)}`}
