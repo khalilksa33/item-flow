@@ -44,8 +44,15 @@ export function InvoiceItemRow({
     }
   };
 
+  const VAT_RATE = 0.15;
+  const priceBeforeVat = item.unitPrice;
+  const priceAfterVat = item.unitPrice * (1 + VAT_RATE);
+
   return (
-    <div className={`grid grid-cols-12 gap-2 mb-2 items-center ${isRTL ? "dir-rtl" : ""}`}>
+    <div className={`grid grid-cols-16 gap-2 mb-2 items-center ${isRTL ? "dir-rtl" : ""}`}>
+      <div className="col-span-1">
+        <BarcodeScanner onScan={handleBarcodeScanned} />
+      </div>
       <div className="col-span-3">
         <select
           value={item.productId}
@@ -60,9 +67,6 @@ export function InvoiceItemRow({
             </option>
           ))}
         </select>
-      </div>
-      <div className="col-span-1">
-        <BarcodeScanner onScan={handleBarcodeScanned} />
       </div>
       <div className="col-span-2">
         <Input
@@ -93,6 +97,20 @@ export function InvoiceItemRow({
           placeholder={t("invoices:unitPrice", "Price")}
           className={isRTL ? "text-right" : ""}
         />
+      </div>
+      <div className="col-span-2 text-center">
+        <span className="text-sm">
+          {isRTL 
+            ? `${priceBeforeVat.toFixed(2)} ${currency}` 
+            : `${currency} ${priceBeforeVat.toFixed(2)}`}
+        </span>
+      </div>
+      <div className="col-span-2 text-center">
+        <span className="text-sm">
+          {isRTL 
+            ? `${priceAfterVat.toFixed(2)} ${currency}` 
+            : `${currency} ${priceAfterVat.toFixed(2)}`}
+        </span>
       </div>
       <div className="col-span-2 text-right">
         <span>

@@ -39,9 +39,17 @@ export const styles = StyleSheet.create({
     textAlign: 'right',
     alignItems: 'flex-end'
   },
+  headerLogo: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 20
+  },
   headerCenter: {
     flex: 1,
-    alignItems: 'center'
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 20
   },
   headerQR: {
     flex: 1,

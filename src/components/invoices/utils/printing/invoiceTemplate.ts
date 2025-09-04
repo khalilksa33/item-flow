@@ -164,22 +164,30 @@ export const generateInvoiceHTML = (
           width: 5%;
         }
         .table td:nth-child(2), .table th:nth-child(2) {
-          width: 15%;
+          width: 12%;
         }
         .table td:nth-child(3), .table th:nth-child(3) {
-          width: 30%;
+          width: 25%;
         }
         .table td:nth-child(4), .table th:nth-child(4) {
           text-align: center;
-          width: 12%;
+          width: 8%;
         }
         .table td:nth-child(5), .table th:nth-child(5) {
           text-align: center;
-          width: 18%;
+          width: 12%;
         }
         .table td:nth-child(6), .table th:nth-child(6) {
           text-align: center;
-          width: 20%;
+          width: 12%;
+        }
+        .table td:nth-child(7), .table th:nth-child(7) {
+          text-align: center;
+          width: 12%;
+        }
+        .table td:nth-child(8), .table th:nth-child(8) {
+          text-align: center;
+          width: 14%;
         }
         .totals {
           margin-top: 20px;
@@ -277,9 +285,10 @@ export const generateInvoiceHTML = (
           
           <div class="logo-container">
             ${companyInfo.companyLogo ? `<img src="${companyInfo.companyLogo}" class="logo" alt="Company Logo" />` : ''}
-            <div class="address-container">
-              ${companyInfo.companyAddress ? `<p>${companyInfo.companyAddress}</p>` : ''}
-            </div>
+          </div>
+          
+          <div class="address-container">
+            ${companyInfo.companyAddress ? `<p>${companyInfo.companyAddress}</p>` : ''}
           </div>
           
           <div class="qr-container">
@@ -311,12 +320,18 @@ export const generateInvoiceHTML = (
               <th>${labels.item}</th>
               <th>${labels.quantity}</th>
               <th>${labels.unitPrice}</th>
+              <th>${isRTL ? 'السعر قبل الضريبة' : 'Price Before VAT'}</th>
+              <th>${isRTL ? 'السعر بعد الضريبة' : 'Price After VAT'}</th>
               <th>${labels.subtotal}</th>
             </tr>
           </thead>
           <tbody>
             ${invoice.items.map((item, index) => {
               const product = storage.getItems().find(p => p.id === item.productId);
+              const VAT_RATE = 0.15;
+              const priceBeforeVat = item.unitPrice;
+              const priceAfterVat = item.unitPrice * (1 + VAT_RATE);
+              
               return `
               <tr>
                 <td>${index + 1}</td>
@@ -324,6 +339,8 @@ export const generateInvoiceHTML = (
                 <td>${product?.name || item.productId}</td>
                 <td>${item.quantity}</td>
                 <td>${formatCurrencyValue(item.unitPrice)}</td>
+                <td>${formatCurrencyValue(priceBeforeVat)}</td>
+                <td>${formatCurrencyValue(priceAfterVat)}</td>
                 <td>${formatCurrencyValue(item.subtotal)}</td>
               </tr>
             `}).join('')}

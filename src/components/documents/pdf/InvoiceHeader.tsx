@@ -40,8 +40,8 @@ export function InvoiceHeader({
         <Text style={styles.companyInfo}>{labels.email}: {companyEmail}</Text>
       </View>
 
-      {/* Logo and Address */}
-      <View style={styles.headerCenter}>
+      {/* Logo */}
+      <View style={styles.headerLogo}>
         {companyLogo && (
           <Image 
             src={companyLogo} 
@@ -49,6 +49,10 @@ export function InvoiceHeader({
             cache={false}
           />
         )}
+      </View>
+
+      {/* Address */}
+      <View style={styles.headerCenter}>
         {companyAddress && (
           <View style={styles.addressContainer}>
             <Text style={styles.addressText}>{companyAddress}</Text>
