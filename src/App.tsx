@@ -7,7 +7,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { UserProvider } from "@/contexts/UserContext";
 import { ProtectedRoute } from "@/components/common/ProtectedRoute";
-import i18n from "./i18n";
 
 // Import all pages
 import Index from "./pages/Index";
@@ -27,17 +26,21 @@ const queryClient = new QueryClient();
 const App: React.FC = () => {
   // Initialize app's language
   React.useEffect(() => {
-    const storedLanguage = localStorage.getItem('preferredLanguage');
-    if (storedLanguage) {
-      i18n.changeLanguage(storedLanguage);
-      document.documentElement.dir = storedLanguage === 'ar' ? 'rtl' : 'ltr';
-      document.documentElement.lang = storedLanguage;
-      if (storedLanguage === 'ar') {
-        document.body.classList.add('rtl');
-      } else {
-        document.body.classList.remove('rtl');
+    // Dynamically import i18n to avoid circular dependency
+    import('./i18n').then((i18nModule) => {
+      const i18n = i18nModule.default;
+      const storedLanguage = localStorage.getItem('preferredLanguage');
+      if (storedLanguage) {
+        i18n.changeLanguage(storedLanguage);
+        document.documentElement.dir = storedLanguage === 'ar' ? 'rtl' : 'ltr';
+        document.documentElement.lang = storedLanguage;
+        if (storedLanguage === 'ar') {
+          document.body.classList.add('rtl');
+        } else {
+          document.body.classList.remove('rtl');
+        }
       }
-    }
+    });
   }, []);
 
   return (
