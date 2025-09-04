@@ -7,6 +7,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { UserProvider } from "@/contexts/UserContext";
 import { ProtectedRoute } from "@/components/common/ProtectedRoute";
+import i18n from "./i18n";
 
 // Import all pages
 import Index from "./pages/Index";
@@ -24,23 +25,39 @@ import Login from "./pages/Login";
 const queryClient = new QueryClient();
 
 const App: React.FC = () => {
-  // Initialize app's language
+  // Initialize app's language with proper error handling
   React.useEffect(() => {
-    // Dynamically import i18n to avoid circular dependency
-    import('./i18n').then((i18nModule) => {
-      const i18n = i18nModule.default;
-      const storedLanguage = localStorage.getItem('preferredLanguage');
-      if (storedLanguage) {
-        i18n.changeLanguage(storedLanguage);
-        document.documentElement.dir = storedLanguage === 'ar' ? 'rtl' : 'ltr';
-        document.documentElement.lang = storedLanguage;
-        if (storedLanguage === 'ar') {
-          document.body.classList.add('rtl');
+    const initializeLanguage = async () => {
+      try {
+        const storedLanguage = localStorage.getItem('preferredLanguage');
+        console.log('Stored language:', storedLanguage);
+        
+        if (storedLanguage && i18n && typeof i18n.changeLanguage === 'function') {
+          // Wait a bit for i18n to be fully ready
+          setTimeout(() => {
+            try {
+              i18n.changeLanguage(storedLanguage);
+              document.documentElement.dir = storedLanguage === 'ar' ? 'rtl' : 'ltr';
+              document.documentElement.lang = storedLanguage;
+              if (storedLanguage === 'ar') {
+                document.body.classList.add('rtl');
+              } else {
+                document.body.classList.remove('rtl');
+              }
+              console.log('Language successfully changed to:', storedLanguage);
+            } catch (error) {
+              console.error('Error changing language:', error);
+            }
+          }, 100);
         } else {
-          document.body.classList.remove('rtl');
+          console.log('i18n not ready or no stored language');
         }
+      } catch (error) {
+        console.error('Error in language initialization:', error);
       }
-    });
+    };
+    
+    initializeLanguage();
   }, []);
 
   return (

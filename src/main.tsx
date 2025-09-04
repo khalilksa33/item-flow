@@ -1,13 +1,13 @@
 
-import * as React from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import './index.css';
 
-// Force document direction based on stored language before render
+// Set initial language and document direction
 const storedLanguage = localStorage.getItem('preferredLanguage');
 if (storedLanguage) {
-  console.log(`Initializing with stored language: ${storedLanguage}`);
+  console.log(`Main: Initializing with stored language: ${storedLanguage}`);
   document.documentElement.dir = storedLanguage === 'ar' ? 'rtl' : 'ltr';
   document.documentElement.lang = storedLanguage;
   if (storedLanguage === 'ar') {
@@ -17,16 +17,11 @@ if (storedLanguage) {
   }
 }
 
-// Initialize i18n after React is ready
-import('./i18n').then(() => {
-  console.log('i18n loaded successfully');
-});
-
-// Create custom event to notify components of language changes
+// Handle language changes from localStorage
 window.addEventListener('storage', (event) => {
   if (event.key === 'preferredLanguage') {
     const newLang = event.newValue || 'en';
-    console.log(`Language changed in storage: ${newLang}`);
+    console.log(`Main: Language changed in storage: ${newLang}`);
     
     document.documentElement.dir = newLang === 'ar' ? 'rtl' : 'ltr';
     document.documentElement.lang = newLang;
@@ -39,8 +34,12 @@ window.addEventListener('storage', (event) => {
 });
 
 const rootElement = document.getElementById('root') as HTMLElement;
-ReactDOM.createRoot(rootElement).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+if (rootElement) {
+  ReactDOM.createRoot(rootElement).render(
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
+  );
+} else {
+  console.error('Failed to find root element');
+}

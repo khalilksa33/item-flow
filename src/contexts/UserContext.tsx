@@ -1,6 +1,5 @@
 
-import * as React from 'react';
-import { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User } from '@/types/inventory';
 import { storage } from '@/lib/storage';
 import { toast } from 'sonner';
@@ -17,11 +16,11 @@ interface UserContextType {
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
-  const [currentUser, setCurrentUser] = React.useState<User | null>(null);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const { t } = useTranslation();
 
   // Load user session on mount
-  React.useEffect(() => {
+  useEffect(() => {
     // Check localStorage directly for user info
     const userJson = localStorage.getItem('inventory_current_user');
     if (userJson) {

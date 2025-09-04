@@ -80,40 +80,42 @@ const resources = {
 // Get saved language preference
 const savedLanguage = localStorage.getItem('preferredLanguage');
 
-i18n
-  // detect user language
-  .use(LanguageDetector)
-  // pass the i18n instance to react-i18next.
-  .use(initReactI18next)
-  // init i18next
-  .init({
-    resources,
-    fallbackLng: 'en',
-    lng: savedLanguage || undefined, // Use saved language if available
-    debug: true, // Enable debug to see what's happening
-    interpolation: {
-      escapeValue: false, // not needed for react as it escapes by default
-    },
-    react: {
-      useSuspense: false,
-    },
-    detection: {
-      order: ['localStorage', 'navigator'],
-      lookupLocalStorage: 'preferredLanguage',
-      caches: ['localStorage']
-    }
-  });
+// Initialize i18n asynchronously to avoid blocking
+const initializeI18n = async () => {
+  try {
+    await i18n
+      // detect user language
+      .use(LanguageDetector)
+      // pass the i18n instance to react-i18next.
+      .use(initReactI18next)
+      // init i18next
+      .init({
+        resources,
+        fallbackLng: 'en',
+        lng: savedLanguage || undefined, // Use saved language if available
+        debug: false, // Disable debug to reduce console noise
+        interpolation: {
+          escapeValue: false, // not needed for react as it escapes by default
+        },
+        react: {
+          useSuspense: false,
+        },
+        detection: {
+          order: ['localStorage', 'navigator'],
+          lookupLocalStorage: 'preferredLanguage',
+          caches: ['localStorage']
+        }
+      });
 
-// Update document direction based on language
-document.documentElement.dir = i18n.language === 'ar' ? 'rtl' : 'ltr';
-document.documentElement.lang = i18n.language;
+    console.log('i18n initialized successfully with language:', i18n.language);
+    return i18n;
+  } catch (error) {
+    console.error('Failed to initialize i18n:', error);
+    return i18n;
+  }
+};
 
-if (i18n.language === 'ar') {
-  document.body.classList.add('rtl');
-} else {
-  document.body.classList.remove('rtl');
-}
-
-console.log('i18n initialized with language:', i18n.language);
+// Initialize immediately but don't block
+initializeI18n();
 
 export default i18n;
