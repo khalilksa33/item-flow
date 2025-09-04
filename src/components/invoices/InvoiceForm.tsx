@@ -148,15 +148,14 @@ export function InvoiceForm({
         </div>
         
         {/* Column Headers */}
-        <div className={`grid grid-cols-14 gap-2 text-sm font-medium text-gray-700 pb-2 border-b mb-2 ${isRTL ? "dir-rtl" : ""}`}>
+        <div className={`grid grid-cols-12 gap-2 text-sm font-medium text-gray-700 pb-2 border-b mb-2 ${isRTL ? "dir-rtl" : ""}`}>
           <div className="col-span-3">{t("invoices:selectProduct")}</div>
           <div className="col-span-2">{t("invoices:itemCode")}</div>
           <div className="col-span-1">{t("invoices:quantity")}</div>
-          <div className="col-span-2">{t("invoices:unitPrice")}</div>
+          <div className="col-span-1">{t("invoices:unitPrice")}</div>
           <div className="col-span-2">{isRTL ? 'قيمة ضريبة القيمة المضافة للوحدة (15%)' : '15% VAT per Unit'}</div>
           <div className="col-span-2">{isRTL ? 'إجمالي قيمة الضريبة' : 'Total VAT Value'}</div>
           <div className="col-span-1">{t("invoices:subtotal")}</div>
-          <div className="col-span-1"></div>
         </div>
         
         {invoiceItems.map((item, index) => (

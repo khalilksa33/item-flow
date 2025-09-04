@@ -29,15 +29,12 @@ export function InvoiceHeader({
 }: InvoiceHeaderProps) {
   return (
     <View style={[styles.header, isRTL && styles.rtlRow]}>
-      {/* Logo */}
-      <View style={styles.headerLogo}>
-        {companyLogo && (
-          <Image 
-            src={companyLogo} 
-            style={styles.logo}
-            cache={false}
-          />
-        )}
+      {/* QR Code - moved to left corner */}
+      <View style={styles.headerQR}>
+        <Image src={qrCodeUrl} style={styles.qrCode} />
+        <Text style={styles.qrLabel}>
+          {isRTL ? 'رمز الاستجابة السريعة' : 'QR Code'}
+        </Text>
       </View>
 
       {/* Company Info */}
@@ -51,12 +48,15 @@ export function InvoiceHeader({
         <Text style={styles.companyInfo}>{labels.email}: {companyEmail}</Text>
       </View>
 
-      {/* QR Code */}
-      <View style={styles.headerQR}>
-        <Image src={qrCodeUrl} style={styles.qrCode} />
-        <Text style={styles.qrLabel}>
-          {isRTL ? 'رمز الاستجابة السريعة' : 'QR Code'}
-        </Text>
+      {/* Logo - moved to right corner */}
+      <View style={styles.headerLogo}>
+        {companyLogo && (
+          <Image 
+            src={companyLogo} 
+            style={styles.logo}
+            cache={false}
+          />
+        )}
       </View>
     </View>
   );

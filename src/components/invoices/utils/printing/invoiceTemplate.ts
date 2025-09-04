@@ -275,8 +275,9 @@ export const generateInvoiceHTML = (
         ${invoice.status === 'paid' ? `<div class="watermark">${labels.paid}</div>` : ''}
         
         <div class="header">
-          <div class="logo-container">
-            ${companyInfo.companyLogo ? `<img src="${companyInfo.companyLogo}" class="logo" alt="Company Logo" />` : ''}
+          <div class="qr-container">
+            <img src="${qrCodeUrl}" class="qr-code" alt="QR Code" />
+            <div class="qr-label">${isRTL ? 'رمز الاستجابة السريعة' : 'QR Code'}</div>
           </div>
           
           <div class="company-info">
@@ -287,9 +288,8 @@ export const generateInvoiceHTML = (
             ${companyInfo.companyEmail ? `<p><strong>${labels.email}:</strong> ${companyInfo.companyEmail}</p>` : ''}
           </div>
           
-          <div class="qr-container">
-            <img src="${qrCodeUrl}" class="qr-code" alt="QR Code" />
-            <div class="qr-label">${isRTL ? 'رمز الاستجابة السريعة' : 'QR Code'}</div>
+          <div class="logo-container">
+            ${companyInfo.companyLogo ? `<img src="${companyInfo.companyLogo}" class="logo" alt="Company Logo" />` : ''}
           </div>
         </div>
         

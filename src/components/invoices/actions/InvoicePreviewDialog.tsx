@@ -96,21 +96,28 @@ export const InvoicePreviewDialog = ({
           </DialogDescription>
         </DialogHeader>
         <div className="flex-1 overflow-hidden">
-          <PDFViewer width="100%" height="100%" className="border rounded">
-            {previewType === "invoice" ? (
-              <InvoicePDF 
-                key={`pdf-viewer-invoice-${forceRender}-${isRTL ? 'rtl' : 'ltr'}`}
-                invoice={invoice} 
-                customerName={customerName} 
-              />
-            ) : (
-              <ReceiptPDF 
-                key={`pdf-viewer-receipt-${forceRender}-${isRTL ? 'rtl' : 'ltr'}`}
-                invoice={invoice} 
-                customerName={customerName} 
-              />
-            )}
-          </PDFViewer>
+          <div className="w-full h-full">
+            <PDFViewer 
+              width="100%" 
+              height="100%" 
+              className="border rounded"
+              showToolbar={true}
+            >
+              {previewType === "invoice" ? (
+                <InvoicePDF 
+                  key={`pdf-viewer-invoice-${forceRender}-${isRTL ? 'rtl' : 'ltr'}`}
+                  invoice={invoice} 
+                  customerName={customerName} 
+                />
+              ) : (
+                <ReceiptPDF 
+                  key={`pdf-viewer-receipt-${forceRender}-${isRTL ? 'rtl' : 'ltr'}`}
+                  invoice={invoice} 
+                  customerName={customerName} 
+                />
+              )}
+            </PDFViewer>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
