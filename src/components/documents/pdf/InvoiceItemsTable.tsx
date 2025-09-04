@@ -34,24 +34,29 @@ export function InvoiceItemsTable({
       <View style={styles.table}>
         <View style={isRTL ? styles.tableHeaderRTL : styles.tableHeader}>
           <Text style={styles.tableCellNarrow}>#</Text>
+          <Text style={styles.tableCell}>{isRTL ? 'كود الصنف' : 'Item Code'}</Text>
           <Text style={styles.tableCellWide}>{labels.item}</Text>
           <Text style={styles.tableCell}>{labels.quantity}</Text>
           <Text style={styles.tableCell}>{labels.unitPrice}</Text>
           <Text style={styles.tableCell}>{labels.subtotal}</Text>
         </View>
-        {items.map((item, index) => (
-          <View key={index} style={isRTL ? styles.tableRowRTL : styles.tableRow}>
-            <Text style={styles.tableCellNarrow}>{index + 1}</Text>
-            <Text style={styles.tableCellWide}>{getProductName(item.productId)}</Text>
-            <Text style={styles.tableCell}>{item.quantity || 0}</Text>
-            <Text style={styles.tableCell}>
-              {isRTL ? `${formatNumber(item.unitPrice)} ${currency}` : `${currency} ${formatNumber(item.unitPrice)}`}
-            </Text>
-            <Text style={styles.tableCell}>
-              {isRTL ? `${formatNumber(item.subtotal)} ${currency}` : `${currency} ${formatNumber(item.subtotal)}`}
-            </Text>
-          </View>
-        ))}
+        {items.map((item, index) => {
+          const product = inventoryItems.find(p => p.id === item.productId);
+          return (
+            <View key={index} style={isRTL ? styles.tableRowRTL : styles.tableRow}>
+              <Text style={styles.tableCellNarrow}>{index + 1}</Text>
+              <Text style={styles.tableCell}>{product?.barcode || item.productId.slice(0, 8)}</Text>
+              <Text style={styles.tableCellWide}>{getProductName(item.productId)}</Text>
+              <Text style={styles.tableCell}>{item.quantity || 0}</Text>
+              <Text style={styles.tableCell}>
+                {isRTL ? `${formatNumber(item.unitPrice)} ${currency}` : `${currency} ${formatNumber(item.unitPrice)}`}
+              </Text>
+              <Text style={styles.tableCell}>
+                {isRTL ? `${formatNumber(item.subtotal)} ${currency}` : `${currency} ${formatNumber(item.subtotal)}`}
+              </Text>
+            </View>
+          );
+        })}
       </View>
     </View>
   );

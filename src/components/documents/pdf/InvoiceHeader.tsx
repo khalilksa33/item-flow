@@ -19,6 +19,7 @@ export function InvoiceHeader({
   companyName,
   vatNumber,
   crNumber,
+  companyAddress,
   companyPhone,
   companyEmail,
   companyLogo,
@@ -39,20 +40,28 @@ export function InvoiceHeader({
         <Text style={styles.companyInfo}>{labels.email}: {companyEmail}</Text>
       </View>
 
-      {/* Logo */}
-      {companyLogo && (
-        <View style={styles.headerCenter}>
+      {/* Logo and Address */}
+      <View style={styles.headerCenter}>
+        {companyLogo && (
           <Image 
             src={companyLogo} 
             style={styles.logo}
             cache={false}
           />
-        </View>
-      )}
+        )}
+        {companyAddress && (
+          <View style={styles.addressContainer}>
+            <Text style={styles.addressText}>{companyAddress}</Text>
+          </View>
+        )}
+      </View>
 
       {/* QR Code */}
       <View style={styles.headerQR}>
         <Image src={qrCodeUrl} style={styles.qrCode} />
+        <Text style={styles.qrLabel}>
+          {isRTL ? 'رمز الاستجابة السريعة' : 'QR Code'}
+        </Text>
       </View>
     </View>
   );

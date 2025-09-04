@@ -9,7 +9,7 @@
   "paymentTerms": "شروط الدفع",
   "billTo": "فاتورة إلى",
   "items": "عناصر الفاتورة",
-  "item": "العنصر",
+  "itemCode": "كود الصنف",
   "quantity": "الكمية",
   "unitPrice": "سعر الوحدة",
   "subtotal": "المجموع الفرعي",

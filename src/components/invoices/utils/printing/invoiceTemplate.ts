@@ -3,6 +3,7 @@ import { Invoice } from "@/types/inventory";
 import { formatCurrency, formatDate, getDocumentDirection } from "./formatUtils";
 import { getCompanyInfo } from "./companyInfo";
 import { getDocumentLabels } from "./labels";
+import { storage } from "@/lib/storage";
 
 /**
  * Generate HTML content for invoice printing
@@ -79,11 +80,27 @@ export const generateInvoiceHTML = (
           justify-content: center;
           align-items: center;
           text-align: center;
+          flex-direction: column;
         }
         .logo {
           max-height: 80px;
           max-width: 150px;
           object-fit: contain;
+          margin-bottom: 10px;
+        }
+        .address-container {
+          flex: 1;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          text-align: center;
+          flex-direction: column;
+          padding: 0 20px;
+        }
+        .address-container p {
+          margin: 2px 0;
+          font-size: 11px;
+          color: #666;
         }
         .qr-container {
           flex: 1;
@@ -147,17 +164,20 @@ export const generateInvoiceHTML = (
           width: 5%;
         }
         .table td:nth-child(2), .table th:nth-child(2) {
-          width: 40%;
+          width: 15%;
         }
         .table td:nth-child(3), .table th:nth-child(3) {
-          text-align: center;
-          width: 15%;
+          width: 30%;
         }
         .table td:nth-child(4), .table th:nth-child(4) {
           text-align: center;
-          width: 20%;
+          width: 12%;
         }
         .table td:nth-child(5), .table th:nth-child(5) {
+          text-align: center;
+          width: 18%;
+        }
+        .table td:nth-child(6), .table th:nth-child(6) {
           text-align: center;
           width: 20%;
         }
@@ -255,10 +275,12 @@ export const generateInvoiceHTML = (
             ${companyInfo.companyEmail ? `<p><strong>${labels.email}:</strong> ${companyInfo.companyEmail}</p>` : ''}
           </div>
           
-          ${companyInfo.companyLogo ? `
           <div class="logo-container">
-            <img src="${companyInfo.companyLogo}" class="logo" alt="Company Logo" />
-          </div>` : '<div class="logo-container"></div>'}
+            ${companyInfo.companyLogo ? `<img src="${companyInfo.companyLogo}" class="logo" alt="Company Logo" />` : ''}
+            <div class="address-container">
+              ${companyInfo.companyAddress ? `<p>${companyInfo.companyAddress}</p>` : ''}
+            </div>
+          </div>
           
           <div class="qr-container">
             <img src="${qrCodeUrl}" class="qr-code" alt="QR Code" />
@@ -285,6 +307,7 @@ export const generateInvoiceHTML = (
           <thead>
             <tr>
               <th>#</th>
+              <th>${isRTL ? 'كود الصنف' : 'Item Code'}</th>
               <th>${labels.item}</th>
               <th>${labels.quantity}</th>
               <th>${labels.unitPrice}</th>
@@ -292,15 +315,18 @@ export const generateInvoiceHTML = (
             </tr>
           </thead>
           <tbody>
-            ${invoice.items.map((item, index) => `
+            ${invoice.items.map((item, index) => {
+              const product = storage.getItems().find(p => p.id === item.productId);
+              return `
               <tr>
                 <td>${index + 1}</td>
-                <td>${item.productId}</td>
+                <td>${product?.barcode || item.productId.slice(0, 8)}</td>
+                <td>${product?.name || item.productId}</td>
                 <td>${item.quantity}</td>
                 <td>${formatCurrencyValue(item.unitPrice)}</td>
                 <td>${formatCurrencyValue(item.subtotal)}</td>
               </tr>
-            `).join('')}
+            `}).join('')}
           </tbody>
         </table>
         

@@ -61,11 +61,28 @@ export const styles = StyleSheet.create({
     width: 100,
     height: 50,
     objectFit: 'contain',
-    objectPosition: 'center'
+    objectPosition: 'center',
+    marginBottom: 8
   },
   qrCode: {
     width: 50,
     height: 50
+  },
+  qrLabel: {
+    fontSize: 6,
+    marginTop: 3,
+    textAlign: 'center',
+    color: '#666666',
+  },
+  addressContainer: {
+    marginTop: 5,
+    paddingHorizontal: 10,
+  },
+  addressText: {
+    fontSize: 8,
+    textAlign: 'center',
+    color: '#666666',
+    lineHeight: 1.2,
   },
   invoiceInfo: {
     marginBottom: 20

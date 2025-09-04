@@ -9,7 +9,7 @@
   "paymentTerms": "Payment Terms",
   "billTo": "Bill To",
   "items": "Invoice Items",
-  "item": "Item",
+  "itemCode": "Item Code",
   "quantity": "Quantity",
   "unitPrice": "Unit Price",
   "subtotal": "Subtotal",
