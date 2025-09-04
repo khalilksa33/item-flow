@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -7,7 +7,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { UserProvider } from "@/contexts/UserContext";
 import { ProtectedRoute } from "@/components/common/ProtectedRoute";
-import { useEffect } from "react";
 import i18n from "./i18n";
 
 // Import all pages
@@ -25,9 +24,9 @@ import Login from "./pages/Login";
 
 const queryClient = new QueryClient();
 
-const App = () => {
+const App: React.FC = () => {
   // Initialize app's language
-  useEffect(() => {
+  React.useEffect(() => {
     const storedLanguage = localStorage.getItem('preferredLanguage');
     if (storedLanguage) {
       i18n.changeLanguage(storedLanguage);
