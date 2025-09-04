@@ -39,5 +39,19 @@
   "saleUpdated": "تم تحديث البيع بنجاح",
   "saleDeleted": "تم حذف البيع بنجاح",
   "confirmDelete": "هل أنت متأكد من رغبتك في حذف هذا البيع؟",
-  "cannotBeUndone": "لا يمكن التراجع عن هذا الإجراء."
+  "cannotBeUndone": "لا يمكن التراجع عن هذا الإجراء.",
+  "customer": "العميل", 
+  "date": "التاريخ",
+  "selectCustomer": "اختر عميلا",
+  "createSuccess": "تم إنشاء البيع بنجاح",
+  "updateSuccess": "تم تحديث البيع بنجاح",
+  "deleteSuccess": "تم حذف البيع بنجاح", 
+  "deleteSale": "حذف البيع",
+  "deleteConfirm": "هل أنت متأكد من رغبتك في حذف هذا البيع؟ لا يمكن التراجع عن هذا الإجراء.",
+  "totalSales": "إجمالي المبيعات",
+  "completedSales": "المبيعات المكتملة",
+  "pendingSales": "المبيعات المعلقة", 
+  "unknownCustomer": "عميل غير معروف",
+  "noSales": "لا توجد سجلات مبيعات",
+  "partial": "جزئي"
 }

@@ -26,8 +26,8 @@ export function InventoryTable({ items, onEdit, onDelete }: InventoryTableProps)
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead className={isRTL ? "text-right" : ""}>{t("inventory:name")}</TableHead>
           <TableHead className={isRTL ? "text-right" : ""}>{isRTL ? 'كود الصنف' : 'Item Code'}</TableHead>
+          <TableHead className={isRTL ? "text-right" : ""}>{t("inventory:name")}</TableHead>
           <TableHead className={isRTL ? "text-right" : ""}>{t("inventory:category")}</TableHead>
           <TableHead className={isRTL ? "text-right" : ""}>{t("common:description")}</TableHead>
           <TableHead className={isRTL ? "text-right" : ""}>{t("inventory:quantity")}</TableHead>
@@ -44,8 +44,8 @@ export function InventoryTable({ items, onEdit, onDelete }: InventoryTableProps)
               key={item.id}
               className={item.quantity <= item.minQuantity ? "bg-red-50" : ""}
             >
-              <TableCell>{item.name}</TableCell>
               <TableCell>{item.barcode || item.id.slice(0, 8)}</TableCell>
+              <TableCell>{item.name}</TableCell>
               <TableCell>{item.category}</TableCell>
               <TableCell>{item.description}</TableCell>
               <TableCell className="flex items-center gap-2">

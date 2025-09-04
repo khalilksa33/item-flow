@@ -54,18 +54,10 @@ export function InvoiceItemsTable({
               <Text style={styles.tableCell}>{product?.barcode || item.productId.slice(0, 8)}</Text>
               <Text style={styles.tableCellWide}>{getProductName(item.productId)}</Text>
               <Text style={styles.tableCell}>{item.quantity || 0}</Text>
-              <Text style={styles.tableCell}>
-                {isRTL ? `${formatNumber(item.unitPrice)} ${currency}` : `${currency} ${formatNumber(item.unitPrice)}`}
-              </Text>
-              <Text style={styles.tableCell}>
-                {isRTL ? `${formatNumber(vatPerUnit)} ${currency}` : `${currency} ${formatNumber(vatPerUnit)}`}
-              </Text>
-              <Text style={styles.tableCell}>
-                {isRTL ? `${formatNumber(totalVatValue)} ${currency}` : `${currency} ${formatNumber(totalVatValue)}`}
-              </Text>
-              <Text style={styles.tableCell}>
-                {isRTL ? `${formatNumber(item.subtotal)} ${currency}` : `${currency} ${formatNumber(item.subtotal)}`}
-              </Text>
+              <Text style={styles.tableCell}>{formatNumber(item.unitPrice)} {currency}</Text>
+              <Text style={styles.tableCell}>{formatNumber(vatPerUnit)} {currency}</Text>
+              <Text style={styles.tableCell}>{formatNumber(totalVatValue)} {currency}</Text>
+              <Text style={styles.tableCell}>{formatNumber(item.subtotal)} {currency}</Text>
             </View>
           );
         })}

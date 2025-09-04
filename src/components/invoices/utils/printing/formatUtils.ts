@@ -11,9 +11,7 @@ export const formatCurrency = (
   currency: string, 
   isRTL: boolean
 ): string => {
-  return isRTL 
-    ? `${amount.toFixed(2)} ${currency}` 
-    : `${currency} ${amount.toFixed(2)}`;
+  return `${amount.toFixed(2)} ${currency}`;
 };
 
 /**

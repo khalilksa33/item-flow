@@ -5,12 +5,26 @@ import { storage } from "@/lib/storage";
 import { Sale, Customer, InventoryItem } from "@/types/inventory";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
-import { Plus } from "lucide-react";
+import { Plus, Trash2, Edit } from "lucide-react";
+import { SaleDialogManager } from "./SalesDialogManager";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export function SalesManager() {
   const [customers] = useState<Customer[]>(storage.getCustomers());
   const [products] = useState<InventoryItem[]>(storage.getItems());
   const [sales, setSales] = useState<Sale[]>([]);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editingSale, setEditingSale] = useState<Sale | null>(null);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const { t, i18n } = useTranslation(["sales", "common"]);
   const isRTL = i18n.language === 'ar';
   
@@ -26,9 +40,7 @@ export function SalesManager() {
 
   const formatCurrency = (amount: number) => {
     const currency = localStorage.getItem('currency') || 'SAR';
-    return isRTL 
-      ? `${amount.toFixed(2)} ${currency}` 
-      : `${currency} ${amount.toFixed(2)}`;
+    return `${amount.toFixed(2)} ${currency}`;
   };
 
   const getCustomerName = (customerId: string) => {
@@ -55,7 +67,8 @@ export function SalesManager() {
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">{t("sales:title")}</h2>
         <Button onClick={() => {
-          /* Sale creation logic */
+          setEditingSale(null);
+          setIsDialogOpen(true);
         }}>
           <Plus className={`h-4 w-4 ${isRTL ? 'ml-2' : 'mr-2'}`} />
           {t("sales:newSale")}
@@ -124,13 +137,16 @@ export function SalesManager() {
                 <td className="p-2">
                   <div className="flex justify-end space-x-2">
                     <Button size="sm" variant="outline" onClick={() => {
-                      /* Sale edit logic */
+                      setEditingSale(sale);
+                      setIsDialogOpen(true);
                     }}>
+                      <Edit className="h-4 w-4 mr-1" />
                       {t("common:edit")}
                     </Button>
                     <Button size="sm" variant="destructive" onClick={() => {
-                      /* Sale delete logic */
+                      setDeleteConfirmId(sale.id);
                     }}>
+                      <Trash2 className="h-4 w-4 mr-1" />
                       {t("common:delete")}
                     </Button>
                   </div>
@@ -147,6 +163,38 @@ export function SalesManager() {
           </tbody>
         </table>
       </div>
+
+      <SaleDialogManager
+        isOpen={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+        editingSale={editingSale}
+        customers={customers}
+        onSaveComplete={refreshSales}
+      />
+
+      <AlertDialog open={!!deleteConfirmId} onOpenChange={() => setDeleteConfirmId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("sales:deleteSale", "Delete Sale")}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("sales:deleteConfirm", "Are you sure you want to delete this sale? This action cannot be undone.")}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t("common:cancel")}</AlertDialogCancel>
+            <AlertDialogAction onClick={() => {
+              if (deleteConfirmId) {
+                storage.deleteSale(deleteConfirmId);
+                refreshSales();
+                toast.success(t("sales:deleteSuccess", "Sale deleted successfully"));
+                setDeleteConfirmId(null);
+              }
+            }}>
+              {t("common:delete")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

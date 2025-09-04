@@ -34,7 +34,6 @@ export const InvoicePreviewDialog = ({
   const prevOpenRef = useRef(isOpen);
   const prevTypeRef = useRef(previewType);
 
-  // When dialog opens or language changes, update language settings
   useEffect(() => {
     const handleLanguageChange = () => {
       const currentLang = i18n.language;
@@ -84,6 +83,23 @@ export const InvoicePreviewDialog = ({
     prevTypeRef.current = previewType;
   }, [isOpen, previewType]);
 
+  // Handle PDF viewer error and provide fallback
+  const handlePDFError = () => {
+    console.warn("PDFViewer failed to load, opening in new window");
+    const newWindow = window.open('', '_blank');
+    if (newWindow) {
+      newWindow.document.write(`
+        <html>
+          <head><title>${previewType === "invoice" ? "Invoice" : "Receipt"}</title></head>
+          <body>
+            <h1>PDF Preview</h1>
+            <p>PDF viewer failed to load. Please use the download or print buttons to view the document.</p>
+          </body>
+        </html>
+      `);
+    }
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-6xl h-5/6 flex flex-col" dir={isRTL ? "rtl" : "ltr"}>
@@ -98,6 +114,7 @@ export const InvoicePreviewDialog = ({
         <div className="flex-1 overflow-hidden">
           <div className="w-full h-full">
             <PDFViewer 
+              key={`invoice-viewer-${forceRender}`}
               width="100%" 
               height="100%" 
               className="border rounded"

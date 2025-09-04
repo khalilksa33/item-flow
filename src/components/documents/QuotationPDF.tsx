@@ -65,6 +65,14 @@ export const QuotationPDF = ({ quotation, customerName }: QuotationPDFProps) => 
     return typeof value === 'number' ? value.toFixed(2) : '0.00';
   };
 
+  // Function to get product name from ID
+  const getProductName = (productId: string): string => {
+    // Get inventory items from storage
+    const inventoryItems = JSON.parse(localStorage.getItem('inventory_items') || '[]');
+    const product = inventoryItems.find((item: any) => item.id === productId);
+    return product ? product.name : productId; // Fallback to ID if product not found
+  };
+
   // Ensure quotation items array exists
   const items = quotation.items || [];
 
@@ -72,19 +80,18 @@ export const QuotationPDF = ({ quotation, customerName }: QuotationPDFProps) => 
     <Document>
       <Page size="A4" style={styles.page}>
         <View style={styles.header}>
-          <View style={styles.companyHeader}>
-            <Text style={styles.companyName}>{companyName}</Text>
-            {vatNumber && <Text style={styles.companyInfo}>VAT Number: {vatNumber}</Text>}
-            {crNumber && <Text style={styles.companyInfo}>CR Number: {crNumber}</Text>}
-            {companyAddress && <Text style={styles.companyInfo}>Address: {companyAddress}</Text>}
-            {companyPhone && <Text style={styles.companyInfo}>Phone: {companyPhone}</Text>}
-            {companyEmail && <Text style={styles.companyInfo}>Email: {companyEmail}</Text>}
-          </View>
           {companyLogo && (
             <View style={styles.logoContainer}>
               <Image src={companyLogo} style={styles.logo} />
             </View>
           )}
+          <View style={styles.companyHeader}>
+            <Text style={styles.companyName}>{companyName}</Text>
+            {vatNumber && <Text style={styles.companyInfo}>VAT Number: {vatNumber}</Text>}
+            {crNumber && <Text style={styles.companyInfo}>CR Number: {crNumber}</Text>}
+            {companyPhone && <Text style={styles.companyInfo}>Phone: {companyPhone}</Text>}
+            {companyEmail && <Text style={styles.companyInfo}>Email: {companyEmail}</Text>}
+          </View>
         </View>
 
         <View>
@@ -110,10 +117,10 @@ export const QuotationPDF = ({ quotation, customerName }: QuotationPDFProps) => 
           </View>
           {items.map((item, index) => (
             <View key={index} style={styles.tableRow}>
-              <Text style={styles.tableCell}>{item.productId}</Text>
+              <Text style={styles.tableCell}>{getProductName(item.productId)}</Text>
               <Text style={styles.tableCell}>{item.quantity || 0}</Text>
-              <Text style={styles.tableCell}>{currency} {safeFormatNumber(item.unitPrice)}</Text>
-              <Text style={styles.tableCell}>{currency} {safeFormatNumber(item.subtotal)}</Text>
+              <Text style={styles.tableCell}>{safeFormatNumber(item.unitPrice)} {currency}</Text>
+              <Text style={styles.tableCell}>{safeFormatNumber(item.subtotal)} {currency}</Text>
             </View>
           ))}
         </View>
@@ -121,18 +128,18 @@ export const QuotationPDF = ({ quotation, customerName }: QuotationPDFProps) => 
         <View style={styles.totals}>
           <View style={styles.totalRow}>
             <Text style={styles.totalLabel}>{isRTL ? 'المجموع الفرعي:' : 'Subtotal:'}</Text>
-            <Text style={styles.totalValue}>{currency} {safeFormatNumber(quotation.subtotal)}</Text>
+            <Text style={styles.totalValue}>{safeFormatNumber(quotation.subtotal)} {currency}</Text>
           </View>
           <View style={styles.totalRow}>
             <Text style={styles.totalLabel}>
               {isRTL ? `ضريبة القيمة المضافة (${((quotation.vatRate || 0) * 100).toFixed()}%):` : 
                 `VAT (${((quotation.vatRate || 0) * 100).toFixed()}%):`}
             </Text>
-            <Text style={styles.totalValue}>{currency} {safeFormatNumber(quotation.vatAmount)}</Text>
+            <Text style={styles.totalValue}>{safeFormatNumber(quotation.vatAmount)} {currency}</Text>
           </View>
           <View style={[styles.totalRow, styles.grandTotal]}>
             <Text style={styles.totalLabel}>{isRTL ? 'المجموع:' : 'Total:'}</Text>
-            <Text style={styles.totalValue}>{currency} {safeFormatNumber(quotation.total)}</Text>
+            <Text style={styles.totalValue}>{safeFormatNumber(quotation.total)} {currency}</Text>
           </View>
         </View>
 
