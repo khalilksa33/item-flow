@@ -1,4 +1,3 @@
-
 import { storage } from "@/lib/storage";
 import { InventoryItem, Vendor, Customer } from "@/types/inventory";
 
