@@ -62,5 +62,8 @@
   "loadError": "خطأ في تحميل الفواتير",
   "saveError": "خطأ في حفظ الفاتورة",
   "deleteError": "خطأ في حذف الفاتورة",
-  "editError": "خطأ في تعديل الفاتورة"
+  "editError": "خطأ في تعديل الفاتورة",
+  "errorGeneratingPreview": "خطأ في إنشاء معاينة PDF",
+  "failedToLoadPreview": "فشل في تحميل معاينة PDF",
+  "retryPreview": "إعادة المحاولة"
 }

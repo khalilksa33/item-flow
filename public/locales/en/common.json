@@ -22,5 +22,7 @@
   "info": "Information",
   "show": "Show",
   "hide": "Hide",
-  "print": "Print"
+  "print": "Print",
+  "download": "Download",
+  "loading": "Loading"
 }

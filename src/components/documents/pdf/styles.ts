@@ -227,12 +227,15 @@ export const styles = StyleSheet.create({
   },
   footer: {
     position: 'absolute',
-    bottom: 30,
+    bottom: 15,
     left: 30,
     right: 30,
     fontSize: 8,
     color: '#666',
-    textAlign: 'center'
+    textAlign: 'center',
+    borderTopWidth: 1,
+    borderTopColor: '#eee',
+    paddingTop: 8
   },
   footerCompanyName: {
     fontSize: 10,

@@ -34,8 +34,15 @@ export function InvoiceFooter({
         <Text style={styles.watermark}>{labels.paid}</Text>
       )}
 
-      <View style={[styles.footer, isRTL && styles.rtlSection]}>
-        {companyAddress && <Text style={styles.footerText}>{companyAddress}</Text>}
+      {/* Company address fixed at bottom of page */}
+      <View style={[styles.footer, isRTL && styles.rtlSection]} fixed>
+        {companyAddress && (
+          <>
+            <Text style={[styles.footerText, { fontWeight: 'bold', fontSize: 9 }]}>
+              {companyAddress}
+            </Text>
+          </>
+        )}
       </View>
     </>
   );
