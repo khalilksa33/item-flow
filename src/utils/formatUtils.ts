@@ -16,6 +16,7 @@ export const formatUtils = {
 
   formatCurrency: (amount: number, isRTL: boolean): string => {
     const currency = localStorage.getItem('currency') || 'SAR';
-    return `${amount.toFixed(2)} ${currency}`;
+    const symbol = currency === 'SAR' ? 'ر.س' : currency;
+    return `${amount.toFixed(2)} ${symbol}`;
   }
 };

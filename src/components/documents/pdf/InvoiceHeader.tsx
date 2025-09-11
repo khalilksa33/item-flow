@@ -39,6 +39,12 @@ export function InvoiceHeader({
 
       {/* Company Info */}
       <View style={[styles.headerInfo, isRTL && styles.rtlSection]}>
+        {/* Show Arabic company name first if exists */}
+        {localStorage.getItem("companyNameAr") && (
+          <Text style={[styles.companyName, { fontFamily: 'Helvetica' }]}>
+            {localStorage.getItem("companyNameAr")}
+          </Text>
+        )}
         {companyName && (
           <Text style={styles.companyName}>{companyName}</Text>
         )}

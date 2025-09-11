@@ -11,7 +11,8 @@ export const formatCurrency = (
   currency: string, 
   isRTL: boolean
 ): string => {
-  return `${amount.toFixed(2)} ${currency}`;
+  const symbol = currency === 'SAR' ? 'ر.س' : currency;
+  return `${amount.toFixed(2)} ${symbol}`;
 };
 
 /**

@@ -14,9 +14,11 @@ export function InvoiceTotals({ subtotal, vatAmount, total }: InvoiceTotalsProps
   const currency = localStorage.getItem('currency') || 'SAR';
   
   const formatCurrency = (amount: number) => {
+    const currency = localStorage.getItem('currency') || 'SAR';
+    const symbol = currency === 'SAR' ? 'ر.س' : currency;
     return isRTL 
-      ? `${amount.toFixed(2)} ${currency}` 
-      : `${currency} ${amount.toFixed(2)}`;
+      ? `${amount.toFixed(2)} ${symbol}` 
+      : `${symbol} ${amount.toFixed(2)}`;
   };
   
   return (

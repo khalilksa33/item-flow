@@ -33,14 +33,14 @@ export function InvoiceItemsTable({
       <Text style={styles.sectionTitle}>{labels.items}</Text>
       <View style={styles.table}>
         <View style={isRTL ? styles.tableHeaderRTL : styles.tableHeader}>
-          <Text style={styles.tableCellNarrow}>#</Text>
+          <Text style={styles.tableCellNarrow}>{isRTL ? '#' : '#'}</Text>
           <Text style={styles.tableCell}>{isRTL ? 'كود الصنف' : 'Item Code'}</Text>
-          <Text style={styles.tableCellWide}>{labels.item}</Text>
-          <Text style={styles.tableCell}>{labels.quantity}</Text>
-          <Text style={styles.tableCell}>{labels.unitPrice}</Text>
+          <Text style={styles.tableCellWide}>{isRTL ? 'وصف الصنف' : labels.item}</Text>
+          <Text style={styles.tableCell}>{isRTL ? 'الكمية' : labels.quantity}</Text>
+          <Text style={styles.tableCell}>{isRTL ? 'سعر الوحدة' : labels.unitPrice}</Text>
           <Text style={styles.tableCell}>{isRTL ? 'قيمة ضريبة القيمة المضافة للوحدة (15%)' : '15% VAT per Unit'}</Text>
           <Text style={styles.tableCell}>{isRTL ? 'إجمالي قيمة الضريبة' : 'Total VAT Value'}</Text>
-          <Text style={styles.tableCell}>{labels.subtotal}</Text>
+          <Text style={styles.tableCell}>{isRTL ? 'الإجمالي الفرعي' : labels.subtotal}</Text>
         </View>
         {items.map((item, index) => {
           const product = inventoryItems.find(p => p.id === item.productId);
@@ -54,10 +54,10 @@ export function InvoiceItemsTable({
               <Text style={styles.tableCell}>{product?.barcode || item.productId.slice(0, 8)}</Text>
               <Text style={styles.tableCellWide}>{getProductName(item.productId)}</Text>
               <Text style={styles.tableCell}>{item.quantity || 0}</Text>
-              <Text style={styles.tableCell}>{formatNumber(item.unitPrice)} {currency}</Text>
-              <Text style={styles.tableCell}>{formatNumber(vatPerUnit)} {currency}</Text>
-              <Text style={styles.tableCell}>{formatNumber(totalVatValue)} {currency}</Text>
-              <Text style={styles.tableCell}>{formatNumber(item.subtotal)} {currency}</Text>
+              <Text style={styles.tableCell}>{formatNumber(item.unitPrice)} ر.س</Text>
+              <Text style={styles.tableCell}>{formatNumber(vatPerUnit)} ر.س</Text>
+              <Text style={styles.tableCell}>{formatNumber(totalVatValue)} ر.س</Text>
+              <Text style={styles.tableCell}>{formatNumber(item.subtotal)} ر.س</Text>
             </View>
           );
         })}

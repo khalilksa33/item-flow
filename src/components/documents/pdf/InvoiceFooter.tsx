@@ -36,6 +36,17 @@ export function InvoiceFooter({
 
       {/* Company address fixed at bottom of page */}
       <View style={[styles.footer, isRTL && styles.rtlSection]} fixed>
+        {/* Show Arabic footer note first if exists */}
+        {localStorage.getItem("footerNoteAr") && (
+          <Text style={[styles.footerText, { fontFamily: 'Helvetica', fontSize: 10, textAlign: 'center' }]}>
+            {localStorage.getItem("footerNoteAr")}
+          </Text>
+        )}
+        {localStorage.getItem("footerNote") && (
+          <Text style={[styles.footerText, { fontSize: 10, textAlign: 'center' }]}>
+            {localStorage.getItem("footerNote")}
+          </Text>
+        )}
         {companyAddress && (
           <>
             <Text style={[styles.footerText, { fontWeight: 'bold', fontSize: 9 }]}>

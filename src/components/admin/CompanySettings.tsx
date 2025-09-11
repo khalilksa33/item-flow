@@ -16,17 +16,25 @@ export function CompanySettings() {
   const [companyPhone, setCompanyPhone] = useState("");
   const [companyEmail, setCompanyEmail] = useState("");
   const [companyLogo, setCompanyLogo] = useState("");
+  const [companyNameAr, setCompanyNameAr] = useState("");
+  const [footerNote, setFooterNote] = useState("");
+  const [footerNoteAr, setFooterNoteAr] = useState("");
+  const [invoiceType, setInvoiceType] = useState("B2C");
   const { t, i18n } = useTranslation(["admin", "common"]);
   const isRTL = i18n.language === 'ar';
 
   useEffect(() => {
     // Load stored values or set default logo
     setCompanyName(localStorage.getItem("companyName") || "");
+    setCompanyNameAr(localStorage.getItem("companyNameAr") || "");
     setVatNumber(localStorage.getItem("vatNumber") || "");
     setCrNumber(localStorage.getItem("crNumber") || "");
     setCompanyAddress(localStorage.getItem("companyAddress") || "");
     setCompanyPhone(localStorage.getItem("companyPhone") || "");
     setCompanyEmail(localStorage.getItem("companyEmail") || "");
+    setFooterNote(localStorage.getItem("footerNote") || "");
+    setFooterNoteAr(localStorage.getItem("footerNoteAr") || "");
+    setInvoiceType(localStorage.getItem("invoiceType") || "B2C");
     
     // Set default logo if none exists
     const storedLogo = localStorage.getItem("companyLogo");
@@ -59,12 +67,16 @@ export function CompanySettings() {
 
   const saveSettings = () => {
     localStorage.setItem("companyName", companyName);
+    localStorage.setItem("companyNameAr", companyNameAr);
     localStorage.setItem("vatNumber", vatNumber);
     localStorage.setItem("crNumber", crNumber);
     localStorage.setItem("companyAddress", companyAddress);
     localStorage.setItem("companyPhone", companyPhone);
     localStorage.setItem("companyEmail", companyEmail);
     localStorage.setItem("companyLogo", companyLogo);
+    localStorage.setItem("footerNote", footerNote);
+    localStorage.setItem("footerNoteAr", footerNoteAr);
+    localStorage.setItem("invoiceType", invoiceType);
     toast.success(t("admin:settingsSaved"));
   };
 
@@ -77,16 +89,46 @@ export function CompanySettings() {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="companyName" className={isRTL ? "text-right block" : "block"}>
+              {t("admin:companyName")} (English)
+            </Label>
+            <Input
+              id="companyName"
+              value={companyName}
+              onChange={(e) => setCompanyName(e.target.value)}
+              className={isRTL ? "text-right" : ""}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="companyNameAr" className={isRTL ? "text-right block" : "block"}>
+              {t("admin:companyName")} (العربية)
+            </Label>
+            <Input
+              id="companyNameAr"
+              value={companyNameAr}
+              onChange={(e) => setCompanyNameAr(e.target.value)}
+              className="text-right"
+              dir="rtl"
+            />
+          </div>
+        </div>
+
         <div className="space-y-2">
-          <Label htmlFor="companyName" className={isRTL ? "text-right block" : "block"}>
-            {t("admin:companyName")}
+          <Label htmlFor="invoiceType" className={isRTL ? "text-right block" : "block"}>
+            Invoice Type
           </Label>
-          <Input
-            id="companyName"
-            value={companyName}
-            onChange={(e) => setCompanyName(e.target.value)}
-            className={isRTL ? "text-right" : ""}
-          />
+          <select
+            id="invoiceType"
+            value={invoiceType}
+            onChange={(e) => setInvoiceType(e.target.value)}
+            className="w-full px-3 py-2 border border-input bg-background rounded-md"
+          >
+            <option value="B2C">B2C - Business to Consumer</option>
+            <option value="B2B">B2B - Business to Business</option>
+            <option value="B2G">B2G - Business to Government</option>
+          </select>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -179,6 +221,34 @@ export function CompanySettings() {
               />
             </div>
           )}
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="footerNote" className={isRTL ? "text-right block" : "block"}>
+              Footer Note (English)
+            </Label>
+            <Input
+              id="footerNote"
+              value={footerNote}
+              onChange={(e) => setFooterNote(e.target.value)}
+              className={isRTL ? "text-right" : ""}
+              placeholder="Thank you for your business"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="footerNoteAr" className={isRTL ? "text-right block" : "block"}>
+              Footer Note (العربية)
+            </Label>
+            <Input
+              id="footerNoteAr"
+              value={footerNoteAr}
+              onChange={(e) => setFooterNoteAr(e.target.value)}
+              className="text-right"
+              dir="rtl"
+              placeholder="شكراً لكم لثقتكم بنا"
+            />
+          </div>
         </div>
 
         <Button onClick={saveSettings}>
