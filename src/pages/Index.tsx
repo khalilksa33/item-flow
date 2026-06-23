@@ -101,6 +101,13 @@ const Index = () => {
       href: "/assets",
       color: "bg-indigo-600",
     },
+    {
+      title: "ZATCA e-Invoicing",
+      icon: <SettingsIcon className="h-5 w-5" />,
+      description: "Manage Saudi ZATCA e-Invoicing onboarding, certificates, and compliance settings.",
+      href: "/zatca-settings",
+      color: "bg-emerald-600",
+    },
   ];
   
   // Only show admin card if user is an admin

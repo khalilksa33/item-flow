@@ -17,6 +17,7 @@ import suppliersRouter from './routes/suppliers';
 import auditLogsRouter from './routes/auditLogs';
 import settingsRouter from './routes/settings';
 import assetsRouter from './routes/assets';
+import zatcaRouter from './routes/zatca';
 
 dotenv.config();
 
@@ -51,6 +52,7 @@ app.use('/api/suppliers', suppliersRouter);
 app.use('/api/audit-logs', auditLogsRouter);
 app.use('/api/settings', settingsRouter);
 app.use('/api/assets', assetsRouter);
+app.use('/api/zatca', zatcaRouter);
 
 // ── Error handler ─────────────────────────────────────────────
 app.use((err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {

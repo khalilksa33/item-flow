@@ -21,6 +21,12 @@ export interface IInvoice extends Document {
   paymentDue: Date;
   paymentTerms?: string;
   notes?: string;
+  xmlHash?: string;
+  zatcaStatus?: 'pending' | 'cleared' | 'reported' | 'failed';
+  qrCodeData?: string;
+  zatcaErrorMessage?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 const InvoiceItemSchema = new Schema<IInvoiceItem>({
@@ -44,6 +50,10 @@ const InvoiceSchema = new Schema<IInvoice>({
   paymentDue: { type: Date, required: true },
   paymentTerms: { type: String },
   notes: { type: String },
+  xmlHash: { type: String },
+  zatcaStatus: { type: String, enum: ['pending', 'cleared', 'reported', 'failed'], default: 'pending' },
+  qrCodeData: { type: String },
+  zatcaErrorMessage: { type: String },
 }, { timestamps: true });
 
 import { getModel } from '../database/FileModel';

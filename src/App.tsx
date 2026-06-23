@@ -22,6 +22,7 @@ import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import Assets from "./pages/Assets";
+import ZatcaSettings from "./pages/ZatcaSettings";
 
 const queryClient = new QueryClient();
 
@@ -79,6 +80,7 @@ const App: React.FC = () => {
               <Route path="/invoices" element={<ProtectedRoute><Invoices /></ProtectedRoute>} />
               <Route path="/vendors" element={<ProtectedRoute><Vendors /></ProtectedRoute>} />
               <Route path="/assets" element={<ProtectedRoute><Assets /></ProtectedRoute>} />
+              <Route path="/zatca-settings" element={<ProtectedRoute><ZatcaSettings /></ProtectedRoute>} />
               <Route path="/admin" element={<ProtectedRoute requiredRole="admin"><Admin /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
