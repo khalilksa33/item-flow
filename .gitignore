@@ -22,3 +22,14 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Environment secrets — never commit these
+.env
+.env.local
+.env.production
+.env.staging
+
+# Backend build artifacts
+backend/node_modules
+backend/dist
+

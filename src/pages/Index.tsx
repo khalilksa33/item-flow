@@ -13,6 +13,7 @@ import {
   Truck as TruckIcon,
   Settings as SettingsIcon,
   LogOut as LogOutIcon,
+  Shield as ShieldIcon,
 } from "lucide-react";
 import { storage } from "@/lib/storage";
 import { useUser } from "@/contexts/UserContext";
@@ -92,6 +93,13 @@ const Index = () => {
       description: t("vendors:description"),
       href: "/vendors",
       color: "bg-teal-500",
+    },
+    {
+      title: "Asset Management",
+      icon: <ShieldIcon className="h-5 w-5" />,
+      description: "Track company fixed assets, valuations, and depreciation.",
+      href: "/assets",
+      color: "bg-indigo-600",
     },
   ];
   

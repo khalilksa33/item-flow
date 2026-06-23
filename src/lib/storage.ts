@@ -1,5 +1,19 @@
-
 import { InventoryItem, Customer, Vendor, Sale, Quotation, Invoice, User, Category, Supplier, AuditLog } from "@/types/inventory";
+import { seedSampleData } from "@/utils/sampleDataSeeder";
+import {
+  inventoryApi,
+  customersApi,
+  vendorsApi,
+  salesApi,
+  quotationsApi,
+  invoicesApi,
+  usersApi,
+  categoriesApi,
+  suppliersApi,
+  auditLogsApi,
+  settingsApi,
+  tokenStore
+} from "./api";
 
 const STORAGE_KEYS = {
   INVENTORY: 'inventory_items',
@@ -15,40 +29,120 @@ const STORAGE_KEYS = {
   CURRENT_USER: 'inventory_current_user',
 };
 
-import { seedSampleData } from "@/utils/sampleDataSeeder";
+// ── LocalStorage proxy for settings sync ──────────────────────
+const originalSetItem = window.localStorage.setItem;
+const settingsKeys = [
+  "companyName", "companyNameAr", "vatNumber", "crNumber",
+  "companyAddress", "companyPhone", "companyEmail", "companyLogo",
+  "footerNote", "footerNoteAr", "invoiceType",
+  "timezone", "currency", "vatRate", "dateFormat"
+];
+
+let isSyncing = false;
+
+window.localStorage.setItem = function(key, value) {
+  originalSetItem.call(window.localStorage, key, value);
+  if (!isSyncing && settingsKeys.includes(key)) {
+    if (tokenStore.get()) {
+      settingsApi.update({ [key]: value }).catch(err => {
+        console.error('Failed to sync setting to backend:', key, err);
+      });
+    }
+  }
+};
 
 export const storage = {
+  // Synchronization
+  syncWithBackend: async () => {
+    if (!tokenStore.get()) return;
+    isSyncing = true;
+    try {
+      const [
+        inventory,
+        customers,
+        vendors,
+        sales,
+        quotations,
+        invoices,
+        users,
+        categories,
+        suppliers,
+        auditLogs,
+        settings
+      ] = await Promise.all([
+        inventoryApi.getAll().catch(e => { console.error('Error fetching inventory:', e); return null; }),
+        customersApi.getAll().catch(e => { console.error('Error fetching customers:', e); return null; }),
+        vendorsApi.getAll().catch(e => { console.error('Error fetching vendors:', e); return null; }),
+        salesApi.getAll().catch(e => { console.error('Error fetching sales:', e); return null; }),
+        quotationsApi.getAll().catch(e => { console.error('Error fetching quotations:', e); return null; }),
+        invoicesApi.getAll().catch(e => { console.error('Error fetching invoices:', e); return null; }),
+        usersApi.getAll().catch(e => { console.error('Error fetching users:', e); return null; }),
+        categoriesApi.getAll().catch(e => { console.error('Error fetching categories:', e); return null; }),
+        suppliersApi.getAll().catch(e => { console.error('Error fetching suppliers:', e); return null; }),
+        auditLogsApi.getAll().catch(e => { console.error('Error fetching audit logs:', e); return null; }),
+        settingsApi.getAll().catch(e => { console.error('Error fetching settings:', e); return null; }),
+      ]);
+
+      if (inventory !== null) localStorage.setItem(STORAGE_KEYS.INVENTORY, JSON.stringify(inventory));
+      if (customers !== null) localStorage.setItem(STORAGE_KEYS.CUSTOMERS, JSON.stringify(customers));
+      if (vendors !== null) localStorage.setItem(STORAGE_KEYS.VENDORS, JSON.stringify(vendors));
+      if (sales !== null) localStorage.setItem(STORAGE_KEYS.SALES, JSON.stringify(sales));
+      if (quotations !== null) localStorage.setItem(STORAGE_KEYS.QUOTATIONS, JSON.stringify(quotations));
+      if (invoices !== null) localStorage.setItem(STORAGE_KEYS.INVOICES, JSON.stringify(invoices));
+      if (users !== null) localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
+      if (categories !== null) localStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify(categories));
+      if (suppliers !== null) localStorage.setItem(STORAGE_KEYS.SUPPLIERS, JSON.stringify(suppliers));
+      if (auditLogs !== null) localStorage.setItem(STORAGE_KEYS.AUDIT_LOGS, JSON.stringify(auditLogs));
+
+      if (settings !== null) {
+        Object.entries(settings).forEach(([key, value]) => {
+          originalSetItem.call(window.localStorage, key, value);
+        });
+      }
+      console.log('✅ Synchronized all data from MongoDB successfully');
+    } catch (error) {
+      console.error('❌ Sync error:', error);
+    } finally {
+      isSyncing = false;
+    }
+  },
+
   // Inventory Items
   getInventoryItems: () => {
     const items = localStorage.getItem(STORAGE_KEYS.INVENTORY);
     return items ? JSON.parse(items) : [];
   },
   getItems: () => {
-    // Alias for getInventoryItems
     return storage.getInventoryItems();
   },
   addInventoryItem: (item: InventoryItem) => {
     const items = storage.getInventoryItems();
     localStorage.setItem(STORAGE_KEYS.INVENTORY, JSON.stringify([...items, item]));
+    if (tokenStore.get()) {
+      inventoryApi.create(item).catch(err => console.error('API Error:', err));
+    }
   },
   addItem: (item: InventoryItem) => {
-    // Alias for addInventoryItem
     return storage.addInventoryItem(item);
   },
   updateInventoryItem: (item: InventoryItem) => {
     const items = storage.getInventoryItems().map(i => i.id === item.id ? item : i);
     localStorage.setItem(STORAGE_KEYS.INVENTORY, JSON.stringify(items));
+    if (tokenStore.get()) {
+      inventoryApi.update(item.id, item).catch(err => console.error('API Error:', err));
+    }
   },
   updateItem: (item: InventoryItem) => {
-    // Alias for updateInventoryItem
     return storage.updateInventoryItem(item);
   },
   deleteInventoryItem: (id: string) => {
     const items = storage.getInventoryItems().filter(i => i.id !== id);
     localStorage.setItem(STORAGE_KEYS.INVENTORY, JSON.stringify(items));
+    if (tokenStore.get()) {
+      inventoryApi.delete(id).catch(err => console.error('API Error:', err));
+    }
   },
   deleteItem: (id: string) => {
-    // Alias for deleteInventoryItem
     return storage.deleteInventoryItem(id);
   },
 
@@ -60,14 +154,23 @@ export const storage = {
   addCustomer: (customer: Customer) => {
     const customers = storage.getCustomers();
     localStorage.setItem(STORAGE_KEYS.CUSTOMERS, JSON.stringify([...customers, customer]));
+    if (tokenStore.get()) {
+      customersApi.create(customer).catch(err => console.error('API Error:', err));
+    }
   },
   updateCustomer: (customer: Customer) => {
     const customers = storage.getCustomers().map(c => c.id === customer.id ? customer : c);
     localStorage.setItem(STORAGE_KEYS.CUSTOMERS, JSON.stringify(customers));
+    if (tokenStore.get()) {
+      customersApi.update(customer.id, customer).catch(err => console.error('API Error:', err));
+    }
   },
   deleteCustomer: (id: string) => {
     const customers = storage.getCustomers().filter(c => c.id !== id);
     localStorage.setItem(STORAGE_KEYS.CUSTOMERS, JSON.stringify(customers));
+    if (tokenStore.get()) {
+      customersApi.delete(id).catch(err => console.error('API Error:', err));
+    }
   },
 
   // Vendors
@@ -78,14 +181,23 @@ export const storage = {
   addVendor: (vendor: Vendor) => {
     const vendors = storage.getVendors();
     localStorage.setItem(STORAGE_KEYS.VENDORS, JSON.stringify([...vendors, vendor]));
+    if (tokenStore.get()) {
+      vendorsApi.create(vendor).catch(err => console.error('API Error:', err));
+    }
   },
   updateVendor: (vendor: Vendor) => {
     const vendors = storage.getVendors().map(v => v.id === vendor.id ? vendor : v);
     localStorage.setItem(STORAGE_KEYS.VENDORS, JSON.stringify(vendors));
+    if (tokenStore.get()) {
+      vendorsApi.update(vendor.id, vendor).catch(err => console.error('API Error:', err));
+    }
   },
   deleteVendor: (id: string) => {
     const vendors = storage.getVendors().filter(v => v.id !== id);
     localStorage.setItem(STORAGE_KEYS.VENDORS, JSON.stringify(vendors));
+    if (tokenStore.get()) {
+      vendorsApi.delete(id).catch(err => console.error('API Error:', err));
+    }
   },
 
   // Sales
@@ -96,14 +208,23 @@ export const storage = {
   addSale: (sale: Sale) => {
     const sales = storage.getSales();
     localStorage.setItem(STORAGE_KEYS.SALES, JSON.stringify([...sales, sale]));
+    if (tokenStore.get()) {
+      salesApi.create(sale).catch(err => console.error('API Error:', err));
+    }
   },
   updateSale: (sale: Sale) => {
     const sales = storage.getSales().map(s => s.id === sale.id ? sale : s);
     localStorage.setItem(STORAGE_KEYS.SALES, JSON.stringify(sales));
+    if (tokenStore.get()) {
+      salesApi.update(sale.id, sale).catch(err => console.error('API Error:', err));
+    }
   },
   deleteSale: (id: string) => {
     const sales = storage.getSales().filter(s => s.id !== id);
     localStorage.setItem(STORAGE_KEYS.SALES, JSON.stringify(sales));
+    if (tokenStore.get()) {
+      salesApi.delete(id).catch(err => console.error('API Error:', err));
+    }
   },
 
   // Quotations
@@ -114,14 +235,23 @@ export const storage = {
   addQuotation: (quotation: Quotation) => {
     const quotations = storage.getQuotations();
     localStorage.setItem(STORAGE_KEYS.QUOTATIONS, JSON.stringify([...quotations, quotation]));
+    if (tokenStore.get()) {
+      quotationsApi.create(quotation).catch(err => console.error('API Error:', err));
+    }
   },
   updateQuotation: (quotation: Quotation) => {
     const quotations = storage.getQuotations().map(q => q.id === quotation.id ? quotation : q);
     localStorage.setItem(STORAGE_KEYS.QUOTATIONS, JSON.stringify(quotations));
+    if (tokenStore.get()) {
+      quotationsApi.update(quotation.id, quotation).catch(err => console.error('API Error:', err));
+    }
   },
   deleteQuotation: (id: string) => {
     const quotations = storage.getQuotations().filter(q => q.id !== id);
     localStorage.setItem(STORAGE_KEYS.QUOTATIONS, JSON.stringify(quotations));
+    if (tokenStore.get()) {
+      quotationsApi.delete(id).catch(err => console.error('API Error:', err));
+    }
   },
 
   // Invoices
@@ -132,14 +262,23 @@ export const storage = {
   addInvoice: (invoice: Invoice) => {
     const invoices = storage.getInvoices();
     localStorage.setItem(STORAGE_KEYS.INVOICES, JSON.stringify([...invoices, invoice]));
+    if (tokenStore.get()) {
+      invoicesApi.create(invoice).catch(err => console.error('API Error:', err));
+    }
   },
   updateInvoice: (invoice: Invoice) => {
     const invoices = storage.getInvoices().map(i => i.id === invoice.id ? invoice : i);
     localStorage.setItem(STORAGE_KEYS.INVOICES, JSON.stringify(invoices));
+    if (tokenStore.get()) {
+      invoicesApi.update(invoice.id, invoice).catch(err => console.error('API Error:', err));
+    }
   },
   deleteInvoice: (id: string) => {
     const invoices = storage.getInvoices().filter(i => i.id !== id);
     localStorage.setItem(STORAGE_KEYS.INVOICES, JSON.stringify(invoices));
+    if (tokenStore.get()) {
+      invoicesApi.delete(id).catch(err => console.error('API Error:', err));
+    }
   },
 
   // Users
@@ -150,14 +289,23 @@ export const storage = {
   addUser: (user: User) => {
     const users = storage.getUsers();
     localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify([...users, user]));
+    if (tokenStore.get()) {
+      usersApi.create(user).catch(err => console.error('API Error:', err));
+    }
   },
   updateUser: (user: User) => {
     const users = storage.getUsers().map(u => u.id === user.id ? user : u);
     localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
+    if (tokenStore.get()) {
+      usersApi.update(user.id, user).catch(err => console.error('API Error:', err));
+    }
   },
   deleteUser: (id: string) => {
     const users = storage.getUsers().filter(u => u.id !== id);
     localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
+    if (tokenStore.get()) {
+      usersApi.delete(id).catch(err => console.error('API Error:', err));
+    }
   },
   getCurrentUser: () => {
     const user = localStorage.getItem(STORAGE_KEYS.CURRENT_USER);
@@ -179,10 +327,16 @@ export const storage = {
   addCategory: (category: Category) => {
     const categories = storage.getCategories();
     localStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify([...categories, category]));
+    if (tokenStore.get()) {
+      categoriesApi.create(category).catch(err => console.error('API Error:', err));
+    }
   },
   deleteCategory: (id: string) => {
     const categories = storage.getCategories().filter(c => c.id !== id);
     localStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify(categories));
+    if (tokenStore.get()) {
+      categoriesApi.delete(id).catch(err => console.error('API Error:', err));
+    }
   },
 
   // Suppliers
@@ -193,14 +347,23 @@ export const storage = {
   addSupplier: (supplier: Supplier) => {
     const suppliers = storage.getSuppliers();
     localStorage.setItem(STORAGE_KEYS.SUPPLIERS, JSON.stringify([...suppliers, supplier]));
+    if (tokenStore.get()) {
+      suppliersApi.create(supplier).catch(err => console.error('API Error:', err));
+    }
   },
   updateSupplier: (supplier: Supplier) => {
     const suppliers = storage.getSuppliers().map(s => s.id === supplier.id ? supplier : s);
     localStorage.setItem(STORAGE_KEYS.SUPPLIERS, JSON.stringify(suppliers));
+    if (tokenStore.get()) {
+      suppliersApi.update(supplier.id, supplier).catch(err => console.error('API Error:', err));
+    }
   },
   deleteSupplier: (id: string) => {
     const suppliers = storage.getSuppliers().filter(s => s.id !== id);
     localStorage.setItem(STORAGE_KEYS.SUPPLIERS, JSON.stringify(suppliers));
+    if (tokenStore.get()) {
+      suppliersApi.delete(id).catch(err => console.error('API Error:', err));
+    }
   },
 
   // Audit Logs
@@ -211,6 +374,9 @@ export const storage = {
   addAuditLog: (log: AuditLog) => {
     const logs = storage.getAuditLogs();
     localStorage.setItem(STORAGE_KEYS.AUDIT_LOGS, JSON.stringify([...logs, log]));
+    if (tokenStore.get()) {
+      auditLogsApi.create(log).catch(err => console.error('API Error:', err));
+    }
   },
 
   // Data Management

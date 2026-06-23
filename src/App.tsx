@@ -21,6 +21,7 @@ import Vendors from "./pages/Vendors";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
+import Assets from "./pages/Assets";
 
 const queryClient = new QueryClient();
 
@@ -77,6 +78,7 @@ const App: React.FC = () => {
               <Route path="/quotations" element={<ProtectedRoute><Quotations /></ProtectedRoute>} />
               <Route path="/invoices" element={<ProtectedRoute><Invoices /></ProtectedRoute>} />
               <Route path="/vendors" element={<ProtectedRoute><Vendors /></ProtectedRoute>} />
+              <Route path="/assets" element={<ProtectedRoute><Assets /></ProtectedRoute>} />
               <Route path="/admin" element={<ProtectedRoute requiredRole="admin"><Admin /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
