@@ -1,0 +1,30 @@
+{
+  "version": 2,
+  "dgSpecHash": "+uV5+5N9RW0=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\KAMY\\.antigravity-ide\\item-flow\\KamySoftInstaller\\KamySoftInstaller.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\KAMY\\.nuget\\packages\\microsoft.net.illink.analyzers\\7.0.100-1.23211.1\\microsoft.net.illink.analyzers.7.0.100-1.23211.1.nupkg.sha512",
+    "C:\\Users\\KAMY\\.nuget\\packages\\microsoft.net.illink.tasks\\7.0.100-1.23211.1\\microsoft.net.illink.tasks.7.0.100-1.23211.1.nupkg.sha512",
+    "C:\\Users\\KAMY\\.nuget\\packages\\microsoft.web.webview2\\1.0.2277.86\\microsoft.web.webview2.1.0.2277.86.nupkg.sha512",
+    "C:\\Users\\KAMY\\.nuget\\packages\\microsoft.netcore.app.runtime.win-x64\\6.0.36\\microsoft.netcore.app.runtime.win-x64.6.0.36.nupkg.sha512",
+    "C:\\Users\\KAMY\\.nuget\\packages\\microsoft.windowsdesktop.app.runtime.win-x64\\6.0.36\\microsoft.windowsdesktop.app.runtime.win-x64.6.0.36.nupkg.sha512",
+    "C:\\Users\\KAMY\\.nuget\\packages\\microsoft.aspnetcore.app.runtime.win-x64\\6.0.36\\microsoft.aspnetcore.app.runtime.win-x64.6.0.36.nupkg.sha512",
+    "C:\\Users\\KAMY\\.nuget\\packages\\microsoft.netcore.app.crossgen2.win-x64\\6.0.36\\microsoft.netcore.app.crossgen2.win-x64.6.0.36.nupkg.sha512"
+  ],
+  "logs": [
+    {
+      "code": "NU1603",
+      "level": "Warning",
+      "message": "KamySoft depends on Microsoft.Web.WebView2 (>= 1.0.2260) but Microsoft.Web.WebView2 1.0.2260 was not found. Microsoft.Web.WebView2 1.0.2277.86 was resolved instead.",
+      "projectPath": "C:\\Users\\KAMY\\.antigravity-ide\\item-flow\\KamySoftInstaller\\KamySoftInstaller.csproj",
+      "warningLevel": 1,
+      "filePath": "C:\\Users\\KAMY\\.antigravity-ide\\item-flow\\KamySoftInstaller\\KamySoftInstaller.csproj",
+      "libraryId": "Microsoft.Web.WebView2",
+      "targetGraphs": [
+        "net6.0-windows7.0",
+        "net6.0-windows7.0/win-x64"
+      ]
+    }
+  ]
+}

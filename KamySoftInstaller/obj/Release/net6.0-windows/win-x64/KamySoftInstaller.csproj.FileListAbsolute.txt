@@ -1,0 +1,4 @@
+C:\Users\KAMY\.antigravity-ide\item-flow\KamySoftInstaller\obj\Release\net6.0-windows\win-x64\KamySoftInstaller.csproj.AssemblyReference.cache
+C:\Users\KAMY\.antigravity-ide\item-flow\KamySoftInstaller\obj\Release\net6.0-windows\win-x64\KamySoftInstaller.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\KAMY\.antigravity-ide\item-flow\KamySoftInstaller\obj\Release\net6.0-windows\win-x64\KamySoftInstaller.csproj.CoreCompileInputs.cache
+C:\Users\KAMY\.antigravity-ide\item-flow\KamySoftInstaller\obj\Release\net6.0-windows\win-x64\KamySoftInstaller.sourcelink.json

@@ -1,6 +1,8 @@
 services:
   frontend:
-    image: ${IMAGE_FRONTEND:-ghcr.io/khalilksa33/item-flow-frontend:latest}
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: item-flow-frontend
     ports:
       - "${APP_PORT:-8088}:80"

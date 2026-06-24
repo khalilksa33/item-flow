@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="*" Name="KamySoft" Language="1033" Version="1.0.0.0" Manufacturer="KamySoft" UpgradeCode="{A1B2C3D4-E5F6-7890-1234-56789ABCDEF0}">
+    <Package InstallerVersion="500" Compressed="yes" InstallScope="perMachine" />
+
+    <Media Id="1" Cabinet="KamySoft.cab" EmbedCab="yes" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="INSTALLFOLDER" Name="KamySoft" />
+      </Directory>
+    </Directory>
+
+    <Feature Id="MainFeature" Title="KamySoft" Level="1">
+      <ComponentGroupRef Id="KamySoftComponents" />
+    </Feature>
+  </Product>
+
+  <Fragment>
+    <ComponentGroup Id="KamySoftComponents" Directory="INSTALLFOLDER">
+      <!-- The "heat" tool will populate this with components for the published output -->
+    </ComponentGroup>
+  </Fragment>
+</Wix>
