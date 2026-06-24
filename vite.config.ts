@@ -5,7 +5,8 @@ import path from "path";
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   server: {
-    host: "::",
+    // Bind to all network interfaces so Cloudflare Tunnel can reach the dev server
+    host: "0.0.0.0",
     port: 8080,
   },
   plugins: [
